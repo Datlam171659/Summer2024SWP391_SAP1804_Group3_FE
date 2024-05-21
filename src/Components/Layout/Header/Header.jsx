@@ -16,7 +16,7 @@ function Header() {
     <header className="header">
       <div className="logo" />
       <div className="body">
-        <di v className="user">
+        <div className="user">
           <Avatar
             size={"large"}
             style={{
@@ -31,7 +31,7 @@ function Header() {
           <div className="action">
             <p className="fullName">User Name</p>
           </div>
-        </di>
+        </div>
       </div>
     </header>
   );
