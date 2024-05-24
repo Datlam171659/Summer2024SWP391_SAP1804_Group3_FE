@@ -1,35 +1,27 @@
 import React, {useState} from "react";
 import { Input, List, Skeleton } from "antd";
 import "./CustomerSearchPage.scss"
+import axios from "axios";
 
 const CustomerSearchPage = () => {
     const [searchValue, setSearchValue] = useState('');
     const [loading, setLoading] = useState(false);
     const [customers, setCustomers] = useState([]);
 
-    const handleSearch = value => {
-        setLoading(true);
-
-        setTimeout(() => {
-            setCustomers(fakeAPICall(value));
-            setLoading(false);
-    }, 2000);
-    
-};
-
-/*const handleSearch = async value => {
-    setLoading(true);
-    try {
-      // Call backend API
-      const response = await axios.get(`/api/customers?phoneNumber=${value}`);
-      // Set customer data API call
-      setCustomers(response.data);
-    } catch (err) {
-      console.log(err);
-    }
-    setLoading(false);
+    const handleSearch = async value => {
+      setSearchValue(value);
+      setLoading(true);
+  
+      try {
+          const response = await axios.get(`https://localhost:7262/api/Customer?customerName=${value}`);
+          setCustomers(response.data);
+      } catch (error) {
+          console.log(`Failed to fetch customer data: ${error}`);
+      } finally {
+          setLoading(false);
+      }
   };
-*/
+
 return (
     <div>
       <Input.Search 
@@ -39,30 +31,21 @@ return (
       />
 
       <List
-        itemLayout="horizontal"
-        dataSource={customers}
-        renderItem={item => (
-          <List.Item>
-            <Skeleton loading={loading} active avatar>
-              <List.Item.Meta
-                title={item.name}
-                description={item.phoneNumber}
-              />
-            </Skeleton>
-          </List.Item>
-        )}
+          itemLayout="horizontal"
+          dataSource={customers}
+          renderItem={item => (
+            <List.Item>
+              <Skeleton loading={loading} active avatar>
+                <List.Item.Meta
+                  title={item.customerName}
+                  description={item.phoneNumber}
+                />
+              </Skeleton>
+            </List.Item>
+          )}
       />
     </div>
   )
 }
-
-const fakeAPICall = (phoneNumber) => {
-    return [
-      {
-        name: phoneNumber === '1234567890' ? 'John Doe' : 'Anonymous',
-        phoneNumber: phoneNumber,
-      }
-    ]
-  };
   
   export default CustomerSearchPage;
