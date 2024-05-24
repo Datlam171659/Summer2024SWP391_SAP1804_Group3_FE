@@ -5,7 +5,6 @@ import ErrorPage from "../Pages/ErrorPage/ErrorPage";
 import SalesPage from "../Pages/SalesPage/SalesPage";
 import Login from "../Pages/LoginPage/Login";
 
-
 const router = createBrowserRouter([
     {
         path: "/",
@@ -26,6 +25,7 @@ const router = createBrowserRouter([
                 path: "sales-page",
                 element: <SalesPage />,
             },
+
         ],
     },
     {
