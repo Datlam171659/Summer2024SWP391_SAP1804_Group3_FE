@@ -2,7 +2,9 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProductData } from "../../Features/product/productSlice";
 import { Card } from "antd";
-const { Meta } = Card;
+import './SalesPage.scss'
+import { AudioOutlined } from '@ant-design/icons';
+import { Input, Space } from 'antd';
 const ProductListSale = () => {
   const dispatch = useDispatch();
   const productData = useSelector((state) => state.product.productData);
@@ -17,8 +19,18 @@ const ProductListSale = () => {
   if (isError === true && isLoadingProductData === false) {
     return <div>Something wrong!try again</div>;
   }
+  const { Search } = Input;
+const suffix = (
+  <AudioOutlined
+    style={{
+      fontSize: 16,
+      color: '#1677ff',
+    }}
+  />
+);
   return (
-    <div>
+    <div className="flex">
+    <div className="productlist grid grid-rows-2 grid-flow-col gap-4" > 
       {productData.map((item) => (
         <div key={item.id} className="">
           <Card
@@ -37,6 +49,12 @@ const ProductListSale = () => {
           </Card>
         </div>
       ))}
+    </div>
+    <div>
+      <h1>
+        Order 
+      </h1>
+    </div>
     </div>
   );
 };
