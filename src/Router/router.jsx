@@ -6,7 +6,6 @@ import SalesPage from "../Pages/SalesPage/SalesPage";
 import Login from "../Pages/LoginPage/Login";
 import CustomerSearchPage from "../Pages/CustomerSearchPage/CustomerSearchPage";
 
-
 const router = createBrowserRouter([
     {
         path: "/",
@@ -27,6 +26,7 @@ const router = createBrowserRouter([
                 path: "sales-page",
                 element: <SalesPage />,
             },
+
         ],
     },
     {
