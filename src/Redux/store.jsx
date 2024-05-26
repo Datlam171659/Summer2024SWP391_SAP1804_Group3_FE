@@ -6,6 +6,7 @@ const store = configureStore({
     product: productReducer,
     cart: cartReducer
   },
+  middlewares: (configmdw) => configmdw()
 });
 store.dispatch(getTotals());
 export default store;

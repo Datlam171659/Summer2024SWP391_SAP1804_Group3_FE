@@ -4,6 +4,7 @@ import RootLayoput from "./RootLayout";
 import ErrorPage from "../Pages/ErrorPage/ErrorPage";
 import SalesPage from "../Pages/SalesPage/SalesPage";
 import Login from "../Pages/LoginPage/Login";
+import CustomerSearchPage from "../Pages/CustomerSearchPage/CustomerSearchPage";
 
 const router = createBrowserRouter([
     {
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
     {
         path: "/login",
         element: <Login />
+    },
+    {
+        path: "customer-search",
+        element: <CustomerSearchPage/>
     }
 ]);
 

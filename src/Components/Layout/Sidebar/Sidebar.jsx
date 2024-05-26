@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { decrypt } from '../../../Utils/crypto';
 import "./Sidebar.scss"
 import NavItem from './NavItem/NavItem';
-import { AreaChartOutlined, CloseOutlined, DropboxOutlined, MenuOutlined, PayCircleFilled, ProductFilled, SettingFilled, UserOutlined } from '@ant-design/icons';
+import { AreaChartOutlined, CloseOutlined, DropboxOutlined, MenuOutlined, PayCircleFilled, ProductFilled, SettingFilled, UserOutlined, SearchOutlined } from '@ant-design/icons';
+import Search from 'antd/es/transfer/search';
 
 function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -59,6 +60,12 @@ function Sidebar() {
       children: [],
     },
     {
+      icon: <SearchOutlined style={{ fontSize: "20px" }} />,
+      title: 'Search Profile',
+      to: "/customer-search",  
+      children: [],
+    },
+    {
       icon: <SettingFilled style={{ fontSize: "20px" }} />,
       title: 'Setting',
       to: "",
@@ -69,7 +76,6 @@ function Sidebar() {
         }
       ],
     },
-
   ];
 
   return (
