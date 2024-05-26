@@ -28,7 +28,6 @@ const cartSlice = createSlice({
         state.cartItems.push(tempProductItem);
         notification.success({
           message: "Product added to cart",
-          position: "bottom-left",
         });
       }
       localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
@@ -57,9 +56,8 @@ const cartSlice = createSlice({
         (cartItem) => cartItem.id !== action.payload.id
       );
 
-      notification.error({
+      notification.success({
         message: "Product removed from cart",
-        position: "bottom-left",
       });
       localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
       cartSlice.caseReducers.getTotals(state);
@@ -85,13 +83,19 @@ const cartSlice = createSlice({
       state.cartTotalAmount = total;
     },
     clearCart(state) {
-      state.cartItems = [];
-      localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
-      notification.error({
-        message: "Cart cleared",
-        position: "bottom-left",
-      });
-      cartSlice.caseReducers.getTotals(state);
+      if (state.cartItems.length === 0) {
+        notification.info({
+          message: "Cart is empty",
+        });
+      } else {
+        state.cartItems = [];
+        localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
+        notification.success({
+          message: "Products have been cleared from cart",
+          duration: 2,
+        });
+        cartSlice.caseReducers.getTotals(state);
+      }
     },
   },
 });
