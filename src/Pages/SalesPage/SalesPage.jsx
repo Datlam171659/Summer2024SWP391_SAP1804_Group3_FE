@@ -4,7 +4,7 @@ import PoductListSale from './ProductListSale';
 const SalesPage = () => {
   
   return (
-    <div>
+    <div className='w-full'>
      <PoductListSale/>
     </div>
   );
