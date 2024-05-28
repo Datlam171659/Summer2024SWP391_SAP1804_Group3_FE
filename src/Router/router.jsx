@@ -35,7 +35,10 @@ const router = createBrowserRouter([
     },
     {
         path: "customer-search",
-        element: <CustomerSearchPage/>
+        element: 
+            <RootLayoput>
+                <CustomerSearchPage/>
+            </RootLayoput>
     }
 ]);
 
