@@ -15,7 +15,7 @@ const cartSlice = createSlice({
   reducers: {
     addToCart(state, action) {
       const existingIndex = state.cartItems.findIndex(
-        (item) => item.id === action.payload.id
+        (item) => item.itemId === action.payload.itemId
       );
 
       if (existingIndex >= 0) {
@@ -27,7 +27,7 @@ const cartSlice = createSlice({
         let tempProductItem = { ...action.payload, cartQuantity: 1 };
         state.cartItems.push(tempProductItem);
         notification.success({
-          message: "Product added to cart",
+          message: "Sản phẩm đã được thêm vào giỏ hàng",
         });
       }
       localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
@@ -35,14 +35,14 @@ const cartSlice = createSlice({
     },
     decreaseCart(state, action) {
       const itemIndex = state.cartItems.findIndex(
-        (item) => item.id === action.payload.id
+        (item) => item.itemId === action.payload.itemId
       );
 
       if (state.cartItems[itemIndex].cartQuantity > 1) {
         state.cartItems[itemIndex].cartQuantity -= 1;
       } else if (state.cartItems[itemIndex].cartQuantity === 1) {
         const nextCartItems = state.cartItems.filter(
-          (item) => item.id !== action.payload.id
+          (item) => item.itemId !== action.payload.itemId
         );
 
         state.cartItems = nextCartItems;
@@ -53,11 +53,11 @@ const cartSlice = createSlice({
     },
     removeFromCart(state, action) {
       state.cartItems = state.cartItems.filter(
-        (cartItem) => cartItem.id !== action.payload.id
+        (cartItem) => cartItem.itemId !== action.payload.itemId
       );
 
       notification.success({
-        message: "Product removed from cart",
+        message: "Sản phẩm đã được xóa khỏi giỏ hàng",
       });
       localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
       cartSlice.caseReducers.getTotals(state);
@@ -65,8 +65,8 @@ const cartSlice = createSlice({
     getTotals(state) {
       let { total, quantity } = state.cartItems.reduce(
         (cartTotal, cartItem) => {
-          const { Price, cartQuantity } = cartItem;
-          const itemTotal = Price * cartQuantity;
+          const { price, cartQuantity } = cartItem;
+          const itemTotal = price * cartQuantity;
 
           cartTotal.total += itemTotal;
           cartTotal.quantity += cartQuantity;
@@ -85,13 +85,13 @@ const cartSlice = createSlice({
     clearCart(state) {
       if (state.cartItems.length === 0) {
         notification.info({
-          message: "Cart is empty",
+          message: "Không có sản phẩm trong giỏ hàng ",
         });
       } else {
         state.cartItems = [];
         localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
         notification.success({
-          message: "Products have been cleared from cart",
+          message: "Hoàn tất thanh toán",
           duration: 2,
         });
         cartSlice.caseReducers.getTotals(state);
