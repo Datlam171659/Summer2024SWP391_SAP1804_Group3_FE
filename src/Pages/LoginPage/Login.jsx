@@ -3,7 +3,6 @@ import { Button, ConfigProvider, Form, Input, Spin, message } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import "./Login.scss";
 import { useNavigate } from "react-router-dom";
-import { encrypt } from "../../Utils/crypto";
 import { loginUser } from "../../Services/api/loginApi";
 
 const Login = () => {
