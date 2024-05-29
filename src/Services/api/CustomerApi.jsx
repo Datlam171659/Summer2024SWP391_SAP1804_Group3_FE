@@ -12,4 +12,13 @@ const addCustomer = async (customerData) => {
     return response.data;
 }
 
-export default { getAllCustomers, addCustomer };
+const updateCustomer = async (customerId, customerData) => {
+    const response = await axios.put(`${baseURL}/${customerId}`, customerData);
+    return response.data;
+}
+
+export default { 
+    getAllCustomers, 
+    addCustomer, 
+    updateCustomer 
+};

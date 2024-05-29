@@ -59,7 +59,6 @@ const router = createBrowserRouter([
             </RootLayoput>
     },
 
-    }
 ]);
 
 export default router;

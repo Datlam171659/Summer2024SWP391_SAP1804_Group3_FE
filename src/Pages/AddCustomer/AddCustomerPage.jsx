@@ -13,26 +13,26 @@ const AddCustomerPage = () => {
     const onFinish = async (values) => {
       try {
         // Check if the email already exists
-          let emailExists = await CustomerApi.getCustomerByEmail(values.email);
-          if (emailExists.length > 0) {
-              Modal.warning({
-                  title: "Error",
-                  content: `Email already in use, please use a different email`,
-                  okText: "OK"
-              });
-              return;
-          }
+          // let emailExists = await CustomerApi.getCustomerByEmail(values.email);
+          // if (emailExists.length > 0) {
+          //     Modal.warning({
+          //         title: "Error",
+          //         content: `Email already in use, please use a different email`,
+          //         okText: "OK"
+          //     });
+          //     return;
+          // }
 
-          // Check if the phone number already exists
-          let phoneNumberExists = await CustomerApi.getCustomerByPhoneNumber(values.phoneNumber);
-          if (phoneNumberExists.length > 0) {
-              Modal.warning({
-                  title: "Error",
-                  content: `Phone Number already in use, please use a different number`,
-                  okText: "OK"
-              });
-              return;
-          }
+          // // Check if the phone number already exists
+          // let phoneNumberExists = await CustomerApi.getCustomerByPhoneNumber(values.phoneNumber);
+          // if (phoneNumberExists.length > 0) {
+          //     Modal.warning({
+          //         title: "Error",
+          //         content: `Phone Number already in use, please use a different number`,
+          //         okText: "OK"
+          //     });
+          //     return;
+          // }
           await CustomerApi.addCustomer(values);
           message.success('Customer created successfully!');
           Modal.confirm({
