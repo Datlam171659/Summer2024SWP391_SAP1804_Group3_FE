@@ -8,15 +8,16 @@ import CustomerSearchPage from "../Pages/CustomerSearchPage/CustomerSearchPage";
 import PaymentPage from "../Pages/SalesPage/PaymentPage";
 import PrintReceiptPage from "../Pages/SalesPage/PrintReceiptPage";
 import AddCustomerPage from "../Pages/AddCustomer/AddCustomerPage";
+
 const router = createBrowserRouter([
     {
         path: "/",
         element: (
-            // <Authentication>
-            <RootLayoput>
-                <Outlet />
-            </RootLayoput>
-            // </Authentication>
+            <Authentication>
+                <RootLayoput>
+                    <Outlet />
+                </RootLayoput>
+            </Authentication>
         ),
         errorElement: (
             <RootLayoput>
@@ -27,6 +28,15 @@ const router = createBrowserRouter([
             {
                 path: "sales-page",
                 element: <SalesPage />,
+            },
+
+            {
+                path: "sales-page/Payment",
+                element: <PaymentPage />,
+            },
+            {
+                path: "sales-page/Payment/PrintReceiptPage",
+                element: <PrintReceiptPage />,
             },
         ],
     },
@@ -48,6 +58,8 @@ const router = createBrowserRouter([
                 <AddCustomerPage/>
             </RootLayoput>
     },
+
+    }
 ]);
 
 export default router;

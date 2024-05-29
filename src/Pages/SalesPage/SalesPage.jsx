@@ -1,9 +1,13 @@
-import React from 'react'
-import "./SalesPage.scss"
-const SalesPage = () => {
-  return (
-    <div>SalesPage</div>
-  )
-}
+import React, { useEffect } from 'react';
+import PoductListSale from './ProductListSale';
 
-export default SalesPage
+const SalesPage = () => {
+  
+  return (
+    <div className='w-full'>
+     <PoductListSale/>
+    </div>
+  );
+};
+
+export default SalesPage;

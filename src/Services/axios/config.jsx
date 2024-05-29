@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const axiosClient = axios.create({
-  baseURL: '',
+  baseURL: 'https://gjewellery.bsite.net/',
   headers: {
     'Content-type': 'application/json',
   },
@@ -10,7 +10,7 @@ const axiosClient = axios.create({
 // Add a request interceptor
 axiosClient.interceptors.request.use(
   function (config) {
-    const token = sessionStorage.getItem('token');
+    const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
       config.headers.Accept = 'application/json';
