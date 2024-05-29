@@ -10,11 +10,11 @@ const router = createBrowserRouter([
     {
         path: "/",
         element: (
-            // <Authentication>
-            <RootLayoput>
-                <Outlet />
-            </RootLayoput>
-            // </Authentication>
+            <Authentication>
+                <RootLayoput>
+                    <Outlet />
+                </RootLayoput>
+            </Authentication>
         ),
         errorElement: (
             <RootLayoput>
@@ -35,7 +35,7 @@ const router = createBrowserRouter([
     },
     {
         path: "customer-search",
-        element: <CustomerSearchPage/>
+        element: <CustomerSearchPage />
     }
 ]);
 
