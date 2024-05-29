@@ -7,4 +7,9 @@ const getAllCustomers = async (searchValue = '') => {
     return response.data;
 };
 
-export default { getAllCustomers };
+const addCustomer = async (customerData) => {
+    const response = await axios.post(baseURL, customerData);
+    return response.data;
+}
+
+export default { getAllCustomers, addCustomer };
