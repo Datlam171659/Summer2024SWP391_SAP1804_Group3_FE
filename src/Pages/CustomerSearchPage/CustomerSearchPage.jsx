@@ -126,12 +126,13 @@ const CustomerSearchPage = () => {
                                                 await fetchCustomers('')
                                             }
                                             }}
+                    onPressEnter={handleSearch}
                     allowClear
                />
                     <Button 
                         type="primary" 
                         className="search-button" 
-                        htmlType="submit"
+                        onClick={handleSearch} 
                         loading={loading}>
                         Search
                     </Button>
