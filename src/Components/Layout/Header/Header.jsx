@@ -1,3 +1,4 @@
+import { LogoutOutlined } from "@ant-design/icons";
 import "./Header.scss";
 import { Avatar } from "antd";
 import { useNavigate } from "react-router-dom";
@@ -5,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 
 function Header() {
   const navigate = useNavigate();
-  // const fullName = sessionStorage.getItem("fullName");
+  const userName = localStorage.getItem('UserName');
+  const initial = userName ? userName.charAt(0).toUpperCase() : '';
 
   const handleLogout = () => {
     localStorage.clear();
@@ -16,7 +18,15 @@ function Header() {
     <header className="header">
       <div className="logo" />
       <div className="body">
-        <div className="user">
+        <div className="user flex" >
+          <div className="action w-auto flex items-center" >
+            <div className="w-full flex items-center transition-all hover:text-gray-200" style={{ fontSize: "16px", fontWeight: "400" }}>
+              <p className="mr-3"><LogoutOutlined style={{ fontSize: "14px" }} /></p>
+              <button className="" onClick={handleLogout}>Log out</button>
+            </div>
+
+            {/* <p className="fullName">User Name</p> */}
+          </div>
           <Avatar
             size={"large"}
             style={{
@@ -26,11 +36,8 @@ function Header() {
               verticalAlign: 'middle',
             }}
           >
-            {/* {fullName?.length > 0 && fullName[0]} */}
+            {initial}
           </Avatar>
-          <div className="action">
-            <p className="fullName">User Name</p>
-          </div>
         </div>
       </div>
     </header>

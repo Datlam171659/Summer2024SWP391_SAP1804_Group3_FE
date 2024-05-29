@@ -15,10 +15,29 @@ function Authentication({ children }) {
                 localStorage.clear();
                 navigate("/login");
             } else {
-                if (location.pathname !== "" || location.pathname !== "/home") {
+                // Lưu role vào localStorage dựa trên giá trị của decodedToken.role
+                switch (decodedToken.role) {
+                    case "0":
+                        localStorage.setItem("role", "admin");
+                        break;
+                    case "1":
+                        localStorage.setItem("role", "manager");
+                        break;
+                    case "2":
+                        localStorage.setItem("role", "staff");
+                        break;
+                    default:
+                        console.log("Role not recognized");
+                }
+
+                localStorage.setItem("nameid", decodedToken.nameid);
+                localStorage.setItem("email", decodedToken.email);
+                localStorage.setItem("UserName", decodedToken.UserName);
+
+                if (location.pathname !== "" || location.pathname !== "/") {
                     navigate(location.pathname);
                 } else {
-                    navigate("/home");
+                    navigate("/");
                 }
             }
         } else {
