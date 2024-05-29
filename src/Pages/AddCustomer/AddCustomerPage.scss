@@ -1,5 +1,6 @@
 .add-customer-page{
     width: 100%;
+    position: relative;
     .go-back-btn {
         position: relative;
         top: 20px;
@@ -14,7 +15,6 @@
         color: black !important;
 
     }    
-
 
     .add-customer-form-container {
         max-width: 600px;
