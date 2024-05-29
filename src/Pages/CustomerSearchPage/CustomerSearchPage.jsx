@@ -1,14 +1,17 @@
+import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { Input, Table, Space, Button } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import "./CustomerSearchPage.scss"
 import CustomerApi from "../../Services/api/CustomerApi";
+import AddCustomerPage from "../AddCustomer/AddCustomerPage";
 
 const CustomerSearchPage = () => {
     const [searchValue, setSearchValue] = useState('');
     const [loading, setLoading] = useState(false);
     const [customers, setCustomers] = useState([]);
     const [allCustomers, setAllCustomers] = useState([]);
+    const navigate = useNavigate();
 
       useEffect(() => {
         fetchCustomers();
@@ -38,6 +41,10 @@ const CustomerSearchPage = () => {
         setLoading(false);
       }
     };
+
+    const handleAddCustomer = () => {
+        navigate('/customer-search/customer-add');
+    }
 
     const handleUpdate = (customerId) => {
         // Update logic here
@@ -88,7 +95,7 @@ const CustomerSearchPage = () => {
         <div className="customer-search">
             <div className="search-section">
         <Input className="search-input" 
-               placeholder="Search customer by phone number" 
+               placeholder="Search customer by name and phone number" 
                value={searchValue}
                onChange={async event => {setSearchValue(event.target.value);
                                         if(event.target.value === ''){
@@ -103,7 +110,11 @@ const CustomerSearchPage = () => {
                 loading={loading}>
             Search
         </Button>
-        <Button type="primary" className="add-customer-button">Add Customer</Button>
+        <Button type="primary" 
+                className="add-customer-button"
+                onClick={handleAddCustomer}
+                >Add Customer
+        </Button>
     </div>
             <Table
                 columns={columns}
