@@ -1,6 +1,10 @@
-import axios from "axios";
+import axios from "../axios/config"
 const getProductAll = () => {
-    return axios.get(`https://65450fc75a0b4b04436d8f9a.mockapi.io/Item`, {
+    return axios.get(`/api/Item`, {
     });
   };
-  export {getProductAll};
+  const getProductById=(itemId)=>{
+    const response= axios.get(`/api/Item/${itemId}`)
+  return response;
+  }
+  export {getProductAll,getProductById};

@@ -5,6 +5,8 @@ import ErrorPage from "../Pages/ErrorPage/ErrorPage";
 import SalesPage from "../Pages/SalesPage/SalesPage";
 import Login from "../Pages/LoginPage/Login";
 import CustomerSearchPage from "../Pages/CustomerSearchPage/CustomerSearchPage";
+import PaymentPage from "../Pages/SalesPage/PaymentPage";
+import PrintReceiptPage from "../Pages/SalesPage/PrintReceiptPage";
 
 const router = createBrowserRouter([
     {
@@ -27,6 +29,14 @@ const router = createBrowserRouter([
                 element: <SalesPage />,
             },
 
+            {
+                path: "sales-page/Payment",
+                element: <PaymentPage />,
+            },
+            {
+                path: "sales-page/Payment/PrintReceiptPage",
+                element: <PrintReceiptPage />,
+            },
         ],
     },
     {
@@ -36,6 +46,7 @@ const router = createBrowserRouter([
     {
         path: "customer-search",
         element: <CustomerSearchPage />
+
     }
 ]);
 

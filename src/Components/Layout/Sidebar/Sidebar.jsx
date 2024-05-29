@@ -53,12 +53,12 @@ function Sidebar() {
       to: "",
       children: [],
     },
-    {
-      icon: <UserOutlined style={{ fontSize: "20px" }} />,
-      title: 'Client',
-      to: "",
-      children: [],
-    },
+    // {
+    //   icon: <UserOutlined style={{ fontSize: "20px" }} />,
+    //   title: 'Client',
+    //   to: "",
+    //   children: [],
+    // },
     {
       icon: <SearchOutlined style={{ fontSize: "20px" }} />,
       title: 'Search Profile',
