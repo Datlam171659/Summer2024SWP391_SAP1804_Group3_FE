@@ -8,6 +8,7 @@ import CustomerSearchPage from "../Pages/CustomerSearchPage/CustomerSearchPage";
 import PaymentPage from "../Pages/SalesPage/PaymentPage";
 import PrintReceiptPage from "../Pages/SalesPage/PrintReceiptPage";
 import AddCustomerPage from "../Pages/AddCustomer/AddCustomerPage";
+import Product from "../Pages/ProductPage/Product";
 
 const router = createBrowserRouter([
     {
@@ -38,6 +39,7 @@ const router = createBrowserRouter([
                 path: "sales-page/Payment/PrintReceiptPage",
                 element: <PrintReceiptPage />,
             },
+
         ],
     },
     {
@@ -57,6 +59,13 @@ const router = createBrowserRouter([
             <RootLayoput>
                 <AddCustomerPage/>
             </RootLayoput>
+    },
+    {
+        path: "product",
+        element: 
+        <RootLayoput>
+        <Product/>
+        </RootLayoput>
     },
 ]);
 

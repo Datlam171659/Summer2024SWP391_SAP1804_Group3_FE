@@ -21,15 +21,15 @@ function Sidebar() {
     },
     {
       icon: <PayCircleFilled style={{ fontSize: "20px" }} />,
-      title: 'Bill',
+      title: 'Hóa Đơn',
       to: "",
       children: [
         {
-          title: 'Buy',
+          title: 'Mua',
           to: '/',
         },
         {
-          title: 'Sell',
+          title: 'Bán',
           to: '/sales-page',
         },
         // decryptedRoleSyllabusValue === "Full access" || decryptedRoleSyllabusValue === "Create" ? {
@@ -43,8 +43,8 @@ function Sidebar() {
     },
     {
       icon: <ProductFilled style={{ fontSize: "20px" }} />,
-      title: 'Inventory',
-      to: "",
+      title: 'Sản phẩm',
+      to: "/product",
       children: [],
     },
     {
@@ -61,17 +61,17 @@ function Sidebar() {
     // },
     {
       icon: <SearchOutlined style={{ fontSize: "20px" }} />,
-      title: 'Search Profile',
+      title: 'Khách hàng',
       to: "/customer-search",  
       children: [],
     },
     {
       icon: <SettingFilled style={{ fontSize: "20px" }} />,
-      title: 'Setting',
+      title: 'Cài đặt',
       to: "",
       children: [
         {
-          title: 'Log out',
+          title: 'Đăng xuất',
           to: '/',
         }
       ],

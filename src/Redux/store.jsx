@@ -1,14 +1,25 @@
 import { configureStore } from '@reduxjs/toolkit';
-import productReducer from '../Features/product/productSlice'; 
+import productReducer, { fetchProductData } from '../Features/product/productSlice'; 
 import cartReducer, { getTotals } from '../Features/product/cartSlice';
-import productdetailReducer from '../Features/product/productdetailSlice'
+import productDetailReducer from '../Features/product/productdetailSlice';
+import customerReducer from '../Features/Customer/customerSlice';
+import productAddReducer from '../Features/product/productaddSlice'; 
+import productDeleteReducer from '../Features/product/productdeleteSlice'; 
+
 const store = configureStore({
   reducer: {
     product: productReducer,
     cart: cartReducer,
-    productDetail:productdetailReducer,
+    productDetail: productDetailReducer,
+    customer: customerReducer,
+    productAdd: productAddReducer, 
+    productDelete: productDeleteReducer, 
   },
-  middlewares: (configmdw) => configmdw()
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware(), 
 });
+
+
+store.dispatch(fetchProductData());
 store.dispatch(getTotals());
+
 export default store;
