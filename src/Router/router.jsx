@@ -9,6 +9,7 @@ import PaymentPage from "../Pages/SalesPage/PaymentPage";
 import PrintReceiptPage from "../Pages/SalesPage/PrintReceiptPage";
 import AddCustomerPage from "../Pages/AddCustomer/AddCustomerPage";
 import ExchangeRatePage from "../Pages/ExchangeRatePage/ExchangeRatePage";
+import DashBoardPage from "../Pages/DashBoardPage/DashBoardPage";
 
 const router = createBrowserRouter([
     {
@@ -61,6 +62,13 @@ const router = createBrowserRouter([
         element: 
             <RootLayoput>
                 <AddCustomerPage/>
+            </RootLayoput>
+    },
+    {
+        path: "dashboard",
+        element: 
+            <RootLayoput>
+                <DashBoardPage/>
             </RootLayoput>
     },
 ]);

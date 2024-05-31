@@ -16,7 +16,7 @@ function Sidebar() {
     {
       icon: <LineChartOutlined style={{ fontSize: "16px" }} />,
       title: 'Tổng quan',
-      to: '/',
+      to: '/dashboard',
       children: [],
     },
     {
