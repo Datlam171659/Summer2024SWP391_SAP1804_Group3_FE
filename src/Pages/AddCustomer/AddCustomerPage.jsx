@@ -11,6 +11,12 @@ const AddCustomerPage = () => {
     const [form] = Form.useForm();
 
     const onFinish = async (values) => {
+      let newCustomer = {
+        ...values,
+        status: "active"
+    }
+    console.log(newCustomer);
+      // console.log(values);
       try {
         // Check if the email already exists
           // let emailExists = await CustomerApi.getCustomerByEmail(values.email);
@@ -33,7 +39,7 @@ const AddCustomerPage = () => {
           //     });
           //     return;
           // }
-          await CustomerApi.addCustomer(values);
+          await CustomerApi.addCustomer(newCustomer);
           message.success('Customer created successfully!');
           Modal.confirm({
             title: "Success",
@@ -65,7 +71,11 @@ const AddCustomerPage = () => {
 
       <div className="add-customer-form-container">
       <Typography.Title className="add-customer-title" level={3}>Create Profile</Typography.Title>
-      <Form form={form} onFinish={onFinish} layout="vertical">
+      <Form form={form} 
+            onFinish={onFinish} 
+            layout="vertical"
+            initialValues={{ status: "active" }} 
+      >
         <Form.Item name="customerName" label="Name" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
@@ -100,7 +110,7 @@ const AddCustomerPage = () => {
                 ]}>
           <Input />
         </Form.Item>
-
+        
         <Form.Item>
           <Button type="primary" htmlType="submit">
             Add Customer
