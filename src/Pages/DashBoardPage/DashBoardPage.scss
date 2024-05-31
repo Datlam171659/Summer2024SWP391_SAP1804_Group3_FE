@@ -1,0 +1,17 @@
+.dashboard-content {
+    width: 100%;
+    padding: 20px;
+
+  }
+  
+  .dashboard-content .overview {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
+  
+  .dashboard-content .ant-card {
+    margin-bottom: 20px;
+  }
+  

@@ -16,7 +16,7 @@ function Sidebar() {
     {
       icon: <AreaChartOutlined style={{ fontSize: "20px" }} />,
       title: 'Dashboard',
-      to: '/',
+      to: '/dashboard',
       children: [],
     },
     {
