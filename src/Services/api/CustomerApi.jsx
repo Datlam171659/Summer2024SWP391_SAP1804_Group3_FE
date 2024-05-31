@@ -1,10 +1,17 @@
 import axios from 'axios';
 
-const baseURL = 'https://gjewellery.bsite.net/api/Customer';
+const baseURL = 'https://localhost:7262/api/Customer';
 
 const getAllCustomers = async (searchValue = '') => { 
     const response = await axios.get(`${baseURL}?search=${searchValue}`);
-    return response.data;
+    
+    // Check if response.data is an object and it has a property named 'data'
+    if(typeof response.data === 'object' && response.data.hasOwnProperty('data')) {
+      return response.data.data;
+    }
+
+    // Return an empty array if we don't get the response in the expected format
+    return [];
 };
 
 const addCustomer = async (customerData) => {
