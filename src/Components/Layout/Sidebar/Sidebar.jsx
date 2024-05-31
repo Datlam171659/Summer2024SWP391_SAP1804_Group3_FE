@@ -49,7 +49,7 @@ function Sidebar() {
     },
     {
       icon: <DropboxOutlined style={{ fontSize: "20px" }} />,
-      title: 'Order',
+      title: 'Đặt hàng',
       to: "",
       children: [],
     },

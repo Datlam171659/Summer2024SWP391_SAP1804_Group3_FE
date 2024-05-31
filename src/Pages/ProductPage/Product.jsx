@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { removeProduct } from "../../Features/product/productdeleteSlice";
 import { addProduct } from "../../Features/product/productaddSlice";
 import { editProduct } from "../../Features/product/producteditSlice";
-
+import { Link } from "react-router-dom";
 function Product() {
   const dispatch = useDispatch();
   const productData = useSelector((state) => state.product.productData);
@@ -27,7 +27,7 @@ function Product() {
 
   const showEditModal = (product) => {
     setSelectedProduct(product);
-    form.setFieldsValue(product); // Populate the form with the selected product's details
+    form.setFieldsValue(product); 
     setIsEditModalOpen(true);
   };
 
@@ -108,6 +108,9 @@ function Product() {
       title: "Mã Hàng",
       dataIndex: "itemId",
       key: "itemId",
+      render: (text, record) =>(
+          <Link to={`/product/productdetail/${record.itemId}`}>{text}</Link>
+        )        
     },
     {
       title: "Tên Hàng",
@@ -154,11 +157,11 @@ function Product() {
   return (
     <div className="p-4 flex-col justify-center align-middle w-full mt-10 ">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Product</h1>
+        <h1 className="text-2xl font-bold uppercase">Sản phẩm</h1>
         <div className="space-x-2">
-          <Button onClick={() => setIsAddModalOpen(true)}>Add Product</Button>
-          <Button>Filter</Button>
-          <Button>Download All</Button>
+          <Button onClick={() => setIsAddModalOpen(true)}>Thêm Sản Phẩm</Button>
+          <Button>Lọc</Button>
+          <Button>Tải sản phẩm</Button>
         </div>
       </div>
       <div>
@@ -207,9 +210,7 @@ function Product() {
           <Form.Item name="itemId" label="Mã Hàng" rules={[{ required: true, message: 'Vui lòng nhập mã hàng' }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="itemImagesId" label="Mã Hình Ảnh" rules={[{ required: true, message: 'Vui lòng nhập mã hình ảnh' }]}>
-            <Input />
-          </Form.Item>
+        
           <Form.Item name="brandId" label="Mã Thương Hiệu" rules={[{ required: true, message: 'Vui lòng nhập mã thương hiệu' }]}>
             <Input />
           </Form.Item>
@@ -255,9 +256,6 @@ function Product() {
       >
         <Form form={form} layout="vertical">
           <Form.Item name="itemId" label="Mã Hàng" rules={[{ required: true, message: 'Vui lòng nhập mã hàng' }]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="itemImagesId" label="Mã Hình Ảnh" rules={[{ required: true, message: 'Vui lòng nhập mã hình ảnh' }]}>
             <Input />
           </Form.Item>
           <Form.Item name="brandId" label="Mã Thương Hiệu" rules={[{ required: true, message: 'Vui lòng nhập mã thương hiệu' }]}>
