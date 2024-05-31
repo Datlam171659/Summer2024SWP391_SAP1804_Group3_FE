@@ -15,8 +15,7 @@ const AddCustomerPage = () => {
         ...values,
         status: "active"
     }
-    console.log(newCustomer);
-      // console.log(values);
+    // console.log(newCustomer);;
       try {
         // Check if the email already exists
           // let emailExists = await CustomerApi.getCustomerByEmail(values.email);
