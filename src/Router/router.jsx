@@ -8,6 +8,7 @@ import CustomerSearchPage from "../Pages/CustomerSearchPage/CustomerSearchPage";
 import PaymentPage from "../Pages/SalesPage/PaymentPage";
 import PrintReceiptPage from "../Pages/SalesPage/PrintReceiptPage";
 import AddCustomerPage from "../Pages/AddCustomer/AddCustomerPage";
+import ExchangeRatePage from "../Pages/ExchangeRatePage/ExchangeRatePage";
 
 const router = createBrowserRouter([
     {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
             {
                 path: "sales-page/Payment/PrintReceiptPage",
                 element: <PrintReceiptPage />,
+            },
+            {
+                path: "exchange-rate",
+                element: <ExchangeRatePage />,
             },
         ],
     },

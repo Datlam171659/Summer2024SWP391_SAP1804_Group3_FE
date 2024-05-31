@@ -10,7 +10,7 @@ export const loginUser = async (email, password) => {
 
         if (responseData.success) {
             const token = responseData.data;
-            localStorage.setItem("token", token);
+            localStorage.setItem("token", token );
 
             return { token };
         } else {
