@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { decrypt } from '../../../Utils/crypto';
 import "./Sidebar.scss"
 import NavItem from './NavItem/NavItem';
-import { CloseOutlined, MenuOutlined, SearchOutlined, DollarOutlined, AppstoreOutlined, InboxOutlined, LineChartOutlined, SettingOutlined } from '@ant-design/icons';
+import { CloseOutlined, MenuOutlined, SearchOutlined, DollarOutlined, AppstoreOutlined, InboxOutlined, LineChartOutlined, SettingOutlined, UserOutlined, PercentageOutlined } from '@ant-design/icons';
 import Search from 'antd/es/transfer/search';
 
 function Sidebar() {
@@ -53,16 +53,22 @@ function Sidebar() {
       to: "",
       children: [],
     },
-    // {
-    //   icon: <UserOutlined style={{ fontSize: "16px" }} />,
-    //   title: 'Client',
-    //   to: "",
-    //   children: [],
-    // },
+    {
+      icon: <UserOutlined style={{ fontSize: "16px" }} />,
+      title: 'Nhân sự',
+      to: "",
+      children: [],
+    },
+    {
+      icon: <PercentageOutlined style={{ fontSize: "16px" }} />,
+      title: 'Khuyến mãi',
+      to: "",
+      children: [],
+    },
     {
       icon: <SearchOutlined style={{ fontSize: "16px" }} />,
       title: 'Search Profile',
-      to: "/customer-search",  
+      to: "/customer-search",
       children: [],
     },
     {

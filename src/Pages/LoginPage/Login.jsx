@@ -35,26 +35,27 @@ const Login = () => {
   }, []);
 
   return (
-    <Spin spinning={loading} size="large">
-      <div className="login-container">
-        <div className="login-bg">
-          <img
-            src="/login-bg(4).jpg"
-            alt="Login theme"
-          />
-        </div>
-        <div className="login-content">
-          <div className="login-title">
-            <h3>LOG IN</h3>
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: "var(--primary-color)",
+          colorPrimaryHover: "var(--primary-color-hover)"
+        },
+      }}
+    >
+      <Spin spinning={loading} size="large">
+        <div className="login-container">
+          <div className="login-bg">
+            <img
+              src="/login-bg(4).jpg"
+              alt="Login theme"
+            />
           </div>
-          <ConfigProvider
-            theme={{
-              token: {
-                colorPrimary: "var(--primary-color)",
-                colorPrimaryHover: "var(--primary-color-hover)"
-              },
-            }}
-          >
+          <div className="login-content">
+            <div className="login-title">
+              <h3>LOG IN</h3>
+            </div>
+
             <Form
               className="login-form"
               name="normal_login"
@@ -113,11 +114,11 @@ const Login = () => {
                 </Button>
               </Form.Item>
             </Form>
-          </ConfigProvider>
 
+          </div>
         </div>
-      </div>
-    </Spin>
+      </Spin>
+    </ConfigProvider>
   );
 };
 

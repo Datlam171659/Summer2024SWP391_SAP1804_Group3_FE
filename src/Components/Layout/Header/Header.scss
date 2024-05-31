@@ -16,7 +16,6 @@
     .mini-logo {
       display: flex;
       padding: 5px 15px;
-      gap: 10px;
       border-radius: 30px;
       background: #0b2136;
 
@@ -25,14 +24,12 @@
     .user {
       display: flex;
       align-items: center;
-      gap: 7px;
 
       .action {
         display: flex;
         min-width: 120px;
         flex-direction: column;
         align-items: flex-start;
-        gap: 5px;
 
         .fullName {
           padding: 4px;
