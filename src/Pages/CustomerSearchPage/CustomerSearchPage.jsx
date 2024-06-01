@@ -17,6 +17,23 @@
         useEffect(() => {
             fetchCustomers();
         }, []); 
+        
+        const checkIfCustomerExists = (phone, email, id) => {
+            let trimmedPhone = phone.trim();
+            let trimmedEmail = email.trim();
+            const phoneExists = allCustomers.find(customer => customer.phoneNumber === trimmedPhone && customer.id !== id);
+            const emailExists = allCustomers.find(customer => customer.email === trimmedEmail && customer.id !== id);
+            
+            if(phoneExists){ 
+              message.error("This phone number is already registered");
+              return true;
+            }
+            if(emailExists){ 
+              message.error("This email is already registered");
+              return true;
+            } 
+            return false;
+          }
 
         const handleSearch = () => {
         if(searchValue === '')  {
@@ -67,10 +84,11 @@
                 style: { top: '50%', transform: 'translateY(-50%)' },
                 async onOk() {
                     try {
-                        // console.log(customerId);
-                        const updatedCustomer = await CustomerApi.updateCustomer(customerId, { status: 'inactive' });
-                        message.success(`Customer ${updatedCustomer.id} set to inactive`);
-                        fetchCustomers(); // Fetch the customers again so the list gets updated
+                        const customer = await CustomerApi.getCustomerByID(customerId); 
+                        customer.status = 'inactive'; 
+                        const updatedCustomer = await CustomerApi.updateCustomer(customerId, customer); 
+                        message.success(`Customer ${updatedCustomer.customerName} set to inactive`);
+                        fetchCustomers(); 
                     } catch (error) {
                         message.error(`Unable to set customer to inactive`);
                         console.log(error.message)   
@@ -171,8 +189,13 @@
                                 email: currentCustomer.email
                             }}
                             onFinish={ async (values) => {
+                                const trimmedEmail = values.email.trim();
+                                const trimmedPhoneNumber = values.phoneNumber.trim();
+                                if(checkIfCustomerExists(trimmedPhoneNumber, trimmedEmail, currentCustomer.id)){
+                                    return;
+                                }
                                 try {
-                                    const updatedValues = { ...values, status: currentCustomer.status };
+                                    const updatedValues = { ...values, phoneNumber: trimmedPhoneNumber, email: trimmedEmail, status: currentCustomer.status };
                                     await CustomerApi.updateCustomer(currentCustomer.id, updatedValues);
                                     message.success("Customer data updated successfully");
                                     fetchCustomers();
@@ -214,7 +237,12 @@
                             <Form.Item
                                 label="Phone Number"
                                 name="phoneNumber"
-                                rules={[{ required: true, message: 'Please input phone number!' }]}
+                                rules={[{   required: true, message: 'Please input phone number!' },
+                                        {
+                                            pattern: new RegExp(/^\d{9,11}$/),
+                                            message: "Phone number must be between 9 and 11 digits!",
+                                        },
+                                ]}
                             >
                                 <Input />
                             </Form.Item>
@@ -222,7 +250,13 @@
                             <Form.Item
                                 label="Email"
                                 name="email"
-                                rules={[{ required: true, message: 'Please input email!', type: "email" }]}
+                                rules={[
+                                    {   
+                                        type: 'email',
+                                        required: true, 
+                                        message: 'The input is not valid E-mail!', 
+                                    },
+                                ]}
                             >
                                 <Input />
                             </Form.Item>

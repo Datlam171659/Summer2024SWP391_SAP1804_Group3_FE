@@ -7,43 +7,41 @@ import CustomerApi from "../../Services/api/CustomerApi";
 
 const AddCustomerPage = () => {
     const navigate = useNavigate();
-
     const [form] = Form.useForm();
 
     const onFinish = async (values) => {
       let newCustomer = {
         ...values,
         status: "active"
-    }
-    try { 
-      let emailExists = null;
-      let phoneNumberExists = null;
-  
+      }
       try { 
-         emailExists = await CustomerApi.getCustomerByEmail(values.email);
-         phoneNumberExists = await CustomerApi.getCustomerByPhoneNumber(values.phoneNumber); 
-      } catch (error) {
-         console.log('An error occurred while fetching customer by email or phone number:', error);
-      } 
-      let errorMessage = [];
-      if(emailExists && emailExists.email) errorMessage.push('Email');
-      else {
-        console.log("No customer with this email found");
-      }
-      if(phoneNumberExists && phoneNumberExists.phoneNumber) errorMessage.push('Phone Number');
-      else {
-        console.log("No customer with this phone number found");
-      }
-      // If either email or phone number exists
-      if(errorMessage.length !== 0) {
-         Modal.error({
-             style: { top: '50%', transform: 'translateY(-50%)' },
-             title: "Error",
-             content: `${errorMessage.join(' and ')} already in use, please use a different one`,
-             okText: "OK"
-         });
-         return;
-      }
+        let emailExists = null;
+        let phoneNumberExists = null;
+    
+        try {
+            emailExists = await CustomerApi.getCustomerByEmail(values.email);
+        } catch (error) {
+          console.log(error);
+        }
+        
+        try {
+            phoneNumberExists = await CustomerApi.getCustomerByPhoneNumber(values.phoneNumber);
+        } catch (error) {
+            console.log(error);
+        }
+          let errorMessage = [];
+          if(emailExists && emailExists.email) errorMessage.push('Email');
+          if(phoneNumberExists && phoneNumberExists.phoneNumber) errorMessage.push('Phone Number');
+          if(errorMessage.length !== 0) {
+          Modal.error({
+              style: { top: '50%', transform: 'translateY(-50%)' },
+              title: "Error",
+              content: `${errorMessage.join(' and ')} already in use, please use a different one`,
+              okText: "OK"
+          });
+          return;
+          }
+
           await CustomerApi.addCustomer(newCustomer);
           message.success('Customer created successfully!');
           Modal.confirm({
@@ -54,18 +52,17 @@ const AddCustomerPage = () => {
             onOk() {
               navigate(-1); 
             }
-          });
-        } catch (error) {
-          message.error('Failed to add customer. Please try again.');
-          Modal.warning({
-            title: "Error",
-            content: `Failed to add customer`,
-            style: { top: '50%', transform: 'translateY(-50%)' },
-            okText: "OK"
-          });
-          console.log('Failed to add customer:', error);
-        }
-      };
+          })} catch (error) {
+            message.error('Failed to add customer. Please try again.');
+            Modal.warning({
+              title: "Error",
+              content: `Failed to add customer`,
+              style: { top: '50%', transform: 'translateY(-50%)' },
+              okText: "OK"
+            });
+            console.log('Failed to add customer:', error);
+          }
+        };
 
   return (
     <div className='add-customer-page'>
@@ -99,8 +96,8 @@ const AddCustomerPage = () => {
         <Form.Item name="phoneNumber" label="Phone Number" rules={[
                 { required: true, message: "Please input your Phone number!" },
                 {
-                  pattern: new RegExp(/^[0-9]{10}$/),
-                  message: "Phone number must be exactly 10 digits!",
+                  pattern: new RegExp(/^\d{9,11}$/),
+                  message: "Phone number must be between 9 and 11 digits!",
                 },
               ]}>
           <Input />
