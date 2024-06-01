@@ -15,29 +15,35 @@ const AddCustomerPage = () => {
         ...values,
         status: "active"
     }
-    // console.log(newCustomer);;
-      try {
-        // Check if the email already exists
-          // let emailExists = await CustomerApi.getCustomerByEmail(values.email);
-          // if (emailExists.length > 0) {
-          //     Modal.warning({
-          //         title: "Error",
-          //         content: `Email already in use, please use a different email`,
-          //         okText: "OK"
-          //     });
-          //     return;
-          // }
-
-          // // Check if the phone number already exists
-          // let phoneNumberExists = await CustomerApi.getCustomerByPhoneNumber(values.phoneNumber);
-          // if (phoneNumberExists.length > 0) {
-          //     Modal.warning({
-          //         title: "Error",
-          //         content: `Phone Number already in use, please use a different number`,
-          //         okText: "OK"
-          //     });
-          //     return;
-          // }
+    try { 
+      let emailExists = null;
+      let phoneNumberExists = null;
+  
+      try { 
+         emailExists = await CustomerApi.getCustomerByEmail(values.email);
+         phoneNumberExists = await CustomerApi.getCustomerByPhoneNumber(values.phoneNumber); 
+      } catch (error) {
+         console.log('An error occurred while fetching customer by email or phone number:', error);
+      } 
+      let errorMessage = [];
+      if(emailExists && emailExists.email) errorMessage.push('Email');
+      else {
+        console.log("No customer with this email found");
+      }
+      if(phoneNumberExists && phoneNumberExists.phoneNumber) errorMessage.push('Phone Number');
+      else {
+        console.log("No customer with this phone number found");
+      }
+      // If either email or phone number exists
+      if(errorMessage.length !== 0) {
+         Modal.error({
+             style: { top: '50%', transform: 'translateY(-50%)' },
+             title: "Error",
+             content: `${errorMessage.join(' and ')} already in use, please use a different one`,
+             okText: "OK"
+         });
+         return;
+      }
           await CustomerApi.addCustomer(newCustomer);
           message.success('Customer created successfully!');
           Modal.confirm({
