@@ -18,16 +18,6 @@
             fetchCustomers();
         }, []); 
 
-        // useEffect(() => {
-        //     form.setFieldsValue({
-        //         customerName: currentCustomer.customerName,
-        //         address: currentCustomer.address,
-        //         gender: currentCustomer.gender,
-        //         phoneNumber: currentCustomer.phoneNumber,
-        //         email: currentCustomer.email,
-        //     });
-        // }, [currentCustomer]);
-
         const handleSearch = () => {
         if(searchValue === '')  {
             setCustomers(allCustomers);
@@ -60,6 +50,13 @@
         }
 
         const handleUpdate = (record) => {
+                form.setFieldsValue({
+                customerName: record.customerName,
+                address: record.address,
+                gender: record.gender,
+                phoneNumber: record.phoneNumber,
+                email: record.email
+                }); 
                 setCurrentCustomer(record);
                 setIsModalVisible(true);
             };
@@ -180,6 +177,7 @@
                                     message.success("Customer data updated successfully");
                                     fetchCustomers();
                                     setIsModalVisible(false);
+                                    form.resetFields();
                                 } catch (error) {
                                     message.error("Failed to update the customer data");
                                     return [];
