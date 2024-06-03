@@ -5,31 +5,32 @@ import "./Sidebar.scss"
 import NavItem from './NavItem/NavItem';
 import { CloseOutlined, MenuOutlined, SearchOutlined, DollarOutlined, AppstoreOutlined, InboxOutlined, LineChartOutlined, SettingOutlined, UserOutlined, PercentageOutlined } from '@ant-design/icons';
 import Search from 'antd/es/transfer/search';
+import { strings_vi } from '../../../Services/languages/displaystrings';
 
 function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
 
   //   const encryptedRoleSyllabusValue = localStorage.getItem("RoleSyllabus");
   //   const decryptedRoleSyllabusValue = encryptedRoleSyllabusValue && decrypt(encryptedRoleSyllabusValue);
-
+  const strSidebar = strings_vi.SideBar;
   const navItems = [
     {
       icon: <LineChartOutlined style={{ fontSize: "16px" }} />,
-      title: 'Tổng quan',
+      title: strSidebar.Overview,
       to: '/dashboard',
       children: [],
     },
     {
       icon: <DollarOutlined style={{ fontSize: "16px" }} />,
-      title: 'Thanh toán',
+      title: strSidebar.Payment,
       to: "",
       children: [
         {
-          title: 'Mua',
+          title: strSidebar.Buy,
           to: '/',
         },
         {
-          title: 'Bán',
+          title: strSidebar.Sell,
           to: '/sales-page',
         },
         // decryptedRoleSyllabusValue === "Full access" || decryptedRoleSyllabusValue === "Create" ? {
@@ -43,7 +44,7 @@ function Sidebar() {
     },
     {
       icon: <AppstoreOutlined style={{ fontSize: "16px" }} />,
-      title: 'Sản phẩm',
+      title: strSidebar.Products,
       to: "",
       children: [],
     },
@@ -67,17 +68,17 @@ function Sidebar() {
     },
     {
       icon: <SearchOutlined style={{ fontSize: "16px" }} />,
-      title: 'Search Profile',
+      title: strSidebar.SearchProfile,
       to: "/customer-search",
       children: [],
     },
     {
       icon: <SettingOutlined style={{ fontSize: "16px" }} />,
-      title: 'Cài đặt',
+      title: strSidebar.Setting,
       to: "",
       children: [
         {
-          title: 'Giá Vàng',
+          title: strSidebar.GoldPrice,
           to: '/exchange-rate',
         }
       ],
