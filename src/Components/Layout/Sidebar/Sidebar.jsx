@@ -3,33 +3,34 @@ import { useState } from 'react';
 import { decrypt } from '../../../Utils/crypto';
 import "./Sidebar.scss"
 import NavItem from './NavItem/NavItem';
-import { AreaChartOutlined, CloseOutlined, DropboxOutlined, MenuOutlined, PayCircleFilled, ProductFilled, SettingFilled, UserOutlined, SearchOutlined } from '@ant-design/icons';
+import { CloseOutlined, MenuOutlined, SearchOutlined, DollarOutlined, AppstoreOutlined, InboxOutlined, LineChartOutlined, SettingOutlined, UserOutlined, PercentageOutlined } from '@ant-design/icons';
 import Search from 'antd/es/transfer/search';
+import { strings_vi } from '../../../Services/languages/displaystrings';
 
 function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
 
   //   const encryptedRoleSyllabusValue = localStorage.getItem("RoleSyllabus");
   //   const decryptedRoleSyllabusValue = encryptedRoleSyllabusValue && decrypt(encryptedRoleSyllabusValue);
-
+  const strSidebar = strings_vi.SideBar;
   const navItems = [
     {
-      icon: <AreaChartOutlined style={{ fontSize: "20px" }} />,
-      title: 'Dashboard',
-      to: '/',
+      icon: <LineChartOutlined style={{ fontSize: "16px" }} />,
+      title: strSidebar.Overview,
+      to: '/dashboard',
       children: [],
     },
     {
-      icon: <PayCircleFilled style={{ fontSize: "20px" }} />,
-      title: 'Bill',
+      icon: <DollarOutlined style={{ fontSize: "16px" }} />,
+      title: strSidebar.Payment,
       to: "",
       children: [
         {
-          title: 'Buy',
+          title: strSidebar.Buy,
           to: '/',
         },
         {
-          title: 'Sell',
+          title: strSidebar.Sell,
           to: '/sales-page',
         },
         // decryptedRoleSyllabusValue === "Full access" || decryptedRoleSyllabusValue === "Create" ? {
@@ -42,37 +43,43 @@ function Sidebar() {
       ],
     },
     {
-      icon: <ProductFilled style={{ fontSize: "20px" }} />,
-      title: 'Inventory',
+      icon: <AppstoreOutlined style={{ fontSize: "16px" }} />,
+      title: strSidebar.Products,
+      to:"/product",
+      children: [],
+    },
+    {
+      icon: <InboxOutlined style={{ fontSize: "16px" }} />,
+      title: 'Đơn hàng',
       to: "",
       children: [],
     },
     {
-      icon: <DropboxOutlined style={{ fontSize: "20px" }} />,
-      title: 'Order',
+      icon: <UserOutlined style={{ fontSize: "16px" }} />,
+      title: 'Nhân sự',
       to: "",
       children: [],
     },
     {
-      icon: <UserOutlined style={{ fontSize: "20px" }} />,
-      title: 'Client',
+      icon: <PercentageOutlined style={{ fontSize: "16px" }} />,
+      title: 'Khuyến mãi',
       to: "",
       children: [],
     },
     {
-      icon: <SearchOutlined style={{ fontSize: "20px" }} />,
-      title: 'Search Profile',
-      to: "/customer-search",  
+      icon: <SearchOutlined style={{ fontSize: "16px" }} />,
+      title: strSidebar.SearchProfile,
+      to: "/customer-search",
       children: [],
     },
     {
-      icon: <SettingFilled style={{ fontSize: "20px" }} />,
-      title: 'Setting',
+      icon: <SettingOutlined style={{ fontSize: "16px" }} />,
+      title: strSidebar.Setting,
       to: "",
       children: [
         {
-          title: 'Log out',
-          to: '/',
+          title: strSidebar.GoldPrice,
+          to: '/exchange-rate',
         }
       ],
     },

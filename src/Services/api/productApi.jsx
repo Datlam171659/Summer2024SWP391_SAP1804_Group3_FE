@@ -1,6 +1,22 @@
-import axios from "axios";
+import axios from "../axios/config";
 const getProductAll = () => {
-    return axios.get(`https://65450fc75a0b4b04436d8f9a.mockapi.io/Item`, {
-    });
-  };
-  export {getProductAll};
+  return axios.get(`/api/Item`, {});
+};
+const getProductById = (itemId) => {
+  const response = axios.get(`/api/Item/${itemId}`);
+  return response;
+};
+const removeItem = (itemId) => {
+  return axios.delete(`/api/Item/${itemId}`);
+};
+const addItem = (productDetails) => {
+  return axios.post(`/api/Item`, productDetails);
+};
+const edititem = async (itemId, productDetails) => {
+  return axios.put(`/api/Item/${itemId}`, productDetails, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+export { getProductAll, getProductById, removeItem, addItem,edititem };
