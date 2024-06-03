@@ -67,9 +67,9 @@ function Authentication({ children }) {
                         const sellPrice = goldPriceInVND * 1.05;
 
                         const sellGold24k = parseFloat(sellPrice);
-                        const sellGold18k = buyGold24k * 0.75;
-                        const sellGold14k = buyGold24k * 0.583;
-                        const sellGold10k = buyGold24k * 0.417;
+                        const sellGold18k = sellGold24k * 0.75;
+                        const sellGold14k = sellGold24k * 0.583;
+                        const sellGold10k = sellGold24k * 0.417;
 
                         const sellPriceObject = {
                             sellGold24k: sellGold24k.toFixed(0),

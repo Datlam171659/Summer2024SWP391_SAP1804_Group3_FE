@@ -27,7 +27,7 @@ function Sidebar() {
       children: [
         {
           title: strSidebar.Buy,
-          to: '/',
+          to: '/buy-back-page',
         },
         {
           title: strSidebar.Sell,
@@ -93,6 +93,7 @@ function Sidebar() {
       style={{
         minHeight: '100vh',
         backgroundColor: '#ffffff',
+        borderLeft: "2px solid black"
       }}
     >
       <div
