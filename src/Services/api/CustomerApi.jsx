@@ -4,16 +4,27 @@ const baseURL = 'https://gjewellery.bsite.net/api/Customer';
 
 const getAllCustomers = async (searchValue = '') => { 
     const response = await axios.get(`${baseURL}?search=${searchValue}`);
-    
-    // Check if response.data is an object and it has a property named 'data'
     if(typeof response.data === 'object' && response.data.hasOwnProperty('data')) {
       return response.data.data;
     }
-
-    // Return an empty array if we don't get the response in the expected format
     return [];
 };
 
+const getCustomerByEmail = async (email) => {
+    const response = await axios.get(`${baseURL}/email/${email}`); 
+    return response.data;
+}
+
+const getCustomerByPhoneNumber = async (phoneNumber) => {
+    const response = await axios.get(`${baseURL}/phone/${phoneNumber}`); 
+    console.log('getCustomerByPhoneNumber response:', response);
+    return response.data;
+}
+
+const getCustomerByID = async (id) => {
+    const response = await axios.get(`${baseURL}/${id}`);
+    return response.data;
+}
 const addCustomer = async (customerData) => {
     const response = await axios.post(baseURL, customerData);
     return response.data;
@@ -27,5 +38,8 @@ const updateCustomer = async (customerId, customerData) => {
 export default { 
     getAllCustomers, 
     addCustomer, 
-    updateCustomer 
+    updateCustomer,
+    getCustomerByEmail,
+    getCustomerByPhoneNumber,
+    getCustomerByID
 };

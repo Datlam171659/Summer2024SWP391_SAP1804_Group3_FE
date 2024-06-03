@@ -10,6 +10,8 @@ import PrintReceiptPage from "../Pages/SalesPage/PrintReceiptPage";
 import AddCustomerPage from "../Pages/AddCustomer/AddCustomerPage";
 import Product from "../Pages/ProductPage/Product";
 import ProductDetail from "../Pages/ProductPage/ProductDetail";
+import ExchangeRatePage from "../Pages/ExchangeRatePage/ExchangeRatePage";
+import DashBoardPage from "../Pages/DashBoardPage/DashBoardPage";
 
 const router = createBrowserRouter([
   {
@@ -36,21 +38,7 @@ const router = createBrowserRouter([
         path: "sales-page/Payment",
         element: <PaymentPage />,
       },
-      {
-        path: "sales-page/Payment/PrintReceiptPage",
-        element: <PrintReceiptPage />,
-      },
-      {
-        path: "product/productdetail:itemId",
-        element: (
-            <ProductDetail />
-        ),
-      },
     ],
-  },
-  {
-    path: "/login",
-    element: <Login />,
   },
   {
     path: "customer-search",
@@ -76,6 +64,44 @@ const router = createBrowserRouter([
       </RootLayoput>
     ),
   },
-]);
+            {
+                path: "sales-page/Payment",
+                element: <PaymentPage />,
+            },
+            {
+                path: "sales-page/Payment/PrintReceiptPage",
+                element: <PrintReceiptPage />,
+            },
+            {
+                path: "exchange-rate",
+                element: <ExchangeRatePage />,
+            },
+        ],
+    {
+        path: "/login",
+        element: <Login />
+    },
+    {
+        path: "customer-search",
+        element: 
+            <RootLayoput>
+                <CustomerSearchPage/>
+            </RootLayoput>
+    },
+    {
+        path: "customer-search/customer-add",
+        element: 
+            <RootLayoput>
+                <AddCustomerPage/>
+            </RootLayoput>
+    },
+    {
+        path: "dashboard",
+        element: 
+            <RootLayoput>
+                <DashBoardPage/>
+            </RootLayoput>
+    },
+);
 
 export default router;

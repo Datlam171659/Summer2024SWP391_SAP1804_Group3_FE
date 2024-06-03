@@ -34,6 +34,8 @@ function Header() {
               fontWeight: "bolder",
               backgroundColor: "#EDF2F7",
               verticalAlign: 'middle',
+              display: "flex",
+              alignItems: "center"
             }}
           >
             {initial}

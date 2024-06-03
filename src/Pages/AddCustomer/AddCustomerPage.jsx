@@ -4,106 +4,119 @@ import {LeftOutlined} from '@ant-design/icons';
 import { Button, Form, Input, Typography, Radio, message, Modal } from 'antd'
 import "./AddCustomerPage.scss"
 import CustomerApi from "../../Services/api/CustomerApi";
+import { strings_vi } from '../../Services/languages/displaystrings';
 
 const AddCustomerPage = () => {
     const navigate = useNavigate();
-
     const [form] = Form.useForm();
-
+    const strAddCustomer = strings_vi.AddCustomerPage;
     const onFinish = async (values) => {
-      try {
-        // Check if the email already exists
-          // let emailExists = await CustomerApi.getCustomerByEmail(values.email);
-          // if (emailExists.length > 0) {
-          //     Modal.warning({
-          //         title: "Error",
-          //         content: `Email already in use, please use a different email`,
-          //         okText: "OK"
-          //     });
-          //     return;
-          // }
+      let newCustomer = {
+        ...values,
+        status: "active"
+      }
+      try { 
+        let emailExists = null;
+        let phoneNumberExists = null;
+    
+        try {
+            emailExists = await CustomerApi.getCustomerByEmail(values.email);
+        } catch (error) {
+          console.log(error);
+        }
+        
+        try {
+            phoneNumberExists = await CustomerApi.getCustomerByPhoneNumber(values.phoneNumber);
+        } catch (error) {
+            console.log(error);
+        }
+          let errorMessage = [];
+          if(emailExists && emailExists.email) errorMessage.push(strAddCustomer.Email);
+          if(phoneNumberExists && phoneNumberExists.phoneNumber) errorMessage.push(strAddCustomer.PhoneNumber);
+          if(errorMessage.length !== 0) {
+          Modal.error({
+              style: { top: '50%', transform: 'translateY(-50%)' },
+              title: strAddCustomer.Confirm_CreateCustomer_Fail,
+              content: `${errorMessage.join(' và ')} đã được sử dụng, xin vui lòng thử lại`,
+              okText: "OK"
+          });
+          return;
+          }
 
-          // // Check if the phone number already exists
-          // let phoneNumberExists = await CustomerApi.getCustomerByPhoneNumber(values.phoneNumber);
-          // if (phoneNumberExists.length > 0) {
-          //     Modal.warning({
-          //         title: "Error",
-          //         content: `Phone Number already in use, please use a different number`,
-          //         okText: "OK"
-          //     });
-          //     return;
-          // }
-          await CustomerApi.addCustomer(values);
-          message.success('Customer created successfully!');
+          await CustomerApi.addCustomer(newCustomer);
+          message.success(strAddCustomer.SUCCESS_CreateCustomer);
           Modal.confirm({
-            title: "Success",
-            content: "Customer created successfully!",
+            title: strAddCustomer.Confirm_CreateCustomer_OK,
+            content: strAddCustomer.SUCCESS_CreateCustomer,
             okText: "OK",
             style: { top: '50%', transform: 'translateY(-50%)' },
             onOk() {
               navigate(-1); 
             }
-          });
-        } catch (error) {
-          message.error('Failed to add customer. Please try again.');
-          Modal.warning({
-            title: "Error",
-            content: `Failed to add customer`,
-            style: { top: '50%', transform: 'translateY(-50%)' },
-            okText: "OK"
-          });
-          console.log('Failed to add customer:', error);
-        }
-      };
+          })} catch (error) {
+            message.error(strAddCustomer.ERR_AddCustomer);
+            Modal.warning({
+              title: strAddCustomer.Confirm_CreateCustomer_Fail,
+              content: strAddCustomer.ERR_AddCustomer,
+              style: { top: '50%', transform: 'translateY(-50%)' },
+              okText: "OK"
+            });
+            console.log('Failed to add customer:', error);
+          }
+        };
 
   return (
     <div className='add-customer-page'>
       <Button className="go-back-btn" type="primary" onClick={() => navigate(-1)} >
-        Go Back
+        Quay Lại
         <LeftOutlined />
       </Button>
 
       <div className="add-customer-form-container">
-      <Typography.Title className="add-customer-title" level={3}>Create Profile</Typography.Title>
-      <Form form={form} onFinish={onFinish} layout="vertical">
-        <Form.Item name="customerName" label="Name" rules={[{ required: true }]}>
+      <Typography.Title className="add-customer-title" level={3}>Thêm Khách Hàng</Typography.Title>
+      <Form form={form} 
+            onFinish={onFinish} 
+            layout="vertical"
+            initialValues={{ status: "active" }} 
+      >
+        <Form.Item name="customerName" label={strAddCustomer.Customername} rules={[{ required: true }]}>
           <Input />
         </Form.Item>
 
-        <Form.Item name="address" label="Address" rules={[{ required: true }]}>
+        <Form.Item name="address" label={strAddCustomer.Address} rules={[{ required: true }]}>
           <Input.TextArea />
         </Form.Item>
 
-        <Form.Item name="gender" label="Gender" rules={[{ required: true }]}>
+        <Form.Item name="gender" label={strAddCustomer.Gender} rules={[{ required: true }]}>
                 <Radio.Group>
-                  <Radio value="Male">Male</Radio>
-                  <Radio value="Female">Female</Radio>
+                  <Radio value="Nam">Nam</Radio>
+                  <Radio value="Nữ">Nữ</Radio>
                 </Radio.Group>
         </Form.Item>
         
-        <Form.Item name="phoneNumber" label="Phone Number" rules={[
-                { required: true, message: "Please input your Phone number!" },
+        <Form.Item name="phoneNumber" label={strAddCustomer.PhoneNumber} rules={[
+                { required: true, message: strAddCustomer.WARN_InputPhoneNumber },
                 {
-                  pattern: new RegExp(/^[0-9]{10}$/),
-                  message: "Phone number must be exactly 10 digits!",
+                  pattern: new RegExp(/^\d{9,11}$/),
+                  message: strAddCustomer.WARN_FormatPhoneNumber,
                 },
               ]}>
           <Input />
         </Form.Item>
 
-        <Form.Item name="email" label="Email" rules={[
-                  { required: true, message: "Please input your Email!" },
+        <Form.Item name="email" label={strAddCustomer.Email} rules={[
+                  { required: true, message: strAddCustomer.WARN_InputEmail },
                   {
                     type: 'email',
-                    message: "The input is not valid E-mail!",
+                    message: strAddCustomer.WARN_FormatEmail,
                   },
                 ]}>
           <Input />
         </Form.Item>
-
+        
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            Add Customer
+            Thêm Khách Hàng
           </Button>
         </Form.Item>
       </Form>

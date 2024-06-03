@@ -31,7 +31,7 @@ function NavItem(props) {
                     className="nav-item"
                     onClick={() => setShowSubNav(!showSubNav)}
                 >
-                    <div className={props.collapsed ? "icon" : ""}>{props.icon}</div>
+                    <div className={props.collapsed ? "icon" : ""} style={{display: "flex", alignItems: "center"}}>{props.icon}</div>
                     {!props.collapsed &&
                         (
                             <>
