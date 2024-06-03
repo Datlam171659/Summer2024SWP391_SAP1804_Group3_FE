@@ -4,6 +4,7 @@
     import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
     import "./CustomerSearchPage.scss"
     import CustomerApi from "../../Services/api/CustomerApi";
+import { strings_vi } from "../../Services/languages/displaystrings";
     const CustomerSearchPage = () => {
         const [searchValue, setSearchValue] = useState('');
         const [loading, setLoading] = useState(false);
@@ -13,7 +14,7 @@
         const [currentCustomer, setCurrentCustomer] = useState({});
         const [form] = Form.useForm();
         const navigate = useNavigate();
-
+        const strCustomerSearch = strings_vi.CustomerSearchPage;
         useEffect(() => {
             fetchCustomers();
         }, []); 
@@ -25,11 +26,11 @@
             const emailExists = allCustomers.find(customer => customer.email === trimmedEmail && customer.id !== id);
             
             if(phoneExists){ 
-              message.error("This phone number is already registered");
+              message.error(strCustomerSearch.ERR_Registed_Phone);
               return true;
             }
             if(emailExists){ 
-              message.error("This email is already registered");
+              message.error(strCustomerSearch.ERR_Registed_Email);
               return true;
             } 
             return false;
@@ -80,17 +81,17 @@
 
         const handleDelete = (customerId) => {
             Modal.confirm({
-                title: 'Are you sure you want to delete this customer?',
+                title: strCustomerSearch.NOTI_Delete_Customer,
                 style: { top: '50%', transform: 'translateY(-50%)' },
                 async onOk() {
                     try {
                         const customer = await CustomerApi.getCustomerByID(customerId); 
                         customer.status = 'inactive'; 
                         const updatedCustomer = await CustomerApi.updateCustomer(customerId, customer); 
-                        message.success(`Customer ${updatedCustomer.customerName} set to inactive`);
+                        message.success(strings_vi.CustomerSearchPage.DeleteSuccess.format(updatedCustomer.customerName));
                         fetchCustomers(); 
                     } catch (error) {
-                        message.error(`Unable to set customer to inactive`);
+                        message.error(strCustomerSearch.ERR_Delete_Customer);
                         console.log(error.message)   
                     }
                 },
@@ -102,31 +103,31 @@
 
         const columns = [
             {
-                title: 'Customer Name',
+                title: strCustomerSearch.Customername,
                 dataIndex: 'customerName'
             },
             {
-                title: 'Address',
+                title: strCustomerSearch.Address,
                 dataIndex: 'address'
             },
             {
-                title: 'Gender',
+                title: strCustomerSearch.Gender,
                 dataIndex: 'gender'
             },
             {
-                title: 'Phone Number',
+                title: strCustomerSearch.PhoneNumber,
                 dataIndex: 'phoneNumber'
             },
             {
-                title: 'Email',
+                title: strCustomerSearch.Email,
                 dataIndex: 'email'
             },
             {
-                title: 'Points',
+                title: strCustomerSearch.Points,
                 dataIndex: 'points'
             },
             {
-                title: 'Actions',
+                title: strCustomerSearch.Actions,
                 key: 'actions',
                 render: (text, record) => (
                     <Space size="middle">
@@ -141,7 +142,7 @@
             <div className="customer-search">
                 <div className="search-section">
                     <Input className="search-input" 
-                        placeholder="Search customer by name and phone number" 
+                        placeholder= {strCustomerSearch.SearchBarPlaceHolder}
                         value={searchValue}
                         onChange={async event => {setSearchValue(event.target.value);
                                                     if(event.target.value === '') {
@@ -156,12 +157,12 @@
                             className="search-button" 
                             onClick={handleSearch} 
                             loading={loading}>
-                            Search
+                            Tìm kiếm
                         </Button>
                         <Button type="primary" 
                             className="add-customer-button"
                             onClick={handleAddCustomer}
-                            >Add Customer
+                            >Thêm Khách Hàng
                         </Button>
                 </div>
                     <Table
@@ -171,7 +172,7 @@
                         // pagination={{ pageSize: 15 }}
                         rowKey="id"           
                     />
-                        <Modal title="Update Customer" 
+                        <Modal title = {strCustomerSearch.TIT_UpdateCutsomer}
                         open={isModalVisible} 
                         onCancel={() => {
                             setIsModalVisible(false) 
@@ -197,50 +198,50 @@
                                 try {
                                     const updatedValues = { ...values, phoneNumber: trimmedPhoneNumber, email: trimmedEmail, status: currentCustomer.status };
                                     await CustomerApi.updateCustomer(currentCustomer.id, updatedValues);
-                                    message.success("Customer data updated successfully");
+                                    message.success(strCustomerSearch.SUCCESS_Update_Customer);
                                     fetchCustomers();
                                     setIsModalVisible(false);
                                     form.resetFields();
                                 } catch (error) {
-                                    message.error("Failed to update the customer data");
+                                    message.error(strCustomerSearch.ERR_Update_Customer);
                                     return [];
                                 }
                             }}
                         >
                             <Form.Item
-                                label="Customer Name"
+                                label={strCustomerSearch.Customername}
                                 name="customerName"
-                                rules={[{ required: true, message: 'Please input customer name!' }]}
+                                rules={[{ required: true, message: strCustomerSearch.WARN_InputName }]}
                             >
                     <Input />
                             </Form.Item>
 
                             <Form.Item
-                                label="Address"
+                                label={strCustomerSearch.Address}
                                 name="address"
-                                rules={[{ required: true, message: 'Please input address!' }]}
+                                rules={[{ required: true, message: strCustomerSearch.WARN_InputAddress }]}
                             >
                                 <Input />
                             </Form.Item>
 
                             <Form.Item
-                                label="Gender"
+                                label={strCustomerSearch.Gender}
                                 name="gender"
-                                rules={[{ required: true, message: 'Please select gender!' }]}
+                                rules={[{ required: true, message: strCustomerSearch.WARN_InputGender }]}
                             >
                                 <Select>
-                                    <Select.Option value="male">Male</Select.Option>
-                                    <Select.Option value="female">Female</Select.Option>
+                                    <Select.Option value="Nam">Nam</Select.Option>
+                                    <Select.Option value="Nữ">Nữ</Select.Option>
                                 </Select>
                             </Form.Item>
 
                             <Form.Item
-                                label="Phone Number"
+                                label={strCustomerSearch.PhoneNumber}
                                 name="phoneNumber"
-                                rules={[{   required: true, message: 'Please input phone number!' },
+                                rules={[{   required: true, message: strCustomerSearch.WARN_InputPhoneNumber },
                                         {
                                             pattern: new RegExp(/^\d{9,11}$/),
-                                            message: "Phone number must be between 9 and 11 digits!",
+                                            message: strCustomerSearch.WARN_FormatPhoneNumber,
                                         },
                                 ]}
                             >
@@ -248,13 +249,13 @@
                             </Form.Item>
 
                             <Form.Item
-                                label="Email"
+                                label= {strCustomerSearch.Email}
                                 name="email"
                                 rules={[
                                     {   
                                         type: 'email',
                                         required: true, 
-                                        message: 'The input is not valid E-mail!', 
+                                        message: strCustomerSearch.WARN_FormatEmail, 
                                     },
                                 ]}
                             >
@@ -263,7 +264,7 @@
 
                             <Form.Item>
                                 <Button type="primary" block htmlType="submit">
-                                    Update
+                                    Cập Nhật
                                 </Button>
                             </Form.Item>
                         </Form>
