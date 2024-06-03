@@ -22,7 +22,7 @@ function Header() {
           <div className="action w-auto flex items-center" >
             <div className="w-full flex items-center transition-all hover:text-gray-200" style={{ fontSize: "16px", fontWeight: "400" }}>
               <p className="mr-3"><LogoutOutlined style={{ fontSize: "14px" }} /></p>
-              <button className="" onClick={handleLogout}>Log out</button>
+              <button className="" onClick={handleLogout}>Đăng xuất</button>
             </div>
 
             {/* <p className="fullName">User Name</p> */}

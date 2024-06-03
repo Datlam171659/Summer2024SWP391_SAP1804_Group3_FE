@@ -1,17 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { Button, Input, Modal, Table, Select, Space } from "antd";
-import {
-    clearCart,
-    getTotals
-  } from "../../Features/product/cartSlice";
+import { Button, Input, Modal, Table, Select, Space, Spin } from "antd";
+import { clearCart, getTotals } from "../../Features/product/cartSlice";
+import { fetchCustomerDetail } from "../../Features/Customer/CustomerdetailSlice";
+
 const PaymentPage = () => {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
+  const customerDetail = useSelector((state) => state.customerDetail);
+
+  const [customerId, setCustomerId] = useState("");
+  const [customerInfo, setCustomerInfo] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const handleChange = (value) => {
     console.log(`selected ${value}`);
   };
+
   const { TextArea } = Input;
   const columns = [
     {
@@ -52,20 +59,40 @@ const PaymentPage = () => {
       render: (price, record) => `$${price * record.cartQuantity}`,
     },
   ];
+
   const handleClearCart = () => {
     dispatch(clearCart());
     dispatch(getTotals());
   };
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const showModal = () => {
     setIsModalOpen(true);
   };
+
   const handleOk = () => {
     setIsModalOpen(false);
   };
+
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
+  const handleSearchCustomer = () => {
+    setLoading(true);
+    dispatch(fetchCustomerDetail(customerId))
+      .then((response) => {
+        if (response.payload) {
+          setCustomerInfo(response.payload);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching customer details:", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
   return (
     <div className="payment-page w-full p-4">
       <div className="order-summary bg-gray-50 p-4 rounded-lg mb-4">
@@ -80,43 +107,31 @@ const PaymentPage = () => {
           />
         </div>
       </div>
+
       <div className="customer-info bg-white p-4 rounded-lg mb-4">
-        <h3 className="text-lg mb-4 font-bold">Thông tin khách hàng</h3>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <div className="flex items-center mb-3">
-              <p className="w-1/3">Tên Khách Hàng:</p>
-              <Input placeholder="Nhập tên khách hàng" className="w-2/3" />
-            </div>
-            <div className="flex items-center mb-3">
-              <p className="w-1/3">Địa Chỉ:</p>
-              <Input placeholder="Nhập địa chỉ" className="w-2/3" />
-            </div>
-            <div className="flex items-center mb-3">
-              <p className="w-1/3">Số điện thoại:</p>
-              <Input placeholder="Nhập số điện thoại" className="w-2/3" />
-            </div>
-            <div className="flex items-center mb-3">
-              <p className="w-1/3">E-mail:</p>
-              <Input placeholder="Nhập E-mail" className="w-2/3" />
-            </div>
-          </div>
-          <div className="flex items-center ml-48 mb-40">
-            <p className="w-1/3">Giới Tính:</p>
-            <Space wrap className="w-2/3">
-              <Select
-                defaultValue="Nam"
-                style={{ width: "100%" }}
-                onChange={handleChange}
-                options={[
-                  { value: "Nam", label: "Nam" },
-                  { value: "Nữ", label: "Nữ" },
-                ]}
-              />
-            </Space>
-          </div>
+        <div className="flex mb-4">
+          <Input
+            placeholder="Enter Customer ID"
+            value={customerId}
+            onChange={(e) => setCustomerId(e.target.value)}
+            className="mr-2"
+          />
+          <Button onClick={handleSearchCustomer}>Search</Button>
         </div>
+        {loading ? (
+          <Spin />
+        ) : (
+          customerInfo && (
+            <div className="customer-details">
+              <p className="text-lg my-3"><strong>Name:</strong> {customerInfo.customerName}</p>
+              <p className="text-lg my-3"><strong>Address:</strong> {customerInfo.address}</p>
+              <p className="text-lg my-3"><strong>Phone:</strong> {customerInfo.phoneNumber}</p>
+              <p className="text-lg my-3"><strong>Gender:</strong> {customerInfo.gender}</p>
+            </div>
+          )
+        )}
       </div>
+
       <div className="flex w-full">
         <div className="cart-summary mt-12 bg-white p-6 rounded-lg shadow-md w-1/2 mr-3">
           <div className="cart-checkout mt-6">
@@ -167,7 +182,10 @@ const PaymentPage = () => {
           <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
           <div>
             <Link to="/sales-page/Payment/PrintReceiptPage">
-              <Button className="w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500 "   onClick={() => handleClearCart()}>
+              <Button
+                className="w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500"
+                onClick={() => handleClearCart()}
+              >
                 Xác Nhận
               </Button>
             </Link>
@@ -179,22 +197,21 @@ const PaymentPage = () => {
           </div>
         </div>
       </div>
+
       <Modal
         title="Yêu cầu chiết khấu"
         open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
         className="w-36"
         footer={
-            <div className="">
-              <Button onClick={handleCancel} className="text-black bg-white uppercase mr-3">
-                hủy
-              </Button>
-              <Button   onClick={handleOk} className="bg-blue-700 text-white uppercase">
+          <div className="">
+            <Button onClick={handleCancel} className="text-black bg-white uppercase mr-3">
+              hủy
+            </Button>
+            <Button onClick={handleOk} className="bg-blue-700 text-white uppercase">
               Xác nhận
-              </Button>
-            </div>
-          }
+            </Button>
+          </div>
+        }
       >
         <div className="flex my-4 justify-between mr-8">
           <p>Mức chiết khấu(0.00)</p>
@@ -215,7 +232,7 @@ const PaymentPage = () => {
           </Space>
         </div>
         <div className=" my-4">
-        <TextArea rows={4} placeholder="Ghi Chú" maxLength={6} />
+          <TextArea rows={4} placeholder="Ghi Chú" maxLength={6} />
         </div>
       </Modal>
     </div>

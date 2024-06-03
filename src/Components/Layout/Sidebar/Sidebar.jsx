@@ -45,7 +45,7 @@ function Sidebar() {
     {
       icon: <AppstoreOutlined style={{ fontSize: "16px" }} />,
       title: strSidebar.Products,
-      to: "",
+      to:"/product",
       children: [],
     },
     {

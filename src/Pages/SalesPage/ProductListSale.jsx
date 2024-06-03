@@ -45,16 +45,13 @@ const ProductListSale = () => {
     dispatch(removeFromCart(item));
     dispatch(getTotals());
   };
-  const filteredProducts = searchQuery
-    ? productData.filter(
-        (item) =>
-          item &&
-          (item.itemName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.itemId.toString().includes(searchQuery))
-      )
-    : [];
 
   const onSearch = (value) => {
+    // Validate input: allow only numeric values
+    if (!/^\d+$/.test(value)) {
+      message.error("Invalid product ID. Please enter a numeric value.");
+      return;
+    }
     setSearchQuery(value);
   };
 
@@ -129,11 +126,17 @@ const ProductListSale = () => {
     },
   ];
 
+  const filteredProducts = searchQuery
+    ? productData.filter(
+        (item) => item && item.itemId.toString() === searchQuery
+      )
+    : [];
+
   return (
     <div className="flex flex-col lg:flex-row">
       <div className="my-9 w-full lg:w-full p-4">
         <div className="w-full lg:w-full text-center p-6 bg-gray-50">
-          <Input
+          <Search
             placeholder="Nhập Id sản phẩm"
             onSearch={onSearch}
             style={{ width: 400 }}
@@ -245,7 +248,7 @@ const ProductListSale = () => {
                 ]}
               />
             </Space>
-            <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"></hr>
+            <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"></hr>
             <div>
               <Link to="Payment">
                 <Button className="w-full h-14 bg-black text-white uppercase font-bold">
