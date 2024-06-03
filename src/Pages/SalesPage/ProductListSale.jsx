@@ -250,8 +250,11 @@ const ProductListSale = () => {
             </Space>
             <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"></hr>
             <div>
-              <Link to="Payment">
-                <Button className="w-full h-14 bg-black text-white uppercase font-bold">
+              <Link to={cart.cartTotalQuantity > 0 ? "Payment" : "#"}>
+                <Button
+                  className="w-full h-14 bg-black text-white uppercase font-bold"
+                  disabled={cart.cartTotalQuantity === 0}
+                >
                   Tạo Đơn
                 </Button>
               </Link>

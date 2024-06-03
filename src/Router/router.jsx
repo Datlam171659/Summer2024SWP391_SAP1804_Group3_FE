@@ -11,7 +11,7 @@ import AddCustomerPage from "../Pages/AddCustomer/AddCustomerPage";
 import Product from "../Pages/ProductPage/Product";
 import ExchangeRatePage from "../Pages/ExchangeRatePage/ExchangeRatePage";
 import DashBoardPage from "../Pages/DashBoardPage/DashBoardPage";
-
+import ProducDetail from "../Pages/ProductPage/ProductDetail";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -68,6 +68,14 @@ const router = createBrowserRouter([
     element: (
       <RootLayoput>
         <Product />
+      </RootLayoput>
+    ),
+  },
+  {
+    path: "product/productdetail/:itemId",
+    element: (
+      <RootLayoput>
+        <ProducDetail />
       </RootLayoput>
     ),
   },

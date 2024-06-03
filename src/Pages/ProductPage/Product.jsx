@@ -34,11 +34,11 @@ function Product() {
   const handleDeleteOk = () => {
     dispatch(removeProduct(selectedProduct.itemId))
       .then(() => {
-        message.success("Product deleted successfully");
+        message.success("Sản phẩm xóa thành công");
         dispatch(fetchProductData());
       })
       .catch((error) => {
-        message.error("Failed to delete product");
+        message.error("Xóa sản phẩm thất bại");
       });
     setIsModalOpen(false);
   };
@@ -49,17 +49,17 @@ function Product() {
       .then((values) => {
         dispatch(addProduct(values))
           .then(() => {
-            message.success("Product added successfully");
+            message.success("Thêm sản phẩm thành công");
             dispatch(fetchProductData());
             form.resetFields();
           })
           .catch((error) => {
-            message.error("Failed to add product");
+            message.error("Thêm sản phẩm thất bại");
           });
         setIsAddModalOpen(false);
       })
       .catch((errorInfo) => {
-        console.log("Validation Failed:", errorInfo);
+        console.log("xác thực thất bại:", errorInfo);
       });
   };
 
@@ -69,17 +69,17 @@ function Product() {
       .then((values) => {
         dispatch(editProduct({ itemId: selectedProduct.itemId, productDetails: values }))
           .then(() => {
-            message.success("Product updated successfully");
+            message.success("Sản phẩm cập nhật thành công");
             dispatch(fetchProductData());
             form.resetFields();
           })
           .catch((error) => {
-            message.error("Failed to update product");
+            message.error("Cập nhật sản phẩm thất bại");
           });
         setIsEditModalOpen(false);
       })
       .catch((errorInfo) => {
-        console.log("Validation Failed:", errorInfo);
+        console.log("Xác thực thất bại:", errorInfo);
       });
   };
 
@@ -108,14 +108,16 @@ function Product() {
       title: "Mã Hàng",
       dataIndex: "itemId",
       key: "itemId",
-      render: (text, record) =>(
-          <Link to={`/product/productdetail/${record.itemId}`}>{text}</Link>
-        )        
+  
+          
     },
     {
       title: "Tên Hàng",
       dataIndex: "itemName",
       key: "itemName",
+      render: (text, record) =>(
+        <Link to={`/product/productdetail/${record.itemId}`}>{text}</Link>
+      )    
     },
     {
       title: "Mô Tả",
