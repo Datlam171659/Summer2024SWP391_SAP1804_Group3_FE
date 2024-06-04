@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { Button, Input, Modal, Table, Select, Space, Spin } from "antd";
 import { clearCart, getTotals } from "../../Features/product/cartSlice";
 import { fetchCustomerDetail } from "../../Features/Customer/CustomerdetailSlice";
-
+import { createInvoice } from "../../Features/Invoice/InvoiceSlice"; 
 const PaymentPage = () => {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
@@ -70,6 +70,23 @@ const PaymentPage = () => {
   };
 
   const handleOk = () => {
+    // Prepare invoice data
+    const invoiceData = {
+      staffId: "someStaffId", // Replace with actual data
+      returnPolicyId: "someReturnPolicyId", // Replace with actual data
+      itemId: cart.cartItems.map((item) => item.itemId),
+      customerId: customerInfo.customerId,
+      companyName: customerInfo.companyName,
+      buyerAddress: customerInfo.address,
+      status: "Pending", // or other status
+      paymentType: "somePaymentType", // Replace with actual data
+      quantity: cart.cartTotalQuantity,
+      subTotal: cart.cartTotalAmount,
+    };
+
+    // Dispatch createInvoice action
+    dispatch(createInvoice(invoiceData));
+    
     setIsModalOpen(false);
   };
 

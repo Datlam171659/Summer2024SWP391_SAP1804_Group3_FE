@@ -1,5 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { notification } from "antd";
+import { fetchDiscountData } from "../Discount/DiscountSlice";
 
 const initialState = {
   cartItems: localStorage.getItem("cartItems")
@@ -7,7 +8,16 @@ const initialState = {
     : [],
   cartTotalQuantity: 0,
   cartTotalAmount: 0,
+  discount: 0,
 };
+
+export const fetchDiscount = createAsyncThunk(
+  'cart/fetchDiscount',
+  async () => {
+    const response = await fetchDiscountData();
+    return response.discountPercentage;
+  }
+);
 
 const cartSlice = createSlice({
   name: "cart",
@@ -80,7 +90,7 @@ const cartSlice = createSlice({
       );
       total = parseFloat(total.toFixed(2));
       state.cartTotalQuantity = quantity;
-      state.cartTotalAmount = total;
+      state.cartTotalAmount = total - (total * state.discount) / 100; 
     },
     clearCart(state) {
       if (state.cartItems.length === 0) {
@@ -97,10 +107,19 @@ const cartSlice = createSlice({
         cartSlice.caseReducers.getTotals(state);
       }
     },
+    applyDiscount(state, action) {
+      state.discount = action.payload;
+      cartSlice.caseReducers.getTotals(state);
+    },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(fetchDiscount.fulfilled, (state, action) => {
+      state.discount = action.payload;
+      cartSlice.caseReducers.getTotals(state);
+    });
   },
 });
 
-export const { addToCart, decreaseCart, removeFromCart, getTotals, clearCart } =
-  cartSlice.actions;
+export const { addToCart, decreaseCart, removeFromCart, getTotals, clearCart, applyDiscount } = cartSlice.actions;
 
 export default cartSlice.reducer;

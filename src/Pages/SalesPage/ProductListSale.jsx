@@ -8,8 +8,10 @@ import {
   decreaseCart,
   getTotals,
   removeFromCart,
+  applyDiscount, // import the new action
 } from "../../Features/product/cartSlice";
 import { Link } from "react-router-dom";
+import { fetchDiscountData } from "../../Features/Discount/DiscountSlice";
 
 const ProductListSale = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -18,13 +20,23 @@ const ProductListSale = () => {
   const isLoadingProductData = useSelector(
     (state) => state.product.isLoadingProductData
   );
+  const discountData = useSelector((state) => state.discount.discountData);
+  const isLoadingDiscountData = useSelector(
+    (state) => state.discount.isLoadingDiscountData
+  );
   const isError = useSelector((state) => state.product.isError);
   const cart = useSelector((state) => state.cart);
+
   const handleChange = (value) => {
-    console.log(`selected ${value}`);
+    const selectedDiscount = discountData.find((discount) => discount.discountId === value);
+    if (selectedDiscount) {
+      dispatch(applyDiscount(selectedDiscount.discountPercentage));
+    }
   };
+
   useEffect(() => {
     dispatch(fetchProductData());
+    dispatch(fetchDiscountData());
   }, [dispatch]);
 
   useEffect(() => {
@@ -47,9 +59,8 @@ const ProductListSale = () => {
   };
 
   const onSearch = (value) => {
-    // Validate input: allow only numeric values
     if (!/^\d+$/.test(value)) {
-      message.error("Invalid product ID. Please enter a numeric value.");
+      message.error("Sai mã sản phẩm.Hãy nhập lại!");
       return;
     }
     setSearchQuery(value);
@@ -58,7 +69,7 @@ const ProductListSale = () => {
   const { Search } = Input;
 
   if (isError && !isLoadingProductData) {
-    return <div>Something went wrong! Try again</div>;
+    return <div>Có gì đó sai! Hãy thử lại</div>;
   }
 
   const columns = [
@@ -132,6 +143,11 @@ const ProductListSale = () => {
       )
     : [];
 
+  const discountOptions = discountData.map((item) => ({
+    value: item.discountId,
+    label: `${item.discountPercentage}%`,
+  }));
+
   return (
     <div className="flex flex-col lg:flex-row">
       <div className="my-9 w-full lg:w-full p-4">
@@ -176,7 +192,7 @@ const ProductListSale = () => {
                 </div>
                 <div className="flex justify-between mb-3 text-lg">
                   <p>Giảm giá:</p>
-                  <p>0</p>
+                  <p>{cart.discount}%</p>
                 </div>
                 <div className="flex justify-between mb-3 text-lg">
                   <p>Tạm tính</p>
@@ -202,50 +218,7 @@ const ProductListSale = () => {
                   height: 50,
                 }}
                 onChange={handleChange}
-                options={[
-                  {
-                    value: "Giảm 20%",
-                    label: (
-                      <div className="flex justify-between mx-5">
-                        <h1 className="uppercase font-bold text-center my-4">
-                          Khai Truong
-                        </h1>
-                        <div>
-                          <p>Giảm 20%</p>
-                          <p>Đơn tối thiểu 2 tr</p>
-                        </div>
-                      </div>
-                    ),
-                  },
-                  {
-                    value: "Giảm 15%",
-                    label: (
-                      <div className="flex justify-between mx-5">
-                        <h1 className="uppercase font-bold text-center my-4">
-                          Khai Truong
-                        </h1>
-                        <div>
-                          <p>Giảm 15%</p>
-                          <p>Đơn tối thiểu 2 tr</p>
-                        </div>
-                      </div>
-                    ),
-                  },
-                  {
-                    value: "Giảm 5%",
-                    label: (
-                      <div className="flex justify-between mx-5">
-                        <h1 className="uppercase font-bold text-center my-4">
-                          Khai Truong
-                        </h1>
-                        <div>
-                          <p>Giảm 5%</p>
-                          <p>Đơn tối thiểu 2 tr</p>
-                        </div>
-                      </div>
-                    ),
-                  },
-                ]}
+                options={discountOptions}
               />
             </Space>
             <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"></hr>
