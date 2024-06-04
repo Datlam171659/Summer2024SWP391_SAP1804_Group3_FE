@@ -1,13 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { addinvoice } from '../../Services/api/InvoiceApi';
-import { notification } from 'antd';
 
-const initialState = {
-  invoices: [],
-  isLoading: false,
-  error: null,
-};
-
+// Async thunk to create invoice
 export const createInvoice = createAsyncThunk(
   'invoice/createInvoice',
   async (invoiceData, { rejectWithValue }) => {
@@ -25,36 +19,36 @@ export const createInvoice = createAsyncThunk(
         invoiceData.subTotal
       );
       return response.data;
-    } catch (err) {
-      return rejectWithValue(err.response.data);
+    } catch (error) {
+      if (error.response) {
+        return rejectWithValue(error.response.data);
+      } else {
+        return rejectWithValue(error.message);
+      }
     }
   }
 );
-
 const invoiceSlice = createSlice({
   name: 'invoice',
-  initialState,
+  initialState: {
+    invoice: null,
+    loading: false,
+    error: null,
+  },
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(createInvoice.pending, (state) => {
-        state.isLoading = true;
+        state.loading = true;
         state.error = null;
       })
       .addCase(createInvoice.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.invoices.push(action.payload);
-        notification.success({
-          message: 'Invoice created successfully!',
-        });
+        state.loading = false;
+        state.invoice = action.payload;
       })
       .addCase(createInvoice.rejected, (state, action) => {
-        state.isLoading = false;
+        state.loading = false;
         state.error = action.payload;
-        notification.error({
-          message: 'Failed to create invoice',
-          description: action.payload.message,
-        });
       });
   },
 });

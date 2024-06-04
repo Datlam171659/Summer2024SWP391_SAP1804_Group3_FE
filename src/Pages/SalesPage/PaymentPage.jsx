@@ -1,19 +1,22 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { Button, Input, Modal, Table, Select, Space, Spin } from "antd";
+import { Button, Input, Modal, Table, Select, Space, Spin, notification } from "antd";
 import { clearCart, getTotals } from "../../Features/product/cartSlice";
 import { fetchCustomerDetail } from "../../Features/Customer/CustomerdetailSlice";
-import { createInvoice } from "../../Features/Invoice/InvoiceSlice"; 
+import { createInvoice } from "../../Features/Invoice/InvoiceSlice";
+import { fetchCustomerPhone } from "../../Features/Customer/customerbyphoneSlice";
 const PaymentPage = () => {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
   const customerDetail = useSelector((state) => state.customerDetail);
-
+  const invoiceState = useSelector((state) => state.invoice); // Assuming this is the invoice state slice
+const [phoneNumber,setphoneNumber]=useState("")
   const [customerId, setCustomerId] = useState("");
   const [customerInfo, setCustomerInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [paymentType, setPaymentType] = useState("");
 
   const handleChange = (value) => {
     console.log(`selected ${value}`);
@@ -70,24 +73,36 @@ const PaymentPage = () => {
   };
 
   const handleOk = () => {
-    // Prepare invoice data
+    if (!customerInfo) {
+      alert("Please fetch customer details first");
+      return;
+    }
+    const staffId = localStorage.getItem("nameid");
+    const returnPolicyId = "RP01";
+    const companyName = "SWJ";
+    const status = "Active";
+
     const invoiceData = {
-      staffId: "someStaffId", // Replace with actual data
-      returnPolicyId: "someReturnPolicyId", // Replace with actual data
-      itemId: cart.cartItems.map((item) => item.itemId),
+      staffId: staffId,
+      returnPolicyId: returnPolicyId,
+      itemId: cart.item,
       customerId: customerInfo.customerId,
-      companyName: customerInfo.companyName,
+      companyName: companyName,
       buyerAddress: customerInfo.address,
-      status: "Pending", // or other status
-      paymentType: "somePaymentType", // Replace with actual data
+      status: status,
+      paymentType: paymentType, // Use the selected payment type
       quantity: cart.cartTotalQuantity,
       subTotal: cart.cartTotalAmount,
     };
-
-    // Dispatch createInvoice action
-    dispatch(createInvoice(invoiceData));
-    
-    setIsModalOpen(false);
+console.log(cart.itemId)
+    dispatch(createInvoice(invoiceData)).then((result) => {
+      if (result.type === createInvoice.fulfilled.toString()) {
+        notification("Tạo hóa đơn thành công!");
+        setIsModalOpen(false);
+      } else if (result.type === createInvoice.rejected.toString()) {
+        notification(`Tạo hóa đơn thất bại: ${result.payload}`);
+      }
+    });
   };
 
   const handleCancel = () => {
@@ -96,18 +111,26 @@ const PaymentPage = () => {
 
   const handleSearchCustomer = () => {
     setLoading(true);
-    dispatch(fetchCustomerDetail(customerId))
+    dispatch(fetchCustomerPhone(phoneNumber))
       .then((response) => {
         if (response.payload) {
           setCustomerInfo(response.payload);
+        } else {
+          notification("không tìm thấy khách hàng");
         }
       })
       .catch((error) => {
-        console.error("Error fetching customer details:", error);
+        console.error("Lấy thông tin khách hàng thất bại:", error);
+        notification("Lấy thông tin khách hàng thất bại");
       })
       .finally(() => {
         setLoading(false);
       });
+  };
+
+  const handleConfirm = () => {
+    handleOk();
+    handleClearCart();
   };
 
   return (
@@ -129,8 +152,8 @@ const PaymentPage = () => {
         <div className="flex mb-4">
           <Input
             placeholder="Enter Customer ID"
-            value={customerId}
-            onChange={(e) => setCustomerId(e.target.value)}
+            value={phoneNumber}
+            onChange={(e) => setphoneNumber(e.target.value)}
             className="mr-2"
           />
           <Button onClick={handleSearchCustomer}>Search</Button>
@@ -140,10 +163,18 @@ const PaymentPage = () => {
         ) : (
           customerInfo && (
             <div className="customer-details">
-              <p className="text-lg my-3"><strong>Name:</strong> {customerInfo.customerName}</p>
-              <p className="text-lg my-3"><strong>Address:</strong> {customerInfo.address}</p>
-              <p className="text-lg my-3"><strong>Phone:</strong> {customerInfo.phoneNumber}</p>
-              <p className="text-lg my-3"><strong>Gender:</strong> {customerInfo.gender}</p>
+              <p className="text-lg my-3">
+                <strong>Name:</strong> {customerInfo.customerName}
+              </p>
+              <p className="text-lg my-3">
+                <strong>Address:</strong> {customerInfo.address}
+              </p>
+              <p className="text-lg my-3">
+                <strong>Phone:</strong> {customerInfo.phoneNumber}
+              </p>
+              <p className="text-lg my-3">
+                <strong>Gender:</strong> {customerInfo.gender}
+              </p>
             </div>
           )
         )}
@@ -159,7 +190,7 @@ const PaymentPage = () => {
               </div>
               <div className="flex justify-between mb-3 text-lg">
                 <p>Giảm giá:</p>
-                <p>0</p>
+                <p>{cart.discount}%</p>
               </div>
               <div className="flex justify-between mb-3 text-lg">
                 <p>Tạm tính</p>
@@ -188,10 +219,16 @@ const PaymentPage = () => {
           <div>
             <p className="mb-4 text-xl">Phương Thức Thanh Toán</p>
             <div className="flex">
-              <Button className="w-1/2 h-14 bg-lime-800 text-white uppercase font-bold hover:bg-gray-500">
+              <Button
+                className="w-1/2 h-14 bg-lime-800 text-white uppercase font-bold hover:bg-gray-500"
+                onClick={() => setPaymentType("Chuyển khoản")}
+              >
                 Chuyển khoản
               </Button>
-              <Button className="w-1/2 h-14 bg-lime-500 text-white uppercase font-bold hover:bg-gray-500">
+              <Button
+                className="w-1/2 h-14 bg-lime-500 text-white uppercase font-bold hover:bg-gray-500"
+                onClick={() => setPaymentType("Tiền mặt")}
+              >
                 Tiền mặt
               </Button>
             </div>
@@ -201,7 +238,7 @@ const PaymentPage = () => {
             <Link to="/sales-page/Payment/PrintReceiptPage">
               <Button
                 className="w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500"
-                onClick={() => handleClearCart()}
+                onClick={handleConfirm}
               >
                 Xác Nhận
               </Button>
@@ -224,7 +261,7 @@ const PaymentPage = () => {
             <Button onClick={handleCancel} className="text-black bg-white uppercase mr-3">
               hủy
             </Button>
-            <Button onClick={handleOk} className="bg-blue-700 text-white uppercase">
+            <Button onClick={handleConfirm} className="bg-blue-700 text-white uppercase">
               Xác nhận
             </Button>
           </div>

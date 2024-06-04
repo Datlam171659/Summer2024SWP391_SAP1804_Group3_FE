@@ -8,7 +8,7 @@ import {
   decreaseCart,
   getTotals,
   removeFromCart,
-  applyDiscount, // import the new action
+  applyDiscount,
 } from "../../Features/product/cartSlice";
 import { Link } from "react-router-dom";
 import { fetchDiscountData } from "../../Features/Discount/DiscountSlice";

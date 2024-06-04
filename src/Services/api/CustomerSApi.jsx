@@ -7,4 +7,8 @@ const getCustomerAll = () => {
     const response= axios.get(`/api/Customer/${id}`)
   return response;
   }
-  export{getCustomerAll,getCustomerById}
+ const getCustomerByPhone=(phoneNumber)=>{
+  const response= axios.get(`/api/Customer/phone/${phoneNumber}`)
+return response;
+}
+  export{getCustomerAll,getCustomerById,getCustomerByPhone}
