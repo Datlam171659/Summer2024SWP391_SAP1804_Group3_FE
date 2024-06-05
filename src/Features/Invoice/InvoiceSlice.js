@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { addinvoice } from '../../Services/api/InvoiceApi';
 
-// Async thunk to create invoice
 export const createInvoice = createAsyncThunk(
   'invoice/createInvoice',
   async (invoiceData, { rejectWithValue }) => {

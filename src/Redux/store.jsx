@@ -7,6 +7,7 @@ import productAddReducer from '../Features/product/productaddSlice';
 import productDeleteReducer from '../Features/product/productdeleteSlice'; 
 import goldPriceReducer from '../Features/goldTransaction/goldTransactionSlice'
 import DiscountReducer from '../Features/Discount/DiscountSlice'
+import warrantyReducer from '../Features/Warranty/warrantyaddSlice';
 const store = configureStore({
   reducer: {
     product: productReducer,
@@ -16,7 +17,8 @@ const store = configureStore({
     productAdd: productAddReducer, 
     productDelete: productDeleteReducer, 
     goldPrice: goldPriceReducer,
-    discount:DiscountReducer
+    discount:DiscountReducer,
+    warranty: warrantyReducer
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(), 
 });

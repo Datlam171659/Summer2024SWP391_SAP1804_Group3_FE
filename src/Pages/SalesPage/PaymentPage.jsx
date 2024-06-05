@@ -6,11 +6,12 @@ import { clearCart, getTotals } from "../../Features/product/cartSlice";
 import { fetchCustomerDetail } from "../../Features/Customer/CustomerdetailSlice";
 import { createInvoice } from "../../Features/Invoice/InvoiceSlice";
 import { fetchCustomerPhone } from "../../Features/Customer/customerbyphoneSlice";
+import { addWarranty } from "../../Features/Warranty/warrantyaddSlice";
 const PaymentPage = () => {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
   const customerDetail = useSelector((state) => state.customerDetail);
-  const invoiceState = useSelector((state) => state.invoice); // Assuming this is the invoice state slice
+  const invoiceState = useSelector((state) => state.invoice);
 const [phoneNumber,setphoneNumber]=useState("")
   const [customerId, setCustomerId] = useState("");
   const [customerInfo, setCustomerInfo] = useState(null);
@@ -81,30 +82,42 @@ const [phoneNumber,setphoneNumber]=useState("")
     const returnPolicyId = "RP01";
     const companyName = "SWJ";
     const status = "Active";
-
     const invoiceData = {
       staffId: staffId,
       returnPolicyId: returnPolicyId,
-      itemId: cart.item,
-      customerId: customerInfo.customerId,
+      itemId: cart.cartItems[0].itemId,
+      customerId: customerInfo.id,
       companyName: companyName,
       buyerAddress: customerInfo.address,
       status: status,
-      paymentType: paymentType, // Use the selected payment type
+      paymentType: paymentType, 
       quantity: cart.cartTotalQuantity,
       subTotal: cart.cartTotalAmount,
     };
-console.log(cart.itemId)
+    console.log("check cart",cart.cartItems.itemId
+  );
     dispatch(createInvoice(invoiceData)).then((result) => {
       if (result.type === createInvoice.fulfilled.toString()) {
-        notification("Tạo hóa đơn thành công!");
+        notification.success({ message: "Tạo hóa đơn thành công!" });
         setIsModalOpen(false);
       } else if (result.type === createInvoice.rejected.toString()) {
-        notification(`Tạo hóa đơn thất bại: ${result.payload}`);
+        notification.error({ message: `Tạo hóa đơn thất bại: ${result.payload}` });
       }
     });
   };
-
+  const handlewarranty = () => {
+    if (!customerInfo) {
+      alert("Please fetch customer details first");
+      return;
+    }
+    dispatch(addWarranty(customerInfo.id)).then((result) => {
+      if (result.type === addWarranty.fulfilled.toString()) {
+        setIsModalOpen(false);
+      } else if (result.type === addWarranty.rejected.toString()) {
+        notification.error({ message: `Tạo bảo hành thất bại: ${result.payload}` });
+      }
+    });
+  };
   const handleCancel = () => {
     setIsModalOpen(false);
   };
@@ -127,10 +140,10 @@ console.log(cart.itemId)
         setLoading(false);
       });
   };
-
   const handleConfirm = () => {
     handleOk();
     handleClearCart();
+    handlewarranty();
   };
 
   return (
