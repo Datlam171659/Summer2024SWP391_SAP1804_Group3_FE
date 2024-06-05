@@ -111,6 +111,9 @@ const cartSlice = createSlice({
       state.discount = action.payload;
       cartSlice.caseReducers.getTotals(state);
     },
+    resetDiscount: (state) => {
+      state.discount = 0;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchDiscount.fulfilled, (state, action) => {
@@ -120,6 +123,6 @@ const cartSlice = createSlice({
   },
 });
 
-export const { addToCart, decreaseCart, removeFromCart, getTotals, clearCart, applyDiscount } = cartSlice.actions;
+export const { addToCart, decreaseCart, removeFromCart, getTotals, clearCart, applyDiscount,resetDiscount } = cartSlice.actions;
 
 export default cartSlice.reducer;

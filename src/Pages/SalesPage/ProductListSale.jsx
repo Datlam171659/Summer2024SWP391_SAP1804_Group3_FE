@@ -9,6 +9,7 @@ import {
   getTotals,
   removeFromCart,
   applyDiscount,
+  resetDiscount,
 } from "../../Features/product/cartSlice";
 import { Link } from "react-router-dom";
 import { fetchDiscountData } from "../../Features/Discount/DiscountSlice";
@@ -28,9 +29,15 @@ const ProductListSale = () => {
   const cart = useSelector((state) => state.cart);
 
   const handleChange = (value) => {
-    const selectedDiscount = discountData.find((discount) => discount.discountId === value);
-    if (selectedDiscount) {
-      dispatch(applyDiscount(selectedDiscount.discountPercentage));
+    if (value === undefined) {
+      dispatch(resetDiscount());
+    } else {
+      const selectedDiscount = discountData.find(
+        (discount) => discount.discountId === value
+      );
+      if (selectedDiscount) {
+        dispatch(applyDiscount(selectedDiscount.discountPercentage));
+      }
     }
   };
 
@@ -212,11 +219,11 @@ const ProductListSale = () => {
           <div className="cart-summary mt-12 bg-white p-6 rounded-lg shadow-md  w-1/2">
             <Space wrap>
               <Select
-                defaultValue="Chọn khuyến mãi"
                 style={{
                   width: 760,
                   height: 50,
                 }}
+                allowClear
                 onChange={handleChange}
                 options={discountOptions}
               />

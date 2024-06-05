@@ -3,27 +3,22 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { Button, Input, Modal, Table, Select, Space, Spin, notification } from "antd";
 import { clearCart, getTotals } from "../../Features/product/cartSlice";
-import { fetchCustomerDetail } from "../../Features/Customer/CustomerdetailSlice";
-import { createInvoice } from "../../Features/Invoice/InvoiceSlice";
 import { fetchCustomerPhone } from "../../Features/Customer/customerbyphoneSlice";
+import { createInvoice } from "../../Features/Invoice/InvoiceSlice";
 import { addWarranty } from "../../Features/Warranty/warrantyaddSlice";
+
 const PaymentPage = () => {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
-  const customerDetail = useSelector((state) => state.customerDetail);
-  const invoiceState = useSelector((state) => state.invoice);
-const [phoneNumber,setphoneNumber]=useState("")
-  const [customerId, setCustomerId] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [customerInfo, setCustomerInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [paymentType, setPaymentType] = useState("");
-
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
-  };
+  const [customerNotFound, setCustomerNotFound] = useState(false);
 
   const { TextArea } = Input;
+
   const columns = [
     {
       title: "STT",
@@ -50,11 +45,7 @@ const [phoneNumber,setphoneNumber]=useState("")
       title: "Số Lượng",
       dataIndex: "cartQuantity",
       key: "cartQuantity",
-      render: (_, record) => (
-        <div className="flex items-center">
-          <span className="mx-2">{record.cartQuantity}</span>
-        </div>
-      ),
+      render: (_, record) => <span className="mx-2">{record.cartQuantity}</span>,
     },
     {
       title: "Giá",
@@ -83,67 +74,72 @@ const [phoneNumber,setphoneNumber]=useState("")
     const companyName = "SWJ";
     const status = "Active";
     const invoiceData = {
-      staffId: staffId,
-      returnPolicyId: returnPolicyId,
+      staffId,
+      returnPolicyId,
       itemId: cart.cartItems[0].itemId,
       customerId: customerInfo.id,
-      companyName: companyName,
+      companyName,
       buyerAddress: customerInfo.address,
-      status: status,
-      paymentType: paymentType, 
+      status,
+      paymentType,
       quantity: cart.cartTotalQuantity,
       subTotal: cart.cartTotalAmount,
     };
-    console.log("check cart",cart.cartItems.itemId
-  );
+
     dispatch(createInvoice(invoiceData)).then((result) => {
       if (result.type === createInvoice.fulfilled.toString()) {
         notification.success({ message: "Tạo hóa đơn thành công!" });
         setIsModalOpen(false);
-      } else if (result.type === createInvoice.rejected.toString()) {
+      } else {
         notification.error({ message: `Tạo hóa đơn thất bại: ${result.payload}` });
       }
     });
   };
-  const handlewarranty = () => {
+
+  const handleWarranty = () => {
     if (!customerInfo) {
       alert("Please fetch customer details first");
       return;
     }
+
     dispatch(addWarranty(customerInfo.id)).then((result) => {
       if (result.type === addWarranty.fulfilled.toString()) {
-        setIsModalOpen(false);
-      } else if (result.type === addWarranty.rejected.toString()) {
+        notification.success({ message: "Tạo bảo hành thành công!" });
+      } else {
         notification.error({ message: `Tạo bảo hành thất bại: ${result.payload}` });
       }
     });
   };
+
   const handleCancel = () => {
     setIsModalOpen(false);
   };
 
   const handleSearchCustomer = () => {
     setLoading(true);
+    setCustomerNotFound(false);
     dispatch(fetchCustomerPhone(phoneNumber))
       .then((response) => {
         if (response.payload) {
           setCustomerInfo(response.payload);
         } else {
-          notification("không tìm thấy khách hàng");
+          setCustomerInfo(null);
+          setCustomerNotFound(true);
         }
       })
       .catch((error) => {
         console.error("Lấy thông tin khách hàng thất bại:", error);
-        notification("Lấy thông tin khách hàng thất bại");
+        notification.error({ message: "Lấy thông tin khách hàng thất bại" });
       })
       .finally(() => {
         setLoading(false);
       });
   };
+
   const handleConfirm = () => {
     handleOk();
     handleClearCart();
-    handlewarranty();
+    handleWarranty();
   };
 
   return (
@@ -164,15 +160,17 @@ const [phoneNumber,setphoneNumber]=useState("")
       <div className="customer-info bg-white p-4 rounded-lg mb-4">
         <div className="flex mb-4">
           <Input
-            placeholder="Enter Customer ID"
+            placeholder="Enter Customer Phone Number"
             value={phoneNumber}
-            onChange={(e) => setphoneNumber(e.target.value)}
+            onChange={(e) => setPhoneNumber(e.target.value)}
             className="mr-2"
           />
           <Button onClick={handleSearchCustomer}>Search</Button>
         </div>
         {loading ? (
           <Spin />
+        ) : customerInfo.customerName==null ? (
+          <p className="text-red-500">Không tìm thấy khách hàng với số điện thoại này.</p>
         ) : (
           customerInfo && (
             <div className="customer-details">
@@ -212,19 +210,15 @@ const [phoneNumber,setphoneNumber]=useState("")
             </div>
             <div>
               <Button
-                className="w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500 "
+                className="w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500"
                 onClick={showModal}
               >
                 Yêu cầu chiết khấu đơn hàng
               </Button>
             </div>
             <div className="mt-14 flex justify-between">
-              <span className="text-lg font-semibold text-gray-800">
-                Thành tiền
-              </span>
-              <span className="amount text-xl font-bold text-gray-800">
-                ${cart.cartTotalAmount}
-              </span>
+              <span className="text-lg font-semibold text-gray-800">Thành tiền</span>
+              <span className="amount text-xl font-bold text-gray-800">${cart.cartTotalAmount}</span>
             </div>
           </div>
         </div>
@@ -233,13 +227,21 @@ const [phoneNumber,setphoneNumber]=useState("")
             <p className="mb-4 text-xl">Phương Thức Thanh Toán</p>
             <div className="flex">
               <Button
-                className="w-1/2 h-14 bg-lime-800 text-white uppercase font-bold hover:bg-gray-500"
+                className={`w-1/2 h-14 uppercase font-bold ${
+                  paymentType === "Chuyển khoản"
+                    ? "bg-gray-500 text-white"
+                    : "bg-lime-800 text-white hover:bg-gray-500"
+                }`}
                 onClick={() => setPaymentType("Chuyển khoản")}
               >
                 Chuyển khoản
               </Button>
               <Button
-                className="w-1/2 h-14 bg-lime-500 text-white uppercase font-bold hover:bg-gray-500"
+                className={`w-1/2 h-14 uppercase font-bold ${
+                  paymentType === "Tiền mặt"
+                    ? "bg-gray-500 text-white"
+                    : "bg-lime-500 text-white hover:bg-gray-500"
+                }`}
                 onClick={() => setPaymentType("Tiền mặt")}
               >
                 Tiền mặt
@@ -268,11 +270,10 @@ const [phoneNumber,setphoneNumber]=useState("")
       <Modal
         title="Yêu cầu chiết khấu"
         open={isModalOpen}
-        className="w-36"
         footer={
-          <div className="">
+          <div>
             <Button onClick={handleCancel} className="text-black bg-white uppercase mr-3">
-              hủy
+              Hủy
             </Button>
             <Button onClick={handleConfirm} className="bg-blue-700 text-white uppercase">
               Xác nhận
@@ -281,8 +282,8 @@ const [phoneNumber,setphoneNumber]=useState("")
         }
       >
         <div className="flex my-4 justify-between mr-8">
-          <p>Mức chiết khấu(0.00)</p>
-          <Input className="w-72"></Input>
+          <p>Mức chiết khấu (0.00)</p>
+          <Input className="w-72" />
         </div>
         <div className="flex justify-between my-4">
           <p>Quản lý</p>
@@ -290,15 +291,14 @@ const [phoneNumber,setphoneNumber]=useState("")
             <Select
               defaultValue="Đạt"
               style={{ width: "440%" }}
-              onChange={handleChange}
               options={[
-                { value: "ĐẠt", label: "Đạt" },
+                { value: "Đạt", label: "Đạt" },
                 { value: "Chí", label: "Chí" },
               ]}
             />
           </Space>
         </div>
-        <div className=" my-4">
+        <div className="my-4">
           <TextArea rows={4} placeholder="Ghi Chú" maxLength={6} />
         </div>
       </Modal>
