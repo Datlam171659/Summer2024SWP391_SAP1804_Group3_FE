@@ -27,31 +27,8 @@
 
       .action {
         display: flex;
-        min-width: 120px;
-        flex-direction: column;
+        min-width: auto;
         align-items: flex-start;
-
-        .fullName {
-          padding: 4px;
-          font-size: small;
-          font-weight: bold;
-        }
-
-        .logout-btn {
-          display: block;
-          background-color: transparent;
-          padding: 4px;
-          font-weight: bold;
-          border: none;
-          border-radius: 8px;
-          color: var(--text-color);
-          cursor: pointer;
-
-          &:hover {
-            background-color: var(--text-color);
-            color: var(--primary-color);
-          }
-        }
       }
     }
   }
