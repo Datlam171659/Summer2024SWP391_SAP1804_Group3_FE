@@ -13,10 +13,13 @@ import customerDetailReducer from '../Features/Customer/CustomerdetailSlice';
 import warrantyAllReducer from '../Features/Warranty/warrantyallSlice';
 import buyBackCartSlice from '../Features/buy-back/buyBackCartSlice';
 import invoicefullReducer from '../Features/Invoice/fullinvoiceSlice'
+import buyBackCustomerSlice from '../Features/buy-back/buyBackCustomerSlice';
+
 const store = configureStore({
   reducer: {
     product: productReducer,
     buyBackCart: buyBackCartSlice,
+    buyBackCustomer: buyBackCustomerSlice,
     cart: cartReducer,
     productDetail: productDetailReducer,
     customer: customerReducer,

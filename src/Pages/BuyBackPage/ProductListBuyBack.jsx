@@ -18,13 +18,50 @@ const ProductListBuyBack = () => {
   const cartTotalQuantity = useSelector((state) => state.buyBackCart.cartTotalQuantity);
   const cartTotalAmount = useSelector((state) => state.buyBackCart.cartTotalAmount);
   const buyGold24k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold24k);
+  const buyGold18k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold18k);
+  const buyGold14k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold14k);
+  const buyGold10k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold10k);
+
 
   useEffect(() => {
     const cartTotalQuantity = cartItems.reduce((acc, item) => acc + item.itemQuantity, 0);
-    const cartTotalAmount = cartItems.reduce((acc, item) => acc + (item.weight * item.itemQuantity * buyGold24k), 0);
+
+    const cartTotalAmount = cartItems.reduce((acc, item) => {
+      let goldType = "";
+      if (item.itemName.toLowerCase().includes("10k")) {
+        goldType = "10K";
+      } else if (item.itemName.toLowerCase().includes("14k")) {
+        goldType = "14K";
+      } else if (item.itemName.toLowerCase().includes("18k")) {
+        goldType = "18K";
+      } else if (item.itemName.toLowerCase().includes("24k")) {
+        goldType = "24K";
+      }
+
+      let kara;
+      switch (goldType) {
+        case "10K":
+          kara = buyGold10k;
+          break;
+        case "14K":
+          kara = buyGold14k;
+          break;
+        case "18K":
+          kara = buyGold18k;
+          break;
+        case "24K":
+          kara = buyGold24k;
+          break;
+        default:
+          kara = 0;
+      }
+
+      const itemTotalPrice = item.weight * item.itemQuantity * kara;
+      return acc + itemTotalPrice;
+    }, 0);
 
     dispatch(updateTotals({ cartTotalQuantity, cartTotalAmount }));
-  }, [cartItems, buyGold24k, dispatch]);
+  }, [cartItems, buyGold10k, buyGold14k, buyGold18k, buyGold24k, dispatch]);
 
   const handleSearch = async () => {
     setLoading(true);
@@ -40,7 +77,9 @@ const ProductListBuyBack = () => {
         message.success("Sản phẩm đã được thêm vào giỏ hàng");
       }
     } catch (error) {
-      message.error("Có lỗi xảy ra khi tìm sản phẩm");
+      message.error("Không tìm thấy sản phẩm. Vui lòng thử lại");
+      setSearchQuery("")
+
     } finally {
       setLoading(false);
     }
@@ -72,10 +111,11 @@ const ProductListBuyBack = () => {
         .slice(0, 14);
 
       const newItemWithId = {
-        itemId: `BB${formattedDateTime}`,
+        itemId: `BBI${formattedDateTime}`,
         itemImagesId: "string",
         brandId: "PNJ",
         accessoryType: newItem.accessoryType,
+        serialNumber: `BBI${formattedDateTime}`,
         sku: "string",
         itemName: newItem.itemName,
         description: newItem.description,
@@ -127,16 +167,16 @@ const ProductListBuyBack = () => {
   const columns = [
     {
       title: "STT",
-      dataIndex: "serialNumber",
-      key: "serialNumber",
+      dataIndex: "numericalOrder",
+      key: "numericalOrder",
       width: 50,
       render: (_, __, index) => index + 1,
     },
     {
       title: "Mã Hàng",
-      dataIndex: "itemId",
-      key: "itemId",
-      width: 150,
+      dataIndex: "serialNumber",
+      key: "serialNumber",
+      width: 120,
     },
     {
       title: "Tên Hàng",
@@ -145,10 +185,29 @@ const ProductListBuyBack = () => {
       width: 150,
     },
     {
+      title: "Loại Hàng",
+      dataIndex: "accessoryType",
+      key: "accessoryType",
+      width: 100,
+    },
+    {
       title: "Loại Vàng",
-      dataIndex: "24k",
+      dataIndex: "goldType",
       key: "goldType",
       width: 100,
+      render: (_, record) => {
+        let goldType = "";
+        if (record.itemName.toLowerCase().includes("10k")) {
+          goldType = "10K";
+        } else if (record.itemName.toLowerCase().includes("14k")) {
+          goldType = "14K";
+        } else if (record.itemName.toLowerCase().includes("18k")) {
+          goldType = "18K";
+        } else if (record.itemName.toLowerCase().includes("24k")) {
+          goldType = "24K";
+        }
+        return goldType;
+      },
     },
     {
       title: "Số Lượng",
@@ -183,16 +242,45 @@ const ProductListBuyBack = () => {
       title: "Giá",
       dataIndex: "price",
       key: "price",
-      width: 150,
+      width: 120,
       render: (_, record) => {
-        const totalPrice = record.weight * record.itemQuantity * buyGold24k;
+        let goldType = "";
+        if (record.itemName.toLowerCase().includes("10k")) {
+          goldType = "10K";
+        } else if (record.itemName.toLowerCase().includes("14k")) {
+          goldType = "14K";
+        } else if (record.itemName.toLowerCase().includes("18k")) {
+          goldType = "18K";
+        } else if (record.itemName.toLowerCase().includes("24k")) {
+          goldType = "24K";
+        }
+
+        let kara;
+        switch (goldType) {
+          case "10K":
+            kara = buyGold10k;
+            break;
+          case "14K":
+            kara = buyGold14k;
+            break;
+          case "18K":
+            kara = buyGold18k;
+            break;
+          case "24K":
+            kara = buyGold24k;
+            break;
+          default:
+            kara = 0;
+        }
+
+        const totalPrice = record.weight * record.itemQuantity * kara;
         return `${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
       },
     },
     {
       title: "Hành động",
       key: "action",
-      width: 100,
+      width: 78,
       render: (_, record) => (
         <MinusCircleOutlined onClick={() => handleRemove(record.itemId)} style={{ color: 'red', cursor: 'pointer' }} />
       ),
@@ -298,8 +386,8 @@ const ProductListBuyBack = () => {
               placeholder="Chọn loại trang sức"
             >
               <Select.Option value="Nhẫn">Nhẫn</Select.Option>
-              <Select.Option value="Lắc">Lắc</Select.Option>
-              <Select.Option value="Vòng">Vòng</Select.Option>
+              <Select.Option value="Dây chuyền">Dây chuyền</Select.Option>
+              <Select.Option value="Vòng tay">Vòng tay</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item label="Mô tả">
