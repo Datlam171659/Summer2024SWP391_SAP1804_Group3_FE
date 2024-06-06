@@ -17,6 +17,7 @@ import BuyBackPage from "../Pages/BuyBackPage/BuyBackPage";
 import BuyBackPaymentPage from "../Pages/BuyBackPage/BuyBackPaymentPage";
 import UserManagePage from "../Pages/UserManagePage/UserManagePage";
 import AddUserPage from "../Pages/AddUserPage/AddUserPage";
+import CustomerSearchDetail from "../Pages/CustomerSearchPage/CustomerSearchDetail"
 const router = createBrowserRouter([
   {
     path: "/",
@@ -99,6 +100,14 @@ const router = createBrowserRouter([
   {
     path: "login",
     element: <Login />,
+  },
+  {
+    path: "customer/customerdetail/:id",
+    element: (
+      <RootLayoput>
+        <CustomerSearchDetail />
+      </RootLayoput>
+    ),
   },
   {
     path: "customer-search",

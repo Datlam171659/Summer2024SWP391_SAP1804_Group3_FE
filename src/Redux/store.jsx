@@ -12,7 +12,7 @@ import invoiceReducer from '../Features/Invoice/allinvoiceSlice';
 import customerDetailReducer from '../Features/Customer/CustomerdetailSlice';
 import warrantyAllReducer from '../Features/Warranty/warrantyallSlice';
 import buyBackCartSlice from '../Features/buy-back/buyBackCartSlice';
-
+import invoicefullReducer from '../Features/Invoice/fullinvoiceSlice'
 const store = configureStore({
   reducer: {
     product: productReducer,
@@ -28,7 +28,7 @@ const store = configureStore({
     invoice: invoiceReducer,
     customerDetail: customerDetailReducer,
     warrantyall: warrantyAllReducer,
-
+    invoicefull:invoicefullReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(), 
 });

@@ -4,6 +4,7 @@ import { Input, Table, Space, Button, Modal, message, Form, Select } from "antd"
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import "./CustomerSearchPage.scss"
 import CustomerApi from "../../Services/api/CustomerApi";
+import { Link } from "react-router-dom";
 import { strings_vi } from "../../Services/languages/displaystrings";
 const CustomerSearchPage = () => {
     const [searchValue, setSearchValue] = useState('');
@@ -104,7 +105,10 @@ const CustomerSearchPage = () => {
     const columns = [
         {
             title: strCustomerSearch.Customername,
-            dataIndex: 'customerName'
+            dataIndex: 'customerName',
+            render: (text, record) =>(
+                <Link to={`/customer/customerdetail/${record.id}`}>{text}</Link>
+              )  
         },
         {
             title: strCustomerSearch.Address,
