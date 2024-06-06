@@ -4,7 +4,7 @@ import {getinvoiceAll} from '../../Services/api/InvoiceApi'
 export const fetchLatestInvoice = createAsyncThunk('invoice/fetchLatest', async () => {
   const response = await getinvoiceAll();
   const invoices = response.data;
-  return invoices[invoices.length - 1]; 
+  return invoices[invoices.length - 2]; 
 });
 
 const invoiceSalllice = createSlice({

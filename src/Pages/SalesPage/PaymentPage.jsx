@@ -99,6 +99,7 @@ const PaymentPage = () => {
       quantity: cart.cartTotalQuantity,
       subTotal: cart.cartTotalAmount,
     };
+    
 
     dispatch(createInvoice(invoiceData)).then((result) => {
       if (result.type === createInvoice.fulfilled.toString()) {

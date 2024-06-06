@@ -51,7 +51,7 @@ const PrintReceiptPage = () => {
     dispatch(getTotals());
   };
 
-  console.log(customerDataDetail);
+  console.log(cart);
 
   const handlePrint = () => {
     if (!latestInvoice) return;
@@ -190,7 +190,7 @@ const PrintReceiptPage = () => {
             new Paragraph({
               children: [
                 new TextRun({
-                  text: `Tổng: ${latestInvoice.subTotal} $`,
+                  text: `Tổng: ${cart.cartTotalAmount} $`,
                   size: 24,
                 }),
               ],
@@ -203,7 +203,6 @@ const PrintReceiptPage = () => {
         },
       ],
     });
-
     const warrantyDoc = new Document({
       sections: [
         {

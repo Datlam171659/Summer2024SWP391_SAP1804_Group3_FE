@@ -1,15 +1,17 @@
-
-
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import {getwarrantyall} from '../../Services/api/warrantyApi'
+import { getwarrantyall } from '../../Services/api/warrantyApi';
 
 export const fetchLatestWarranty = createAsyncThunk(
   'warranty/fetchLatestWarranty',
   async () => {
     const response = await getwarrantyall();
     const warranties = response.data;
-    // Assuming warranties are sorted by date in descending order
-    return warranties.length > 0 ? warranties[0] : null;
+
+    // Sort warranties by date in descending order
+    const sortedWarranties = warranties.sort((a, b) => new Date(b.creationDate) - new Date(a.creationDate));
+    
+    // Return the latest warranty
+    return sortedWarranties.length > 0 ? sortedWarranties[0] : null;
   }
 );
 
