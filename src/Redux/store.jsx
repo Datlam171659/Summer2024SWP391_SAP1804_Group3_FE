@@ -8,11 +8,13 @@ import productDeleteReducer from '../Features/product/productdeleteSlice';
 import productdetailReducer from '../Features/product/productdetailSlice'
 import goldPriceReducer from '../Features/goldTransaction/goldTransactionSlice'
 import buyBackCartSlice from '../Features/buy-back/buyBackCartSlice';
+import buyBackCustomerSlice from '../Features/buy-back/buyBackCustomerSlice';
 
 const store = configureStore({
   reducer: {
     product: productReducer,
     buyBackCart: buyBackCartSlice,
+    buyBackCustomer: buyBackCustomerSlice,
     cart: cartReducer,
     productDetail: productDetailReducer,
     customer: customerReducer,

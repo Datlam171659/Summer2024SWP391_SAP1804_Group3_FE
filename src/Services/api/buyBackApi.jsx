@@ -16,8 +16,8 @@ const buyBackApi = {
       .then(response => {
         const responseData = response.data;
         if (responseData.success) {
-          const data = responseData.data;
-          return { data };
+          const customerData = responseData.data;
+          return customerData ;
         } else {
           throw new Error(responseData.message);
         }
