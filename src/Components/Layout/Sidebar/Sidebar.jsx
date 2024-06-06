@@ -57,7 +57,7 @@ function Sidebar() {
     {
       icon: <UserOutlined style={{ fontSize: "16px" }} />,
       title: 'Nhân sự',
-      to: "",
+      to: "/user",
       children: [],
     },
     {
