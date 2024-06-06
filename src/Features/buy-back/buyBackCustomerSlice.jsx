@@ -18,26 +18,28 @@ const buyBackCustomerSlice = createSlice({
     name: 'buyBackCustomer',
     initialState: {
       customerData: [],
-      isLoadingCustomerData: false,
+      isLoading: false,
       isError: false,
     },
     reducers: {},
     extraReducers: (builder) => {
       builder
        .addCase(fetchCustomerData.pending, (state, action) => {
-          state.isLoadingCustomerData = true;
+          state.isLoading = true;
           state.isError = false;
         })
        .addCase(fetchCustomerData.fulfilled, (state, action) => {
           state.customerData = action.payload;
-          state.isLoadingCustomerData = false;
+          state.isLoading = false;
           state.isError = false;
         })
        .addCase(fetchCustomerData.rejected, (state) => {
           state.isError = true;
-          state.isLoadingCustomerData = false;
+          state.isLoading = false;
         });
     },
   });
 
   export default buyBackCustomerSlice.reducer;
+
+
