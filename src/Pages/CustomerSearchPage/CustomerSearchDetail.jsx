@@ -11,15 +11,12 @@ function CustomerSearchDetail() {
       dispatch(fetchCustomerDetail(id));
     }
   }, [dispatch, id]);
-
+console.log(customer)
   return (
     <div>
         <h1 className='text-4xl uppercase font-bold'>Trang thông tin khách hàng</h1>
         <div>
-            <h1> Tên khách hàng :{customer.customerName}</h1>
-            <p>Địa chỉ:{customer.address}</p>
-            <p>Số điện thoại:{customer.phoneNumber}</p>
-            <p>Email: {customer.email}</p>
+            <p className='text-2xl my-5'>Tên khách hàng:  {customer.customerName}</p>
         </div>
     </div>
   )
