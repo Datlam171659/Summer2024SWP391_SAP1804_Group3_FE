@@ -1,12 +1,11 @@
-// src/Features/product/productDetailSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getCustomerById } from '../../Services/api/CustomerSApi'; 
+import { getCustomerById } from '../../Services/api/CustomerSApi';
 
 export const fetchCustomerDetail = createAsyncThunk(
   'customerDetail/fetchCustomerDetail',
-  async (itemId, thunkAPI) => {
+  async (id, thunkAPI) => {
     try {
-      const response = await getCustomerById(itemId);
+      const response = await getCustomerById(id);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response.data);
