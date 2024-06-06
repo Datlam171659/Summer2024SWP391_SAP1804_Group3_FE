@@ -15,6 +15,8 @@ import ProducDetail from "../Pages/ProductPage/ProductDetail";
 import BuyBackSuccessPaymentPage from "../Pages/BuyBackPage/BuyBackSuccessPaymentPage";
 import BuyBackPage from "../Pages/BuyBackPage/BuyBackPage";
 import BuyBackPaymentPage from "../Pages/BuyBackPage/BuyBackPaymentPage";
+import UserManagePage from "../Pages/UserManagePage/UserManagePage";
+import AddUserPage from "../Pages/AddUserPage/AddUserPage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -119,6 +121,22 @@ const router = createBrowserRouter([
     element: (
       <RootLayoput>
         <DashBoardPage />
+      </RootLayoput>
+    ),
+  },
+  {
+    path: "user",
+    element: (
+      <RootLayoput>
+        <UserManagePage />
+      </RootLayoput>
+    ),
+  },
+  {
+    path: "user/user-add",
+    element: (
+      <RootLayoput>
+        <AddUserPage />
       </RootLayoput>
     ),
   },
