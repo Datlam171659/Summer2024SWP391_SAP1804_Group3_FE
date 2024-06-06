@@ -1,6 +1,6 @@
-import { LogoutOutlined } from "@ant-design/icons";
+import { BellFilled } from "@ant-design/icons";
 import "./Header.scss";
-import { Avatar } from "antd";
+import { Avatar, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 
 
@@ -9,24 +9,18 @@ function Header() {
   const userName = localStorage.getItem('UserName');
   const initial = userName ? userName.charAt(0).toUpperCase() : '';
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/login");
-  };
-
   return (
     <header className="header">
       <div className="logo" />
       <div className="body">
         <div className="user flex" >
-          <div className="action w-auto flex items-center" >
-            <div className="w-full flex items-center transition-all hover:text-gray-200" style={{ fontSize: "16px", fontWeight: "400" }}>
-              <p className="mr-3"><LogoutOutlined style={{ fontSize: "14px" }} /></p>
-              <button className="" onClick={handleLogout}>Đăng xuất</button>
-            </div>
+          <div className="flex items-center">
+            <button>
+              <BellFilled className="mr-12 text-[18px] hover:text-gray-200" />
+            </button>
 
-            {/* <p className="fullName">User Name</p> */}
           </div>
+
           <Avatar
             size={"large"}
             style={{
@@ -40,6 +34,10 @@ function Header() {
           >
             {initial}
           </Avatar>
+          <div className="action w-12 flex items-center ml-4" >
+            <p className="p-[4px] text-[small] font-semibold text-right">{userName}</p>
+          </div>
+
         </div>
       </div>
     </header>

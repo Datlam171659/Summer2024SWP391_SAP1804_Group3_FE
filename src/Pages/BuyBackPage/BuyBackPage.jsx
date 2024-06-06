@@ -4,7 +4,7 @@ import "./BuyBackPage.scss"
 import { ConfigProvider } from 'antd';
 
 const BuyBackPage = () => {
- 
+
   return (
     <div className='buy-back-page'>
       <ConfigProvider
@@ -12,6 +12,11 @@ const BuyBackPage = () => {
           token: {
             colorPrimary: "var(--primary-color)",
             colorPrimaryHover: "var(--primary-color-hover)"
+          },
+          components: {
+            Select: {
+              optionSelectedBg: "#dbdbdb"
+            },
           },
         }}
       >
