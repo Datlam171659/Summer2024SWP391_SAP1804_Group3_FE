@@ -22,8 +22,10 @@ const addinvoice = (
     status,
     paymentType,
     quantity,
-    subTotal
+    subTotal,
   });
 };
-
-export { addinvoice };
+const getinvoiceAll = () => {
+  return axios.get(`/api/Sales/Invoices`, {});
+};
+export { addinvoice,getinvoiceAll };

@@ -7,5 +7,7 @@ const addwwarranty = (
     customerId
   });
 };
-
-export { addwwarranty };
+const getwarrantyall = () => {
+  return axios.get(`/api/Sales/Warranty`, {});
+};
+export { addwwarranty,getwarrantyall };

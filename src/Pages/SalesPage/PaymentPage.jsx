@@ -1,12 +1,20 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { Button, Input, Modal, Table, Select, Space, Spin, notification } from "antd";
-import { clearCart, getTotals } from "../../Features/product/cartSlice";
+import {
+  Button,
+  Input,
+  Modal,
+  Table,
+  Select,
+  Space,
+  Spin,
+  notification,
+} from "antd";
 import { fetchCustomerPhone } from "../../Features/Customer/customerbyphoneSlice";
 import { createInvoice } from "../../Features/Invoice/InvoiceSlice";
 import { addWarranty } from "../../Features/Warranty/warrantyaddSlice";
-
+import QRCode from '../../assests/images/QRcode.jpg';
 const PaymentPage = () => {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
@@ -16,7 +24,16 @@ const PaymentPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [paymentType, setPaymentType] = useState("");
   const [customerNotFound, setCustomerNotFound] = useState(false);
-
+  const [isModalOpen1, setIsModalOpen1] = useState(false);
+  const showModal1 = () => {
+    setIsModalOpen1(true);
+  };
+  const handleOk1 = () => {
+    setIsModalOpen1(false);
+  };
+  const handleCancel1 = () => {
+    setIsModalOpen1(false);
+  };
   const { TextArea } = Input;
 
   const columns = [
@@ -45,7 +62,9 @@ const PaymentPage = () => {
       title: "Số Lượng",
       dataIndex: "cartQuantity",
       key: "cartQuantity",
-      render: (_, record) => <span className="mx-2">{record.cartQuantity}</span>,
+      render: (_, record) => (
+        <span className="mx-2">{record.cartQuantity}</span>
+      ),
     },
     {
       title: "Giá",
@@ -54,11 +73,6 @@ const PaymentPage = () => {
       render: (price, record) => `$${price * record.cartQuantity}`,
     },
   ];
-
-  const handleClearCart = () => {
-    dispatch(clearCart());
-    dispatch(getTotals());
-  };
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -91,7 +105,9 @@ const PaymentPage = () => {
         notification.success({ message: "Tạo hóa đơn thành công!" });
         setIsModalOpen(false);
       } else {
-        notification.error({ message: `Tạo hóa đơn thất bại: ${result.payload}` });
+        notification.error({
+          message: `Tạo hóa đơn thất bại: ${result.payload}`,
+        });
       }
     });
   };
@@ -106,7 +122,9 @@ const PaymentPage = () => {
       if (result.type === addWarranty.fulfilled.toString()) {
         notification.success({ message: "Tạo bảo hành thành công!" });
       } else {
-        notification.error({ message: `Tạo bảo hành thất bại: ${result.payload}` });
+        notification.error({
+          message: `Tạo bảo hành thất bại: ${result.payload}`,
+        });
       }
     });
   };
@@ -138,7 +156,6 @@ const PaymentPage = () => {
 
   const handleConfirm = () => {
     handleOk();
-    handleClearCart();
     handleWarranty();
   };
 
@@ -165,26 +182,28 @@ const PaymentPage = () => {
             onChange={(e) => setPhoneNumber(e.target.value)}
             className="mr-2"
           />
-          <Button onClick={handleSearchCustomer}>Search</Button>
+          <Button onClick={handleSearchCustomer}>Tìm kiếm</Button>
         </div>
         {loading ? (
           <Spin />
         ) : customerNotFound ? (
-          <p className="text-red-500">Không tìm thấy khách hàng với số điện thoại này.</p>
+          <p className="text-red-500">
+            Không tìm thấy khách hàng với số điện thoại này.
+          </p>
         ) : (
           customerInfo && (
             <div className="customer-details">
               <p className="text-lg my-3">
-                <strong>Name:</strong> {customerInfo.customerName}
+                <strong>Tên:</strong> {customerInfo.customerName}
               </p>
               <p className="text-lg my-3">
-                <strong>Address:</strong> {customerInfo.address}
+                <strong>Địa chỉ:</strong> {customerInfo.address}
               </p>
               <p className="text-lg my-3">
-                <strong>Phone:</strong> {customerInfo.phoneNumber}
+                <strong>Số điện thoại:</strong> {customerInfo.phoneNumber}
               </p>
               <p className="text-lg my-3">
-                <strong>Gender:</strong> {customerInfo.gender}
+                <strong>Giới tính:</strong> {customerInfo.gender}
               </p>
             </div>
           )
@@ -217,8 +236,12 @@ const PaymentPage = () => {
               </Button>
             </div>
             <div className="mt-14 flex justify-between">
-              <span className="text-lg font-semibold text-gray-800">Thành tiền</span>
-              <span className="amount text-xl font-bold text-gray-800">${cart.cartTotalAmount}</span>
+              <span className="text-lg font-semibold text-gray-800">
+                Thành tiền
+              </span>
+              <span className="amount text-xl font-bold text-gray-800">
+                ${cart.cartTotalAmount}
+              </span>
             </div>
           </div>
         </div>
@@ -230,9 +253,12 @@ const PaymentPage = () => {
                 className={`w-1/2 h-14 uppercase font-bold ${
                   paymentType === "Chuyển khoản"
                     ? "bg-gray-500 text-white"
-                    : "bg-lime-800 text-white hover:bg-gray-500"
+                    : "bg-black text-white hover:bg-gray-500"
                 }`}
-                onClick={() => setPaymentType("Chuyển khoản")}
+                onClick={() => {
+                  setPaymentType("Chuyển khoản");
+                  showModal1();
+                }}
               >
                 Chuyển khoản
               </Button>
@@ -240,7 +266,7 @@ const PaymentPage = () => {
                 className={`w-1/2 h-14 uppercase font-bold ${
                   paymentType === "Tiền mặt"
                     ? "bg-gray-500 text-white"
-                    : "bg-lime-500 text-white hover:bg-gray-500"
+                    : "bg-black text-white hover:bg-gray-500"
                 }`}
                 onClick={() => setPaymentType("Tiền mặt")}
               >
@@ -272,10 +298,16 @@ const PaymentPage = () => {
         open={isModalOpen}
         footer={
           <div>
-            <Button onClick={handleCancel} className="text-black bg-white uppercase mr-3">
+            <Button
+              onClick={handleCancel}
+              className="text-black bg-white uppercase mr-3"
+            >
               Hủy
             </Button>
-            <Button onClick={handleConfirm} className="bg-blue-700 text-white uppercase">
+            <Button
+              onClick={handleConfirm}
+              className="bg-blue-700 text-white uppercase"
+            >
               Xác nhận
             </Button>
           </div>
@@ -301,6 +333,29 @@ const PaymentPage = () => {
         <div className="my-4">
           <TextArea rows={4} placeholder="Ghi Chú" maxLength={6} />
         </div>
+      </Modal>
+      <Modal
+        open={isModalOpen1}
+        footer={
+          <div>
+            <Button
+              onClick={handleCancel1}
+              className="text-black bg-white uppercase mr-3"
+            >
+              Hủy
+            </Button>
+            <Button
+              onClick={handleOk1}
+              className="bg-blue-700 text-white uppercase"
+            >
+              Hoàn tất
+            </Button>
+          </div>
+        }
+      >
+         <div className="flex justify-center">
+          <img src={QRCode} alt="QRcode" className="w-72"/>
+         </div>
       </Modal>
     </div>
   );

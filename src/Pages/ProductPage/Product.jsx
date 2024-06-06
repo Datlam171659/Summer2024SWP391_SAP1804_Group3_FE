@@ -100,14 +100,14 @@ function Product() {
   const columns = [
     {
       title: "STT",
-      dataIndex: "serialNumber",
-      key: "serialNumber",
+      dataIndex: "itemId",
+      key: "itemId",
       render: (_, __, index) => index + 1,
     },
     {
       title: "Mã Hàng",
-      dataIndex: "serialNumber",
-      key: "serialNumber",
+      dataIndex: "itemId",
+      key: "itemId",
   
           
     },

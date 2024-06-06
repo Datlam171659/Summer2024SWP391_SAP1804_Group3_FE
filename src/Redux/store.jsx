@@ -8,6 +8,9 @@ import productDeleteReducer from '../Features/product/productdeleteSlice';
 import goldPriceReducer from '../Features/goldTransaction/goldTransactionSlice'
 import DiscountReducer from '../Features/Discount/DiscountSlice'
 import warrantyReducer from '../Features/Warranty/warrantyaddSlice';
+import invoiceReducer from '../Features/Invoice/allinvoiceSlice';
+import customerDetailReducer from '../Features/Customer/CustomerdetailSlice';
+import warrantyAllReducer from '../Features/Warranty/warrantyallSlice';
 const store = configureStore({
   reducer: {
     product: productReducer,
@@ -18,7 +21,11 @@ const store = configureStore({
     productDelete: productDeleteReducer, 
     goldPrice: goldPriceReducer,
     discount:DiscountReducer,
-    warranty: warrantyReducer
+    warranty: warrantyReducer,
+    invoice: invoiceReducer,
+    customerDetail: customerDetailReducer,
+    warrantyall: warrantyAllReducer,
+
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(), 
 });

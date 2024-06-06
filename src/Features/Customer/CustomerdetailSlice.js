@@ -1,6 +1,5 @@
-// src/Features/product/productDetailSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getCustomerById } from '../../Services/api/CustomerSApi'; 
+import { getCustomerById } from '../../Services/api/CustomerSApi';
 
 export const fetchCustomerDetail = createAsyncThunk(
   'customerDetail/fetchCustomerDetail',
