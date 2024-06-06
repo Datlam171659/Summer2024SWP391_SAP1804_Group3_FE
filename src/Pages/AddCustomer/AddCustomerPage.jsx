@@ -7,6 +7,7 @@ import CustomerApi from "../../Services/api/CustomerApi";
 import { strings_vi } from '../../Services/languages/displaystrings';
 
 const AddCustomerPage = () => {
+    const [loading,setLoading] = useState(false);
     const navigate = useNavigate();
     const [form] = Form.useForm();
     const strAddCustomer = strings_vi.AddCustomerPage;
@@ -15,6 +16,7 @@ const AddCustomerPage = () => {
         ...values,
         status: "active"
       }
+      setLoading(true);
       try { 
         let emailExists = null;
         let phoneNumberExists = null;
@@ -115,7 +117,7 @@ const AddCustomerPage = () => {
         </Form.Item>
         
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={loading}>
             Thêm Khách Hàng
           </Button>
         </Form.Item>
