@@ -8,8 +8,10 @@ import {
 } from "../../Features/product/cartSlice";
 const BuyBackPaymentPage = () => {
   const dispatch = useDispatch();
-  const cart = useSelector((state) => state.cart);
+  const cartItems = useSelector((state) => state.buyBackCart.cartItems);
   const buyGold24k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold24k);
+  const cartTotalAmount = useSelector((state) => state.buyBackCart.cartTotalAmount);
+  const cartTotalQuantity = useSelector((state) => state.buyBackCart.cartTotalQuantity);
 
   const handleChange = (value) => {
     console.log(`selected ${value}`);
@@ -43,7 +45,7 @@ const BuyBackPaymentPage = () => {
       key: "cartQuantity",
       render: (_, record) => (
         <div className="flex items-center">
-          <span className="mx-2">{record.cartQuantity}</span>
+          <span className="mx-2">{record.itemQuantity}</span>
         </div>
       ),
     },
@@ -57,7 +59,7 @@ const BuyBackPaymentPage = () => {
       dataIndex: "price",
       key: "price",
       render: (_, record) => {
-        const totalPrice = record.weight * record.cartQuantity * buyGold24k;
+        const totalPrice = record.weight * record.itemQuantity * buyGold24k;
         return `${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
       },
     },
@@ -66,16 +68,7 @@ const BuyBackPaymentPage = () => {
     dispatch(clearCart());
     dispatch(getTotals());
   };
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+
   return (
     <ConfigProvider
       theme={{
@@ -90,11 +83,12 @@ const BuyBackPaymentPage = () => {
           <h2 className="text-xl font-bold mb-4">Đơn hàng</h2>
           <div className="cart-items w-full">
             <Table
-              dataSource={cart.cartItems}
+              dataSource={cartItems}
               columns={columns}
               rowKey="itemId"
               pagination={false}
-              className="w-full"
+              scroll={{ y: 378 }}
+              className="w-full rounded-[5px] font-medium"
             />
           </div>
         </div>
@@ -102,26 +96,26 @@ const BuyBackPaymentPage = () => {
           <h3 className="text-lg mb-4 font-bold">Thông tin khách hàng</h3>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <div className="flex items-center mb-3">
-                <p className="w-1/3">Tên Khách Hàng:</p>
-                <Input placeholder="Nhập tên khách hàng" className="w-2/3" />
-              </div>
-              <div className="flex items-center mb-3">
-                <p className="w-1/3">Địa Chỉ:</p>
-                <Input placeholder="Nhập địa chỉ" className="w-2/3" />
-              </div>
-              <div className="flex items-center mb-3">
+              <div className="flex items-center mb-3 font-medium">
                 <p className="w-1/3">Số điện thoại:</p>
                 <Input placeholder="Nhập số điện thoại" className="w-2/3" />
               </div>
-              <div className="flex items-center mb-3">
+              <div className="flex items-center mb-3 font-medium">
+                <p className="w-1/3">Tên Khách Hàng:</p>
+                <Input placeholder="Nhập tên khách hàng" className="w-2/3" />
+              </div>
+              <div className="flex items-center mb-3 font-medium">
+                <p className="w-1/3">Địa Chỉ:</p>
+                <Input placeholder="Nhập địa chỉ" className="w-2/3" />
+              </div>
+              <div className="flex items-center mb-3 font-medium">
                 <p className="w-1/3">E-mail:</p>
                 <Input placeholder="Nhập E-mail" className="w-2/3" />
               </div>
             </div>
-            <div className="flex items-center ml-48 mb-40">
-              <p className="w-1/3">Giới Tính:</p>
-              <Space wrap className="w-2/3">
+            <div className="flex items-center ml-16 mb-40 font-medium">
+              <p className="w-1/6">Giới Tính:</p>
+              <Space wrap className="w-4/5">
                 <Select
                   defaultValue="Nam"
                   style={{ width: "100%" }}
@@ -141,11 +135,11 @@ const BuyBackPaymentPage = () => {
               <div className="flex-row">
                 <div className="flex justify-between mb-3 text-lg">
                   <p>Tổng số lượng sản phẩm: </p>
-                  <p>{cart.cartTotalQuantity}</p>
+                  <p>{cartTotalQuantity}</p>
                 </div>
                 <div className="flex justify-between mb-3 text-lg">
                   <p>Tạm tính</p>
-                  <p>${cart.cartTotalAmount}</p>
+                  <p>{Number(cartTotalAmount.toFixed(0)).toLocaleString()}đ</p>
                 </div>
               </div>
               <div className="mt-14 flex justify-between">
@@ -153,7 +147,8 @@ const BuyBackPaymentPage = () => {
                   Thành tiền
                 </span>
                 <span className="amount text-xl font-bold text-gray-800">
-                  ${cart.cartTotalAmount}
+                  {Number(cartTotalAmount.toFixed(0)).toLocaleString()}
+                  đ
                 </span>
               </div>
             </div>
