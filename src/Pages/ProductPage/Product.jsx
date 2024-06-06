@@ -106,8 +106,8 @@ function Product() {
     },
     {
       title: "Mã Hàng",
-      dataIndex: "itemId",
-      key: "itemId",
+      dataIndex: "serialNumber",
+      key: "serialNumber",
   
           
     },
@@ -219,7 +219,7 @@ function Product() {
           <Form.Item name="accessoryType" label="Loại Phụ Kiện" rules={[{ required: true, message: 'Vui lòng nhập loại phụ kiện' }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="sku" label="SKU" rules={[{ required: true, message: 'Vui lòng nhập SKU' }]}>
+          <Form.Item name="serialNumber" label="serialNumber" rules={[{ required: true, message: 'Vui lòng nhập serialNumber' }]}>
             <Input />
           </Form.Item>
           <Form.Item name="itemName" label="Tên Hàng" rules={[{ required: true, message: 'Vui lòng nhập tên hàng' }]}>
@@ -266,7 +266,7 @@ function Product() {
           <Form.Item name="accessoryType" label="Loại Phụ Kiện" rules={[{ required: true, message: 'Vui lòng nhập loại phụ kiện' }]}>
             <Input />
           </Form.Item>
-          <Form.Item name="sku" label="SKU" rules={[{ required: true, message: 'Vui lòng nhập SKU' }]}>
+          <Form.Item name="serialNumber" label="serialNumber" rules={[{ required: true, message: 'Vui lòng nhập serialNumber' }]}>
             <Input />
           </Form.Item>
           <Form.Item name="itemName" label="Tên Hàng" rules={[{ required: true, message: 'Vui lòng nhập tên hàng' }]}>

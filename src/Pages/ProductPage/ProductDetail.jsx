@@ -122,17 +122,17 @@ function ProductDetail() {
             )}
           </div>
           <div className='my-3'>
-            <strong>SKU:</strong> 
+            <strong>serialNumber:</strong> 
             {isEditing ? (
               <input 
                 type="text" 
-                name="sku" 
-                value={editableProduct.sku || ''} 
+                name="serialNumber" 
+                value={editableProduct.serialNumber || ''} 
                 onChange={handleChange} 
                 className="ml-2 border p-1"
               />
             ) : (
-              <span className="ml-2">{product.sku}</span>
+              <span className="ml-2">{product.serialNumber}</span>
             )}
           </div>
           <div className='my-3'>

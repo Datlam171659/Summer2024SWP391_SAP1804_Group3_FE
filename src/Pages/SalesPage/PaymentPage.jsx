@@ -169,7 +169,7 @@ const PaymentPage = () => {
         </div>
         {loading ? (
           <Spin />
-        ) : customerInfo.customerName==null ? (
+        ) : customerNotFound ? (
           <p className="text-red-500">Không tìm thấy khách hàng với số điện thoại này.</p>
         ) : (
           customerInfo && (
