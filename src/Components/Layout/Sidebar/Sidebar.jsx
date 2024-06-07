@@ -3,16 +3,22 @@ import { useState } from 'react';
 import { decrypt } from '../../../Utils/crypto';
 import "./Sidebar.scss"
 import NavItem from './NavItem/NavItem';
-import { CloseOutlined, MenuOutlined, SearchOutlined, DollarOutlined, AppstoreOutlined, InboxOutlined, LineChartOutlined, SettingOutlined, UserOutlined, PercentageOutlined } from '@ant-design/icons';
+import { CloseOutlined, MenuOutlined, SearchOutlined, DollarOutlined, AppstoreOutlined, InboxOutlined, LineChartOutlined, SettingOutlined, UserOutlined, PercentageOutlined, LogoutOutlined } from '@ant-design/icons';
 import Search from 'antd/es/transfer/search';
 import { strings_vi } from '../../../Services/languages/displaystrings';
+import { useNavigate } from 'react-router-dom';
 
 function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
 
   //   const encryptedRoleSyllabusValue = localStorage.getItem("RoleSyllabus");
   //   const decryptedRoleSyllabusValue = encryptedRoleSyllabusValue && decrypt(encryptedRoleSyllabusValue);
   const strSidebar = strings_vi.SideBar;
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
   const navItems = [
     {
       icon: <LineChartOutlined style={{ fontSize: "16px" }} />,
@@ -27,7 +33,7 @@ function Sidebar() {
       children: [
         {
           title: strSidebar.Buy,
-          to: '/',
+          to: '/buy-back-page',
         },
         {
           title: strSidebar.Sell,
@@ -45,7 +51,7 @@ function Sidebar() {
     {
       icon: <AppstoreOutlined style={{ fontSize: "16px" }} />,
       title: strSidebar.Products,
-      to:"/product",
+      to: "/product",
       children: [],
     },
     {
@@ -57,7 +63,7 @@ function Sidebar() {
     {
       icon: <UserOutlined style={{ fontSize: "16px" }} />,
       title: 'Nhân sự',
-      to: "",
+      to: "/user",
       children: [],
     },
     {
@@ -93,6 +99,7 @@ function Sidebar() {
       style={{
         minHeight: '100vh',
         backgroundColor: '#ffffff',
+        borderLeft: "2px solid black"
       }}
     >
       <div
@@ -113,6 +120,10 @@ function Sidebar() {
           collapsed={collapsed}
         />
       ))}
+      <div className='flex mt-[30%] mx-[5%] mb-[0] pt-[5px] pb-[5px] rounded-[5px] [transition:0.3] hover:bg-[rgb(246,_246,_246)]'>
+        <p className="mr-3"><LogoutOutlined style={{ fontSize: "14px" }} /></p>
+        <button className="" onClick={handleLogout}>Đăng xuất</button>
+      </div>
     </Sider>
   );
 }

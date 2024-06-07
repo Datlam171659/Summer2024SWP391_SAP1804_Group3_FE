@@ -11,7 +11,13 @@ import AddCustomerPage from "../Pages/AddCustomer/AddCustomerPage";
 import Product from "../Pages/ProductPage/Product";
 import ExchangeRatePage from "../Pages/ExchangeRatePage/ExchangeRatePage";
 import DashBoardPage from "../Pages/DashBoardPage/DashBoardPage";
-
+import ProducDetail from "../Pages/ProductPage/ProductDetail";
+import BuyBackSuccessPaymentPage from "../Pages/BuyBackPage/BuyBackSuccessPaymentPage";
+import BuyBackPage from "../Pages/BuyBackPage/BuyBackPage";
+import BuyBackPaymentPage from "../Pages/BuyBackPage/BuyBackPaymentPage";
+import UserManagePage from "../Pages/UserManagePage/UserManagePage";
+import AddUserPage from "../Pages/AddUserPage/AddUserPage";
+import CustomerSearchDetail from "../Pages/CustomerSearchPage/CustomerSearchDetail"
 const router = createBrowserRouter([
   {
     path: "/",
@@ -41,6 +47,18 @@ const router = createBrowserRouter([
         path: "sales-page/Payment/PrintReceiptPage",
         element: <PrintReceiptPage />,
       },
+      {
+        path: "buy-back-page",
+        element: <BuyBackPage />,
+    },
+    {
+        path: "buy-back-page/Payment",
+        element: <BuyBackPaymentPage />,
+    },
+    {
+        path: "buy-back-page/Payment/PrintReceiptPage",
+        element: <BuyBackSuccessPaymentPage />,
+    },
       {
         path: "exchange-rate",
         element: <ExchangeRatePage />,
@@ -72,8 +90,24 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: "product/productdetail/:itemId",
+    element: (
+      <RootLayoput>
+        <ProducDetail />
+      </RootLayoput>
+    ),
+  },
+  {
     path: "login",
     element: <Login />,
+  },
+  {
+    path: "customer/customerdetail/:id",
+    element: (
+      <RootLayoput>
+        <CustomerSearchDetail />
+      </RootLayoput>
+    ),
   },
   {
     path: "customer-search",
@@ -96,6 +130,22 @@ const router = createBrowserRouter([
     element: (
       <RootLayoput>
         <DashBoardPage />
+      </RootLayoput>
+    ),
+  },
+  {
+    path: "user",
+    element: (
+      <RootLayoput>
+        <UserManagePage />
+      </RootLayoput>
+    ),
+  },
+  {
+    path: "user/user-add",
+    element: (
+      <RootLayoput>
+        <AddUserPage />
       </RootLayoput>
     ),
   },
