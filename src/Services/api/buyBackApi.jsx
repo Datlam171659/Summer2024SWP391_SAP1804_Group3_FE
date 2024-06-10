@@ -17,7 +17,7 @@ const buyBackApi = {
         const responseData = response.data;
         if (responseData.success) {
           const customerData = responseData.data;
-          return customerData ;
+          return customerData;
         } else {
           throw new Error(responseData.message);
         }
@@ -27,16 +27,22 @@ const buyBackApi = {
         throw error;
       });
   },
-  searchCustomerByPhoneNumber: (phoneNumber) => {
-    return axiosClient.get(`/api/Customer/search?phoneNumber=${phoneNumber}`)
+  createCustomer: (customerInfo) => {
+    return axiosClient.post('/api/Customer', customerInfo)
       .then(response => {
-        return response.data;
+        if (response.data) {
+          return response.data;
+        } else {
+          throw new Error(response.data.message);
+        }
       })
       .catch(error => {
-        console.error("There was an error searching for customers!", error);
+        console.error("There was an error creating the customer!", error);
         throw error;
       });
-  }
+  },
+
+
 };
 
 export default buyBackApi;

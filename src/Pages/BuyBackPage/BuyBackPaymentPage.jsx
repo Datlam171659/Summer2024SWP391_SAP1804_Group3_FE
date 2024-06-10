@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { Button, Input, Table, Select, Space, ConfigProvider, Spin } from "antd";
+import { Button, Input, Table, Select, Space, ConfigProvider, Spin, Form, message } from "antd";
 import { fetchCustomerData } from "../../Features/buy-back/buyBackCustomerSlice";
+import { resetCart, updateCustomerInfo } from "../../Features/buy-back/buyBackCartSlice";
+import buyBackApi from "../../Services/api/buyBackApi";
 
 const BuyBackPaymentPage = () => {
   const dispatch = useDispatch();
@@ -15,40 +17,112 @@ const BuyBackPaymentPage = () => {
   const buyGold10k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold10k);
   const cartTotalAmount = useSelector((state) => state.buyBackCart.cartTotalAmount);
   const cartTotalQuantity = useSelector((state) => state.buyBackCart.cartTotalQuantity);
+  const customerInfor = useSelector((state) => state.buyBackCart.customerInfor);
   const [customerType, setCustomerType] = useState('newCustomer');
-  const [phoneNumber, setPhoneNumber] = useState("");
   const [searchedCustomer, setSearchedCustomer] = useState(null);
+  const [newCustomer, setNewCustomer] = useState(null);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [customerName, setCustomerName] = useState(null);
+  const [customerEmail, setCustomerEmail] = useState(null);
+  const [customerGender, setCustomerGender] = useState("Nam");
+  const [customerAddress, setCustomerAddress] = useState(null);
+  const isButtonDisabled = !customerName || !customerEmail || !customerAddress || !phoneNumber;
 
   useEffect(() => {
     dispatch(fetchCustomerData());
   }, [dispatch]);
 
-  const handleChange = (value) => {
-    console.log(`selected ${value}`);
-  };
-
-  const handleSelectChange = (value) => {
-    setCustomerType(value);
+  const handleInputChange = (e) => {
+    const name = e.target ? e.target.name : 'gender';
+    const value = e.target ? e.target.value : e;
+    switch (name) {
+      case 'customerName':
+        setCustomerName(value);
+        break;
+      case 'address':
+        setCustomerAddress(value);
+        break;
+      case 'gender':
+        setCustomerGender(value);
+        break;
+      case 'phoneNumber':
+        setPhoneNumber(value);
+        break;
+      case 'email':
+        setCustomerEmail(value);
+        break;
+      default:
+        break;
+    }
   };
 
   const handleSearchClick = () => {
     if (!phoneNumber) {
-      alert("Vui lòng nhập số điện thoại");
+      message.warning("Vui lòng nhập số điện thoại");
       return;
     }
     if (Array.isArray(customerData)) {
       const foundCustomer = customerData.find(customer => customer.phoneNumber === phoneNumber && customer.status === "active");
       if (foundCustomer) {
         setSearchedCustomer(foundCustomer);
+        dispatch(updateCustomerInfo({
+          id: foundCustomer.id,
+          customerName: foundCustomer.customerName,
+          address: foundCustomer.address,
+          gender: foundCustomer.gender,
+          phoneNumber: foundCustomer.phoneNumber,
+          email: foundCustomer.email,
+          status: "active",
+        }));
       } else {
-        alert("Không tìm thấy khách hàng với số điện thoại này");
+        message.warning("Không tìm thấy khách hàng với số điện thoại này");
       }
     } else {
       console.error("Lỗi khi lấy dữ liệu");
     }
   };
 
+  const handleSubmit = async () => {
+    const newCustomerInfo = {
+      customerName: customerName,
+      address: customerAddress,
+      gender: customerGender,
+      phoneNumber: phoneNumber,
+      email: customerEmail,
+      status: "active",
+    };
+    try {
+      const response = await buyBackApi.createCustomer(newCustomerInfo);
+      message.success("Khách hàng đã được tạo thành công");
+      dispatch(updateCustomerInfo(response));
+    } catch (error) {
+      message.error(`Có lỗi xảy ra: ${error.message}`);
+    }
+  };
 
+  const handleCancel = () => {
+    setCustomerName("");
+    setCustomerAddress("");
+    setCustomerGender("");
+    setPhoneNumber("");
+    setCustomerEmail("");
+    dispatch(updateCustomerInfo([]));
+  };
+
+  const handleSelectChange = (value) => {
+    setCustomerType(value);
+    setCustomerName("");
+    setCustomerAddress("");
+    setCustomerGender("");
+    setPhoneNumber("");
+    setCustomerEmail("");
+    dispatch(updateCustomerInfo([]));
+
+  };
+
+  const handleReset = () => {
+    dispatch(resetCart());
+  };
 
   const columns = [
     {
@@ -182,7 +256,7 @@ const BuyBackPaymentPage = () => {
           </div>
         </div>
         <div className="customer-info bg-white p-4 rounded-lg mb-4">
-          <div className="flex items-center mb-[30px] pb-[30px] pt-[10px] border-b-[1px]">
+          <div className="flex items-center mb-[15px] pb-[15px] pt-[10px] border-b-[1px]">
             <div className="w-[25%]"><h3 className="text-lg mr-4 font-bold w-full">Thông tin khách hàng</h3></div>
             <Space wrap className="w-full">
               <Select
@@ -198,33 +272,38 @@ const BuyBackPaymentPage = () => {
           </div>
 
           {customerType === 'newCustomer' && (
-            <div className="newCustomer grid grid-cols-2 gap-4">
+            <Form className="newCustomer grid grid-cols-2 gap-4">
               <div>
                 <div className="flex items-center mb-3 font-medium">
                   <p className="w-1/3">Số điện thoại:</p>
-                  <Input placeholder="Nhập số điện thoại" className="w-2/3" />
+                  <Input name="phoneNumber" placeholder="Nhập số điện thoại" className="w-2/3" value={phoneNumber}
+                    onChange={handleInputChange} />
                 </div>
                 <div className="flex items-center mb-3 font-medium">
                   <p className="w-1/3">Tên Khách Hàng:</p>
-                  <Input placeholder="Nhập tên khách hàng" className="w-2/3" />
+                  <Input name="customerName" placeholder="Nhập tên khách hàng" className="w-2/3" value={customerName}
+                    onChange={handleInputChange} />
                 </div>
                 <div className="flex items-center mb-3 font-medium">
                   <p className="w-1/3">Địa Chỉ:</p>
-                  <Input placeholder="Nhập địa chỉ" className="w-2/3" />
+                  <Input name="address" placeholder="Nhập địa chỉ" className="w-2/3" value={customerAddress}
+                    onChange={handleInputChange} />
                 </div>
                 <div className="flex items-center mb-3 font-medium">
                   <p className="w-1/3">E-mail:</p>
-                  <Input placeholder="Nhập E-mail" className="w-2/3" />
+                  <Input name="email" type="email" placeholder="Nhập E-mail" className="w-2/3" value={customerEmail}
+                    onChange={handleInputChange} />
                 </div>
               </div>
               <div className="flex items-center ml-16 mb-40 font-medium">
                 <p className="w-1/6">Giới Tính:</p>
                 <Space wrap className="w-full">
                   <Select
+                    name="gender"
                     defaultValue="Nam"
                     style={{ width: "100%" }}
-                    onChange={handleChange}
-                    allowClear
+                    value={customerGender}
+                    onChange={handleInputChange}
                     options={[
                       { value: "Nam", label: "Nam" },
                       { value: "Nữ", label: "Nữ" },
@@ -232,10 +311,12 @@ const BuyBackPaymentPage = () => {
                   />
                 </Space>
               </div>
-            </div>
+              <Button disabled={isButtonDisabled} type="primary" onClick={handleSubmit}>Ok</Button>
+              <Button type="default" onClick={handleCancel}>Cancel</Button>
+            </Form>
           )}
           {customerType === 'member' && (
-            <div className="customer-info bg-white p-4 pl-0 rounded-lg mb-4">
+            <div className="customer-info bg-white p-4 pt-0 pl-0 rounded-lg mb-4">
               <div className="flex mb-4">
                 <Input
                   placeholder="Nhập số điện thoại khách hàng"
@@ -256,7 +337,6 @@ const BuyBackPaymentPage = () => {
                     <p><strong>Địa Chỉ:</strong> {searchedCustomer.address}</p>
                     <p><strong>Giới Tính:</strong> {searchedCustomer.gender}</p>
                     <p><strong>Email:</strong> {searchedCustomer.email}</p>
-                    {/* <p><strong>Trạng Thái:</strong> {searchedCustomer.status}</p> */}
                   </div>
                 )
               )}
@@ -265,7 +345,7 @@ const BuyBackPaymentPage = () => {
 
         </div>
         <div className="flex w-full">
-          <div className="cart-summary mt-12 bg-white p-6 rounded-lg shadow-md w-1/2 mr-3">
+          <div className="cart-summary mt-4 bg-white p-6 rounded-lg shadow-md w-1/2 mr-3">
             <div className="cart-checkout mt-6">
               <div className="flex-row">
                 <div className="flex justify-between mb-3 text-lg">
@@ -288,7 +368,7 @@ const BuyBackPaymentPage = () => {
               </div>
             </div>
           </div>
-          <div className="cart-summary mt-12 bg-white p-6 rounded-lg shadow-md w-1/2">
+          <div className="cart-summary mt-4 bg-white p-6 rounded-lg shadow-md w-1/2">
             <div>
               {/* rgb(101, 163, 13) */}
               <ConfigProvider
@@ -318,7 +398,7 @@ const BuyBackPaymentPage = () => {
                 </Button>
               </Link>
               <Link to="/buy-back-page">
-                <Button className="w-full h-14 bg-white text-black uppercase font-bold hover:bg-gray-500 mt-4">
+                <Button className="w-full h-14 bg-white text-black uppercase font-bold hover:bg-gray-500 mt-4" onClick={handleCancel}>
                   Hủy
                 </Button>
               </Link>
@@ -326,6 +406,7 @@ const BuyBackPaymentPage = () => {
           </div>
         </div>
       </div>
+      {console.log("customerInfor: ", customerInfor)}
     </ConfigProvider>
 
   );

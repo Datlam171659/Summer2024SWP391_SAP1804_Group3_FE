@@ -5,7 +5,7 @@ const initialState = {
   customerInfor: [],
   cartTotalQuantity: 0,
   cartTotalAmount: 0,
-}; 
+};
 
 const buyBackCartSlice = createSlice({
   name: 'buyBackCart',
@@ -43,8 +43,17 @@ const buyBackCartSlice = createSlice({
       state.cartTotalQuantity = action.payload.cartTotalQuantity;
       state.cartTotalAmount = action.payload.cartTotalAmount;
     },
+    updateCustomerInfo(state, action) {
+      state.customerInfor = action.payload;
+    },
+    resetCart: (state) => {
+      state.cartItems = [];
+      state.customerInfor = [];
+      state.cartTotalQuantity = 0;
+      state.cartTotalAmount = 0;
+    },
   },
 });
 
-export const { addItem, removeItem, incrementQuantity, decrementQuantity, updateTotals } = buyBackCartSlice.actions;
+export const { addItem, removeItem, incrementQuantity, decrementQuantity, updateTotals, updateCustomerInfo, resetCart } = buyBackCartSlice.actions;
 export default buyBackCartSlice.reducer;
