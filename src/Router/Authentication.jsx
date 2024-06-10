@@ -23,7 +23,6 @@ function Authentication({ children }) {
                 localStorage.clear();
                 navigate("/login");
             } else {
-                // Lưu role vào localStorage dựa trên giá trị của decodedToken.role
                 switch (decodedToken.role) {
                     case "0":
                         localStorage.setItem("role", "admin");
@@ -41,6 +40,7 @@ function Authentication({ children }) {
                 localStorage.setItem("nameid", decodedToken.nameid);
                 localStorage.setItem("email", decodedToken.email);
                 localStorage.setItem("UserName", decodedToken.UserName);
+                localStorage.setItem("UniqueName", decodedToken.unique_name);
 
                 if (!dataFetched) {
                     try {
@@ -104,7 +104,7 @@ function Authentication({ children }) {
             shouldRender.current = false;
             authenticate();
         }
-    }, []);
+    }, [navigate]);
 
     return (
         children
