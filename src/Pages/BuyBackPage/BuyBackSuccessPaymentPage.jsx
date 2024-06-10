@@ -1,8 +1,25 @@
-import React from "react";
-import { CheckCircleOutlined } from "@ant-design/icons";
+// BuyBackSuccessPaymentPage.jsx
+import React, { useRef } from "react";
+import ReactToPrint from "react-to-print";
+import { useSelector, useDispatch } from "react-redux";
 import { Button, ConfigProvider } from "antd";
-import { Link } from "react-router-dom"
+import { CheckCircleOutlined } from "@ant-design/icons";
+import { Link } from "react-router-dom";
+import { resetCart } from "../../Features/buy-back/buyBackCartSlice";
+import InvoiceComponent from "../../Components/Common/InvoiceComponent";
+
 function BuyBackSuccessPaymentPage() {
+  const dispatch = useDispatch();
+  const handleReset = () => {
+    dispatch(resetCart());
+  };
+
+  const cartItems = useSelector((state) => state.buyBackCart.cartItems);
+  const customerInfor = useSelector((state) => state.buyBackCart.customerInfor);
+  const cartTotalQuantity = useSelector((state) => state.buyBackCart.cartTotalQuantity);
+  const cartTotalAmount = useSelector((state) => state.buyBackCart.cartTotalAmount);
+  const invoiceComponentRef = useRef();
+
   return (
     <ConfigProvider
       theme={{
@@ -12,24 +29,34 @@ function BuyBackSuccessPaymentPage() {
         },
       }}
     >
-      <div className=" flex-col w-full text-center justify-center">
+      <div className="flex-col w-full text-center justify-center">
         <div className="mt-60">
           <CheckCircleOutlined className="text-9xl my-8 text-green-400" />
           <p>Thanh toán thành công</p>
           <div className="flex-col mt-9">
-            <Button className="w-80 h-14 bg-black text-white uppercase font-bold">
-              In hóa đơn
-            </Button>
+            <ReactToPrint
+              trigger={() => <Button className="w-80 h-14 bg-black text-white uppercase font-bold">In hóa đơn</Button>}
+              content={() => invoiceComponentRef.current}
+            />
             <Link to="/buy-back-page">
-              <Button className="w-80 h-14 bg-white text-black uppercase font-bold ml-4">
+              <Button onClick={handleReset} className="w-80 h-14 bg-white text-black uppercase font-bold ml-4">
                 Tạo đơn mới
               </Button>
             </Link>
           </div>
         </div>
       </div>
+      <div className="hidden">
+        <InvoiceComponent
+          ref={invoiceComponentRef}
+          cartItems={cartItems}
+          customerInfor={customerInfor}
+          cartTotalQuantity={cartTotalQuantity}
+          cartTotalAmount={cartTotalAmount}
+        />
+      </div>
     </ConfigProvider>
-
+    
   );
 }
 
