@@ -159,7 +159,7 @@ const ProductListSale = () => {
     <div className="flex flex-col lg:flex-row">
       <div className="my-9 w-full lg:w-full p-4">
         <div className="w-full lg:w-full text-center p-6 bg-gray-50">
-          <Search
+          <Input
             placeholder="Nhập Id sản phẩm"
             onSearch={onSearch}
             style={{ width: 400 }}
