@@ -13,7 +13,10 @@ function Product() {
   const isLoadingProductData = useSelector(
     (state) => state.product.isLoadingProductData
   );
-
+  const buyGold24k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold24k);
+  const buyGold18k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold18k);
+  const buyGold14k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold14k);
+  const buyGold10k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold10k);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -125,9 +128,62 @@ function Product() {
       key: "description",
     },
     {
+      title: "Loại Vàng",
+      dataIndex: "goldType",
+      key: "goldType",
+      width: 100,
+      render: (_, record) => {
+        let goldType = "";
+        if (record.itemName.toLowerCase().includes("10k")) {
+          goldType = "10K";
+        } else if (record.itemName.toLowerCase().includes("14k")) {
+          goldType = "14K";
+        } else if (record.itemName.toLowerCase().includes("18k")) {
+          goldType = "18K";
+        } else if (record.itemName.toLowerCase().includes("24k")) {
+          goldType = "24K";
+        }
+        return goldType;
+      },
+    },
+    {
       title: "Giá",
       dataIndex: "price",
       key: "price",
+      width: 120,
+      render: (_, record) => {
+        let goldType = "";
+        if (record.itemName.toLowerCase().includes("10k")) {
+          goldType = "10K";
+        } else if (record.itemName.toLowerCase().includes("14k")) {
+          goldType = "14K";
+        } else if (record.itemName.toLowerCase().includes("18k")) {
+          goldType = "18K";
+        } else if (record.itemName.toLowerCase().includes("24k")) {
+          goldType = "24K";
+        }
+
+        let kara;
+        switch (goldType) {
+          case "10K":
+            kara = buyGold10k;
+            break;
+          case "14K":
+            kara = buyGold14k;
+            break;
+          case "18K":
+            kara = buyGold18k;
+            break;
+          case "24K":
+            kara = buyGold24k;
+            break;
+          default:
+            kara = 0;
+        }
+
+        const totalPrice = record.weight * record.itemQuantity * kara;
+        return `${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
+      },
     },
     {
       title: "Action",
