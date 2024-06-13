@@ -1,4 +1,4 @@
-// BuyBackSuccessPaymentPage.jsx
+
 import React, { useRef } from "react";
 import ReactToPrint from "react-to-print";
 import { useSelector, useDispatch } from "react-redux";
