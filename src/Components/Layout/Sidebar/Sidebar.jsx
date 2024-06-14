@@ -86,10 +86,6 @@ function Sidebar() {
         {
           title: strSidebar.GoldPrice,
           to: '/exchange-rate',
-        },
-        {
-          title: "Chính Sách",
-          to: '/policy',
         }
       ],
     },

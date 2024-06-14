@@ -18,7 +18,6 @@ import BuyBackPaymentPage from "../Pages/BuyBackPage/BuyBackPaymentPage";
 import UserManagePage from "../Pages/UserManagePage/UserManagePage";
 import AddUserPage from "../Pages/AddUserPage/AddUserPage";
 import CustomerSearchDetail from "../Pages/CustomerSearchPage/CustomerSearchDetail"
-import PolicyPage from "../Pages/PolicyPage/PolicyPage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -147,14 +146,6 @@ const router = createBrowserRouter([
     element: (
       <RootLayoput>
         <AddUserPage />
-      </RootLayoput>
-    ),
-  },
-  {
-    path: "policy",
-    element: (
-      <RootLayoput>
-        <PolicyPage />
       </RootLayoput>
     ),
   },
