@@ -18,10 +18,10 @@ const ProductListBuyBack = () => {
   const cartItems = useSelector((state) => state.cart.cartItems);
   const cartTotalQuantity = useSelector((state) => state.cart.cartTotalQuantity);
   const cartTotalAmount = useSelector((state) => state.cart.cartTotalAmount);
-  const buyGold24k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold24k);
-  const buyGold18k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold18k);
-  const buyGold14k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold14k);
-  const buyGold10k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold10k);
+  const buyGold24k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold24k);
+  const buyGold18k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold18k);
+  const buyGold14k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold14k);
+  const buyGold10k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold10k);
   const discountData = useSelector((state) => state.discount.discountData);
   const isLoadingDiscountData = useSelector((state) => state.discount.isLoadingDiscountData);
   const [discountDataSelect, setDiscountDataSelect] = useState(""); // State to store selected discount ID
@@ -254,7 +254,7 @@ const ProductListBuyBack = () => {
   return (
     <div className="flex flex-col w-full ">
       <div className="my-5 p-4">
-        <div className="h-[40%] min-h-[485px] w-full  text-center p-3 bg-[#FFFFFF] rounded-[7px] shadow-md">
+        <div className="h-[40%] min-h-[485px] w-full  text-center p-3 bg-[#FFFFFF] rounded-[7px]">
           <Input
             placeholder="Nhập Id sản phẩm"
             value={searchQuery}
@@ -284,8 +284,8 @@ const ProductListBuyBack = () => {
           </Spin>
         </div>
         <div className="flex w-full justify-between">
-          <div className="cart-summary mt-6 bg-white p-6 pt-2 rounded-lg shadow-md w-[49%] mr-3">
-            <div className="cart-checkout mt-6">
+          <div className=" mt-6 bg-white p-6 pt-2 rounded-lg shadow-md w-[49%] mr-3">
+            <div className=" mt-6">
               <div className="flex-row">
                 <div className="flex justify-between mb-3 text-lg font-medium">
                   <p>Tổng số lượng sản phẩm: </p>
@@ -300,14 +300,14 @@ const ProductListBuyBack = () => {
                 <span className="text-lg font-semibold text-gray-800">
                   Thành tiền
                 </span>
-                <span className="amount text-xl font-bold text-gray-800">
+                <span className=" text-xl font-bold text-gray-800">
                   {Number(cartTotalAmount.toFixed(0)).toLocaleString()}
                   đ
                 </span>
               </div>
             </div>
           </div>
-          <div className="cart-summary mt-6 bg-white p-6 pt-2 rounded-lg shadow-md  w-[49%]">
+          <div className=" mt-6 bg-white p-6 pt-2 rounded-lg shadow-md  w-[49%]">
             <Space wrap>
               <Select
                 style={{
