@@ -38,7 +38,7 @@ function PrintReceiptPage() {
               trigger={() => <Button className="w-80 h-14 bg-black text-white uppercase font-bold">In hóa đơn</Button>}
               content={() => invoiceComponentRef.current}
             />
-            <Link to="/buy-back-page">
+            <Link to="/sales-page">
               <Button onClick={handleReset} className="w-80 h-14 bg-white text-black uppercase font-bold ml-4">
                 Tạo đơn mới
               </Button>

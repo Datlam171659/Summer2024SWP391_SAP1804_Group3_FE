@@ -1,33 +1,57 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Input, message, Table, Select, Space, Spin } from "antd";
-import { MinusCircleOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  MinusCircleOutlined,
+  MinusOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import SalepageApi from "../../Features/Salepage/SalepageApi";
-import { addItem, decrementQuantity, incrementQuantity, removeItem, updateTotals, applyDiscount, resetDiscount } from "../../Features/product/cartSlice";
+import {
+  addItem,
+  decrementQuantity,
+  incrementQuantity,
+  removeItem,
+  updateTotals,
+  applyDiscount,
+  resetDiscount,
+} from "../../Features/product/cartSlice";
 import { fetchDiscountData } from "../../Features/Discount/DiscountSlice";
 
-const ProductListBuyBack = () => {
+const ProductList = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [newItem, setNewItem] = useState({ itemName: "", weight: "", accessoryType: "", description: "" });
-  const isButtonDisabled = !searchQuery;
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
-  const cartTotalQuantity = useSelector((state) => state.cart.cartTotalQuantity);
+  const cartTotalQuantity = useSelector(
+    (state) => state.cart.cartTotalQuantity
+  );
   const cartTotalAmount = useSelector((state) => state.cart.cartTotalAmount);
-  const buyGold24k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold24k);
-  const buyGold18k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold18k);
-  const buyGold14k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold14k);
-  const buyGold10k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold10k);
+  const buyGold24k = useSelector(
+    (state) => state.goldPrice.sellPrice[0]?.sellGold24k
+  );
+  const buyGold18k = useSelector(
+    (state) => state.goldPrice.sellPrice[0]?.sellGold18k
+  );
+  const buyGold14k = useSelector(
+    (state) => state.goldPrice.sellPrice[0]?.sellGold14k
+  );
+  const buyGold10k = useSelector(
+    (state) => state.goldPrice.sellPrice[0]?.sellGold10k
+  );
   const discountData = useSelector((state) => state.discount.discountData);
-  const isLoadingDiscountData = useSelector((state) => state.discount.isLoadingDiscountData);
+  const isLoadingDiscountData = useSelector(
+    (state) => state.discount.isLoadingDiscountData
+  );
   const [discountDataSelect, setDiscountDataSelect] = useState(""); // State to store selected discount ID
 
   useEffect(() => {
-    const cartTotalQuantity = cartItems.reduce((acc, item) => acc + item.itemQuantity, 0);
+    const cartTotalQuantity = cartItems.reduce(
+      (acc, item) => acc + item.itemQuantity,
+      0
+    );
 
     const cartTotalAmount = cartItems.reduce((acc, item) => {
       let goldType = "";
@@ -74,6 +98,7 @@ const ProductListBuyBack = () => {
     value: item.discountId,
     label: `${item.discountPercentage}%`,
   }));
+
   const handleCreateOrder = () => {
     if (cartItems.length === 0) {
       message.error("Giỏ hàng trống. Không thể tạo đơn.");
@@ -81,22 +106,24 @@ const ProductListBuyBack = () => {
       navigate("/sales-page/Payment");
     }
   };
+
   const handleSearch = async () => {
     setLoading(true);
     try {
       const item = await SalepageApi.getItem(searchQuery);
-      const itemExists = cartItems.some(cartItem => cartItem.itemId === item.itemId);
+      const itemExists = cartItems.some(
+        (cartItem) => cartItem.itemId === item.itemId
+      );
       if (itemExists) {
         message.error("Sản phẩm đã tồn tại");
-        setSearchQuery("")
       } else {
         dispatch(addItem(item));
-        setSearchQuery("")
         message.success("Sản phẩm đã được thêm vào giỏ hàng");
       }
+      setSearchQuery("");
     } catch (error) {
       message.error("Không tìm thấy sản phẩm. Vui lòng thử lại");
-      setSearchQuery("")
+      setSearchQuery("");
     } finally {
       setLoading(false);
     }
@@ -113,7 +140,9 @@ const ProductListBuyBack = () => {
       setDiscountDataSelect(""); // Clear selected discount ID
     } else {
       setDiscountDataSelect(value); // Set selected discount ID
-      const selectedDiscount = discountData.find((discount) => discount.discountId === value);
+      const selectedDiscount = discountData.find(
+        (discount) => discount.discountId === value
+      );
       if (selectedDiscount) {
         dispatch(applyDiscount(selectedDiscount.discountPercentage));
       }
@@ -237,81 +266,84 @@ const ProductListBuyBack = () => {
             kara = 0;
         }
 
-        const totalPrice = record.weight * record.itemQuantity * kara;
-        return `${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
+        return (record.weight * kara).toLocaleString("en-US", {
+          style: "currency",
+          currency: "USD",
+        });
       },
     },
     {
-      title: "Hành động",
+      title: "Thao Tác",
       key: "action",
-      width: 78,
       render: (_, record) => (
-        <MinusCircleOutlined onClick={() => handleRemove(record.itemId)} style={{ color: 'red', cursor: 'pointer' }} />
+        <Button
+          type="primary"
+          danger
+          onClick={() => handleRemove(record.itemId)}
+        >
+          Xóa
+        </Button>
       ),
     },
   ];
 
   return (
-    <div className="flex flex-col w-full ">
-      <div className="my-5 p-4">
-        <div className="h-[40%] min-h-[485px] w-full  text-center p-3 bg-[#FFFFFF] rounded-[7px]">
-          <Input
-            placeholder="Nhập Id sản phẩm"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-1/2"
-          />
-          <Button
-            disabled={isButtonDisabled}
-            type="primary"
-            className="ml-2"
-            style={{ fontWeight: "600", heigh: "30px" }}
-            onClick={handleSearch}
-          >
-            Tìm sản phẩm
-          </Button>
-          <Spin spinning={loading}>
-            <div className="cart-items flex flex-col items-center space-y-8 w-full ">
-              <Table
-                dataSource={cartItems}
-                columns={columns}
-                rowKey="itemId"
-                pagination={false}
-                scroll={{ y: 378 }}
-                className="w-full rounded-[5px] font-medium"
-              />
-            </div>
-          </Spin>
+    <div className="p-4">
+      <h2 className="text-xl font-bold mb-4">Bán hàng</h2>
+      <div className="mb-4 flex">
+        <Input
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Nhập mã hàng"
+          className="mr-2"
+        />
+        <Button type="primary" onClick={handleSearch} loading={loading}>
+          {loading ? "Đang tìm kiếm..." : "Thêm vào giỏ hàng"}
+        </Button>
+      </div>
+      <Spin spinning={loading}>
+        <Table
+          columns={columns}
+          dataSource={cartItems}
+          rowKey="itemId"
+          pagination={false}
+        />
+      </Spin>
+      <div className="flex justify-between mt-4">
+        <div className="flex">
+          <p className="font-bold mr-2">Tổng số lượng:</p>
+          <p>{cartTotalQuantity}</p>
         </div>
-        <div className="flex w-full justify-between">
-          <div className=" mt-6 bg-white p-6 pt-2 rounded-lg shadow-md w-[49%] mr-3">
-            <div className=" mt-6">
-              <div className="flex-row">
-                <div className="flex justify-between mb-3 text-lg font-medium">
-                  <p>Tổng số lượng sản phẩm: </p>
-                  <p>{cartTotalQuantity}</p>
-                </div>
-                <div className="flex justify-between mb-3 text-lg font-medium">
-                  <p>Giảm giá:</p>
-                  <p>{discountDataSelect ? `${discountData.find(d => d.discountId === discountDataSelect).discountPercentage}%` : "0%"}</p>
-                </div>
-              </div>
-              <div className="mt-14 flex justify-between">
-                <span className="text-lg font-semibold text-gray-800">
-                  Thành tiền
-                </span>
-                <span className=" text-xl font-bold text-gray-800">
-                  {Number(cartTotalAmount.toFixed(0)).toLocaleString()}
-                  đ
-                </span>
-              </div>
-            </div>
+        <div className="flex-col">
+          <div className="flex">
+            <p className="font-bold mr-2">Tổng tiền:</p>
+            <p>
+              {cartTotalAmount.toLocaleString("en-US", {
+                style: "currency",
+                currency: "USD",
+              })}
+            </p>
           </div>
-          <div className=" mt-6 bg-white p-6 pt-2 rounded-lg shadow-md  w-[49%]">
-            <Space wrap>
+          <div className="flex justify-between mt-4">
+            <p>Giảm giá:</p>
+            <p>
+              {discountDataSelect
+                ? `${
+                    discountData.find(
+                      (d) => d.discountId === discountDataSelect
+                    ).discountPercentage
+                  }%`
+                : "0%"}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="mt-4">
+      <Space wrap>
+          <span className="font-bold">Chọn khuyến mãi:</span>
               <Select
                 style={{
-                  width: 760,
+                  width: 200,
                   height: 50,
                 }}
                 allowClear
@@ -319,18 +351,14 @@ const ProductListBuyBack = () => {
                 options={discountOptions}
               />
             </Space>
-            <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"></hr>
-
-            <div>
-            <Button onClick={handleCreateOrder} className="w-full h-14 bg-black text-white uppercase font-bold">
-                Tạo Đơn
-              </Button>
-            </div>
-          </div>
-        </div>
+      </div>
+      <div className="mt-4 flex justify-end">
+        <Button type="primary" onClick={handleCreateOrder}>
+          Tạo đơn hàng
+        </Button>
       </div>
     </div>
   );
 };
 
-export default ProductListBuyBack;
+export default ProductList;
