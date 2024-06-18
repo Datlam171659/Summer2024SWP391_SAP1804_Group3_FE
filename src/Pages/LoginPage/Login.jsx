@@ -41,6 +41,11 @@ const Login = () => {
           colorPrimary: "var(--primary-color)",
           colorPrimaryHover: "var(--primary-color-hover)"
         },
+        components: {
+          Input: {
+            activeShadow: "0 0 0 0 rgba(5, 145, 255, 0.1)"
+          },
+        },
       }}
     >
       <Spin spinning={loading} size="large">
@@ -53,7 +58,7 @@ const Login = () => {
           </div>
           <div className="login-content">
             <div className="login-title">
-              <h3>LOG IN</h3>
+              <h3 className="font-bold">LOG IN</h3>
             </div>
 
             <Form

@@ -17,6 +17,9 @@ const BuyBackPage = () => {
             Select: {
               optionSelectedBg: "#dbdbdb"
             },
+            Input: {
+              activeShadow: "0 0 0 0 rgba(5, 145, 255, 0.1)"
+            },
           },
         }}
       >
