@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { removeItem } from '../../Services/api/productApi';
 
-// Define the asynchronous thunk for removing an item
+
 export const removeProduct = createAsyncThunk(
   'products/removeProduct',
   async (itemId, { rejectWithValue }) => {
@@ -14,7 +14,7 @@ export const removeProduct = createAsyncThunk(
   }
 );
 
-// Create the slice
+
 const productSlice = createSlice({
   name: 'products',
   initialState: {
@@ -23,7 +23,6 @@ const productSlice = createSlice({
     error: null
   },
   reducers: {
-    // You can define additional synchronous actions here if needed
   },
   extraReducers: (builder) => {
     builder

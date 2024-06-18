@@ -309,38 +309,38 @@ const ProductList = () => {
           pagination={false}
         />
       </Spin>
-      <div className="flex justify-between mt-4">
-        <div className="flex">
-          <p className="font-bold mr-2">Tổng số lượng:</p>
-          <p>{cartTotalQuantity}</p>
-        </div>
-        <div className="flex-col">
-          <div className="flex">
-            <p className="font-bold mr-2">Tổng tiền:</p>
-            <p>
-              {cartTotalAmount.toLocaleString("en-US", {
-                style: "currency",
-                currency: "USD",
-              })}
-            </p>
+      <div className="flex">
+        <div className="flex-col  mt-6 bg-white p-6 pt-2 rounded-lg shadow-md w-[49%] mr-3s">
+          <div className="flex justify-between mb-3 text-lg font-medium">
+            <p className="font-bold mr-2">Tổng số lượng:</p>
+            <p>{cartTotalQuantity}</p>
           </div>
-          <div className="flex justify-between mt-4">
-            <p>Giảm giá:</p>
-            <p>
-              {discountDataSelect
-                ? `${
-                    discountData.find(
-                      (d) => d.discountId === discountDataSelect
-                    ).discountPercentage
-                  }%`
-                : "0%"}
-            </p>
+          <div className="flex-col">
+            <div className="flex justify-between mb-3 text-lg font-medium ">
+              <p className="font-bold mr-2">Tổng tiền:</p>
+              <p>
+                {cartTotalAmount.toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                })}
+              </p>
+            </div>
+            <div className="flex justify-between mb-3 text-lg font-medium">
+              <p>Giảm giá:</p>
+              <p>
+                {discountDataSelect
+                  ? `${
+                      discountData.find(
+                        (d) => d.discountId === discountDataSelect
+                      ).discountPercentage
+                    }%`
+                  : "0%"}
+              </p>
+            </div>
           </div>
-        </div>
-      </div>
-      <div className="mt-4">
-      <Space wrap>
-          <span className="font-bold">Chọn khuyến mãi:</span>
+          <div className="mt-4">
+            <Space wrap>
+              <span className="font-bold">Chọn khuyến mãi:</span>
               <Select
                 style={{
                   width: 200,
@@ -351,11 +351,14 @@ const ProductList = () => {
                 options={discountOptions}
               />
             </Space>
-      </div>
-      <div className="mt-4 flex justify-end">
-        <Button type="primary" onClick={handleCreateOrder}>
-          Tạo đơn hàng
-        </Button>
+          </div>
+        </div>
+
+        <div className="cart-summary mt-6 bg-white p-6 pt-2 rounded-lg shadow-md  w-[49%] ml-7 flex justify-center ">
+          <Button type="primary" onClick={handleCreateOrder} className="w-full h-14 bg-black text-white uppercase font-bold mt-12">
+            Tạo đơn hàng
+          </Button>
+        </div>
       </div>
     </div>
   );
