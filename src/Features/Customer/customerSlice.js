@@ -4,7 +4,6 @@ export const fetchCustomerData = createAsyncThunk(
   "fetchCustomerData",
   async () => {
   const response = await getCustomerAll();
-  console.log(response)
   return response.data
   }
 );

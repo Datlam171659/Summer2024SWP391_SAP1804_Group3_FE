@@ -7,7 +7,7 @@ function ErrorPage() {
             <Result
                 status="404"
                 title="404"
-                subTitle="Sorry, the page you visited does not exist."
+                subTitle="Xin lỗi, trang bạn vừa truy cập không tồn tại."
             />
         </div>
     );
