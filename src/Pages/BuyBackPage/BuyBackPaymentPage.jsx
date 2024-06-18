@@ -311,8 +311,8 @@ const BuyBackPaymentPage = () => {
                   />
                 </Space>
               </div>
-              <Button disabled={isButtonDisabled} type="primary" onClick={handleSubmit}>Ok</Button>
-              <Button type="default" onClick={handleCancel}>Cancel</Button>
+              <Button disabled={isButtonDisabled} type="primary" onClick={handleSubmit}>Tạo</Button>
+              <Button type="default" onClick={handleCancel}>Hủy</Button>
             </Form>
           )}
           {customerType === 'member' && (

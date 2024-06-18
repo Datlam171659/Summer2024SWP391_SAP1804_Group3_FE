@@ -158,7 +158,7 @@ const ProductListBuyBack = () => {
 
   const handleCreateOrder = () => {
     if (cartItems.length === 0) {
-      message.error("Giỏ hàng trống. Không thể tạo đơn.");
+      message.error("Chưa có sản phẩm. Vui lòng thêm sản phẩm");
     } else {
       navigate("/buy-back-page/Payment");
     }

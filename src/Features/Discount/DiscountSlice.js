@@ -4,7 +4,6 @@ export const fetchDiscountData = createAsyncThunk(
   "fetchDiscountData",
   async () => {
   const response = await getDiscountAll();
-  console.log(response)
   return response.data
   }
 );
