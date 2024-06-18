@@ -1,88 +1,113 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import {
-  Button,
-  Input,
-  Modal,
-  Table,
-  Select,
-  Space,
-  Spin,
-  notification,
-} from "antd";
-import { fetchCustomerPhone } from "../../Features/Customer/customerbyphoneSlice";
+import { Button, Input, Table, Select, Space, ConfigProvider, Spin, Form, message } from "antd";
+import { fetchCustomerData } from "../../Features/Customer/customerSlice";
+import { resetCart, updateCustomerInfo } from "../../Features/product/cartSlice";
+import SalepageApi from "../../Features/Salepage/SalepageApi";
 import { createInvoice } from "../../Features/Invoice/InvoiceSlice";
 import { addWarranty } from "../../Features/Warranty/warrantyaddSlice";
-import QRCode from '../../assests/images/QRcode.jpg';
+
 const PaymentPage = () => {
   const dispatch = useDispatch();
-  const cart = useSelector((state) => state.cart);
+  const cartItems = useSelector((state) => state.cart.cartItems);
+  const customerData = useSelector((state) => state.customer.customerData);
+  const isLoading = useSelector((state) => state.customer.isLoading);
+  const buyGold24k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold24k);
+  const buyGold18k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold18k);
+  const buyGold14k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold14k);
+  const buyGold10k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold10k);
+  const cartTotalAmount = useSelector((state) => state.cart.cartTotalAmount);
+  const cartTotalQuantity = useSelector((state) => state.cart.cartTotalQuantity);
+  const customerInfor = useSelector((state) => state.cart.customerInfor);
+  
+  const [customerType, setCustomerType] = useState('newCustomer');
+  const [searchedCustomer, setSearchedCustomer] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [customerInfo, setCustomerInfo] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [customerName, setCustomerName] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [customerGender, setCustomerGender] = useState("Nam");
+  const [customerAddress, setCustomerAddress] = useState("");
   const [paymentType, setPaymentType] = useState("");
-  const [customerNotFound, setCustomerNotFound] = useState(false);
-  const [isModalOpen1, setIsModalOpen1] = useState(false);
-  const showModal1 = () => {
-    setIsModalOpen1(true);
-  };
-  const handleOk1 = () => {
-    setIsModalOpen1(false);
-  };
-  const handleCancel1 = () => {
-    setIsModalOpen1(false);
-  };
-  const { TextArea } = Input;
 
-  const columns = [
-    {
-      title: "STT",
-      dataIndex: "serialNumber",
-      key: "serialNumber",
-      render: (_, __, index) => index + 1,
-    },
-    {
-      title: "Mã Hàng",
-      dataIndex: "itemId",
-      key: "itemId",
-    },
-    {
-      title: "Tên Hàng",
-      dataIndex: "itemName",
-      key: "itemName",
-    },
-    {
-      title: "Mô Tả",
-      dataIndex: "description",
-      key: "description",
-    },
-    {
-      title: "Số Lượng",
-      dataIndex: "cartQuantity",
-      key: "cartQuantity",
-      render: (_, record) => (
-        <span className="mx-2">{record.cartQuantity}</span>
-      ),
-    },
-    {
-      title: "Giá",
-      dataIndex: "price",
-      key: "price",
-      render: (price, record) => `$${price * record.cartQuantity}`,
-    },
-  ];
+  useEffect(() => {
+    dispatch(fetchCustomerData());
+  }, [dispatch]);
 
-  const showModal = () => {
-    setIsModalOpen(true);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    switch (name) {
+      case 'customerName':
+        setCustomerName(value);
+        break;
+      case 'address':
+        setCustomerAddress(value);
+        break;
+      case 'gender':
+        setCustomerGender(value);
+        break;
+      case 'phoneNumber':
+        setPhoneNumber(value);
+        break;
+      case 'email':
+        setCustomerEmail(value);
+        break;
+      default:
+        break;
+    }
   };
 
-  const handleOk = () => {
-    if (!customerInfo) {
-      alert("Please fetch customer details first");
+  const handleSearchClick = () => {
+    if (!phoneNumber) {
+      message.warning("Vui lòng nhập số điện thoại");
       return;
     }
+
+    const foundCustomer = customerData.find(customer => customer.phoneNumber === phoneNumber && customer.status === "active");
+    if (foundCustomer) {
+      setSearchedCustomer(foundCustomer);
+      dispatch(updateCustomerInfo(foundCustomer));
+    } else {
+      message.warning("Không tìm thấy khách hàng với số điện thoại này");
+    }
+  };
+
+  const handleSubmit = async () => {
+    const newCustomerInfo = {
+      customerName,
+      address: customerAddress,
+      gender: customerGender,
+      phoneNumber,
+      email: customerEmail,
+      status: "active",
+    };
+
+    try {
+      const response = await SalepageApi.createCustomer(newCustomerInfo);
+      message.success("Khách hàng đã được tạo thành công");
+      dispatch(updateCustomerInfo(response));
+    } catch (error) {
+      message.error(`Có lỗi xảy ra: ${error.message}`);
+    }
+  };
+
+  const handleCancel = () => {
+    setCustomerName("");
+    setCustomerAddress("");
+    setCustomerGender("Nam");
+    setPhoneNumber("");
+    setCustomerEmail("");
+    setSearchedCustomer(null);
+    dispatch(updateCustomerInfo([]));
+  };
+
+  const handleConfirm = async () => {
+    if (!searchedCustomer && customerType === 'member') {
+      message.warning("Vui lòng tìm kiếm thông tin khách hàng");
+      return;
+    }
+
+    const customerId = customerType === 'member' ? searchedCustomer.id : customerInfor.id;
     const staffId = localStorage.getItem("nameid");
     const returnPolicyId = "RP01";
     const companyName = "SWJ";
@@ -90,167 +115,274 @@ const PaymentPage = () => {
     const invoiceData = {
       staffId,
       returnPolicyId,
-      itemId: cart.cartItems[0].itemId,
-      customerId: customerInfo.id,
+      itemId: cartItems[0].itemId,
+      customerId,
       companyName,
-      buyerAddress: customerInfo.address,
+      buyerAddress: customerInfor.address,
       status,
       paymentType,
-      quantity: cart.cartTotalQuantity,
-      subTotal: cart.cartTotalAmount,
+      quantity: cartTotalQuantity,
+      subTotal: cartTotalAmount,
     };
-    
 
-    dispatch(createInvoice(invoiceData)).then((result) => {
-      if (result.type === createInvoice.fulfilled.toString()) {
-        notification.success({ message: "Tạo hóa đơn thành công!" });
-        setIsModalOpen(false);
-      } else {
-        notification.error({
-          message: `Tạo hóa đơn thất bại: ${result.payload}`,
-        });
-      }
-    });
-  };
-
-  const handleWarranty = () => {
-    if (!customerInfo) {
-      alert("Please fetch customer details first");
-      return;
+    try {
+      await dispatch(createInvoice(invoiceData)).unwrap();
+      message.success("Tạo hóa đơn thành công!");
+    } catch (error) {
+      message.error(`Tạo hóa đơn thất bại: ${error.message}`);
     }
 
-    dispatch(addWarranty(customerInfo.id)).then((result) => {
-      if (result.type === addWarranty.fulfilled.toString()) {
-        notification.success({ message: "Tạo bảo hành thành công!" });
-      } else {
-        notification.error({
-          message: `Tạo bảo hành thất bại: ${result.payload}`,
-        });
-      }
-    });
+    try {
+      await dispatch(addWarranty(customerId)).unwrap();
+      message.success("Tạo bảo hành thành công!");
+    } catch (error) {
+      message.error(`Tạo bảo hành thất bại: ${error.message}`);
+    }
   };
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
+  const handleSelectChange = (value) => {
+    setCustomerType(value);
+    handleCancel();
   };
 
-  const handleSearchCustomer = () => {
-    setLoading(true);
-    setCustomerNotFound(false);
-    dispatch(fetchCustomerPhone(phoneNumber))
-      .then((response) => {
-        if (response.payload) {
-          setCustomerInfo(response.payload);
-        } else {
-          setCustomerInfo(null);
-          setCustomerNotFound(true);
-        }
-      })
-      .catch((error) => {
-        console.error("Lấy thông tin khách hàng thất bại:", error);
-        notification.error({ message: "Lấy thông tin khách hàng thất bại" });
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+  const handleReset = () => {
+    dispatch(resetCart());
   };
 
-  const handleConfirm = () => {
-    handleOk();
-    handleWarranty();
-  };
+  const columns = [
+    {
+      title: "STT",
+      dataIndex: "numericalOrder",
+      key: "numericalOrder",
+      width: 50,
+      render: (_, __, index) => index + 1,
+    },
+    {
+      title: "Mã Hàng",
+      dataIndex: "serialNumber",
+      key: "serialNumber",
+      width: 120,
+    },
+    {
+      title: "Tên Hàng",
+      dataIndex: "itemName",
+      key: "itemName",
+      width: 150,
+    },
+    {
+      title: "Loại Hàng",
+      dataIndex: "accessoryType",
+      key: "accessoryType",
+      width: 100,
+    },
+    {
+      title: "Loại Vàng",
+      dataIndex: "goldType",
+      key: "goldType",
+      width: 100,
+      render: (_, record) => {
+        const goldTypeMap = {
+          "10k": "10K",
+          "14k": "14K",
+          "18k": "18K",
+          "24k": "24K",
+        };
+        const goldType = Object.keys(goldTypeMap).find(key => record.itemName.toLowerCase().includes(key)) || "";
+        return goldTypeMap[goldType] || "";
+      },
+    },
+    {
+      title: "Số Lượng",
+      dataIndex: "itemQuantity",
+      key: "itemQuantity",
+      width: 100,
+    },
+    {
+      title: "Trọng Lượng",
+      dataIndex: "weight",
+      key: "weight",
+      width: 100,
+    },
+    {
+      title: "Giá",
+      dataIndex: "price",
+      key: "price",
+      width: 120,
+      render: (_, record) => {
+        const goldTypeMap = {
+          "10k": buyGold10k,
+          "14k": buyGold14k,
+          "18k": buyGold18k,
+          "24k": buyGold24k,
+        };
+        const goldType = Object.keys(goldTypeMap).find(key => record.itemName.toLowerCase().includes(key)) || "";
+        const kara = goldTypeMap[goldType] || 0;
+        const totalPrice = record.weight * record.itemQuantity * kara;
+        return `${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
+      },
+    },
+  ];
 
   return (
-    <div className="payment-page w-full p-4">
-      <div className="order-summary bg-gray-50 p-4 rounded-lg mb-4">
-        <h2 className="text-xl font-bold mb-4">Đơn hàng</h2>
-        <div className="cart-items w-full">
-          <Table
-            dataSource={cart.cartItems}
-            columns={columns}
-            rowKey="itemId"
-            pagination={false}
-            className="w-full"
-          />
-        </div>
-      </div>
-
-      <div className="customer-info bg-white p-4 rounded-lg mb-4">
-        <div className="flex mb-4">
-          <Input
-            placeholder="Enter Customer Phone Number"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            className="mr-2"
-          />
-          <Button onClick={handleSearchCustomer}>Tìm kiếm</Button>
-        </div>
-        {loading ? (
-          <Spin />
-        ) : customerNotFound ? (
-          <p className="text-red-500">
-            Không tìm thấy khách hàng với số điện thoại này.
-          </p>
-        ) : (
-          customerInfo && (
-            <div className="customer-details">
-              <p className="text-lg my-3">
-                <strong>Tên:</strong> {customerInfo.customerName}
-              </p>
-              <p className="text-lg my-3">
-                <strong>Địa chỉ:</strong> {customerInfo.address}
-              </p>
-              <p className="text-lg my-3">
-                <strong>Số điện thoại:</strong> {customerInfo.phoneNumber}
-              </p>
-              <p className="text-lg my-3">
-                <strong>Giới tính:</strong> {customerInfo.gender}
-              </p>
-            </div>
-          )
-        )}
-      </div>
-
-      <div className="flex w-full">
-        <div className="cart-summary mt-12 bg-white p-6 rounded-lg shadow-md w-1/2 mr-3">
-          <div className="cart-checkout mt-6">
-            <div className="flex-row">
-              <div className="flex justify-between mb-3 text-lg">
-                <p>Tổng số lượng sản phẩm: </p>
-                <p>{cart.cartTotalQuantity}</p>
-              </div>
-              <div className="flex justify-between mb-3 text-lg">
-                <p>Giảm giá:</p>
-                <p>{cart.discount}%</p>
-              </div>
-              <div className="flex justify-between mb-3 text-lg">
-                <p>Tạm tính</p>
-                <p>${cart.cartTotalAmount}</p>
-              </div>
-            </div>
-            <div>
-              <Button
-                className="w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500"
-                onClick={showModal}
-              >
-                Yêu cầu chiết khấu đơn hàng
-              </Button>
-            </div>
-            <div className="mt-14 flex justify-between">
-              <span className="text-lg font-semibold text-gray-800">
-                Thành tiền
-              </span>
-              <span className="amount text-xl font-bold text-gray-800">
-                ${cart.cartTotalAmount}
-              </span>
-            </div>
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: "var(--primary-color)",
+          colorPrimaryHover: "var(--primary-color-hover)"
+        },
+        components: {
+          Select: {
+            optionSelectedBg: "#dbdbdb"
+          },
+        },
+      }}
+    >
+      <div className="payment-page w-full p-4">
+        <div className="order-summary bg-gray-50 p-4 rounded-lg mb-4">
+          <h2 className="text-xl font-bold mb-4">Đơn hàng</h2>
+          <div className="cart-items w-full">
+            <Table
+              dataSource={cartItems}
+              columns={columns}
+              rowKey="itemId"
+              pagination={false}
+              scroll={{ y: 378 }}
+              className="w-full rounded-[5px] font-medium"
+            />
           </div>
         </div>
-        <div className="cart-summary mt-12 bg-white p-6 rounded-lg shadow-md w-1/2">
-          <div>
-            <p className="mb-4 text-xl">Phương Thức Thanh Toán</p>
-            <div className="flex">
-              <Button
+        <div className="customer-info bg-white p-4 rounded-lg mb-4">
+          <div className="flex items-center mb-[15px]">
+            <span className="block min-w-[150px] font-medium">Loại khách hàng</span>
+            <Select
+              value={customerType}
+              onChange={handleSelectChange}
+              className="w-[130px]"
+            >
+              <Select.Option value="newCustomer">Khách mới</Select.Option>
+              <Select.Option value="member">Thành viên</Select.Option>
+            </Select>
+          </div>
+          {customerType === "member" && (
+            <div className="member-info">
+              <div className="flex items-center mb-[15px]">
+                <span className="block min-w-[150px] font-medium">Số điện thoại</span>
+                <Input
+                  name="phoneNumber"
+                  value={phoneNumber}
+                  onChange={handleInputChange}
+                  className="rounded-[5px]"
+                />
+                <Button onClick={handleSearchClick} className="ml-2">Tìm kiếm</Button>
+              </div>
+              {isLoading ? (
+                <Spin className="ml-[100px]" />
+              ) : searchedCustomer && (
+                <div className="customer-details ml-[100px] bg-gray-100 p-2 rounded-lg">
+                  <p><strong>Tên khách hàng:</strong> {searchedCustomer.customerName}</p>
+                  <p><strong>Email:</strong> {searchedCustomer.email}</p>
+                  <p><strong>Địa chỉ:</strong> {searchedCustomer.address}</p>
+                  <p><strong>Giới tính:</strong> {searchedCustomer.gender}</p>
+                </div>
+              )}
+            </div>
+          )}
+          {customerType === "newCustomer" && (
+            <div className="new-customer-info">
+              <Form>
+                <div className="flex items-center mb-[15px]">
+                  <span className="block min-w-[150px] font-medium">Tên khách hàng</span>
+                  <Input
+                    name="customerName"
+                    value={customerName}
+                    onChange={handleInputChange}
+                    className="rounded-[5px]"
+                  />
+                </div>
+                <div className="flex items-center mb-[15px]">
+                  <span className="block min-w-[150px] font-medium">Số điện thoại</span>
+                  <Input
+                    name="phoneNumber"
+                    value={phoneNumber}
+                    onChange={handleInputChange}
+                    className="rounded-[5px]"
+                  />
+                </div>
+                <div className="flex items-center mb-[15px]">
+                  <span className="block min-w-[150px] font-medium">Email</span>
+                  <Input
+                    name="email"
+                    value={customerEmail}
+                    onChange={handleInputChange}
+                    className="rounded-[5px]"
+                  />
+                </div>
+                <div className="flex items-center mb-[15px]">
+                  <span className="block min-w-[150px] font-medium">Địa chỉ</span>
+                  <Input
+                    name="address"
+                    value={customerAddress}
+                    onChange={handleInputChange}
+                    className="rounded-[5px]"
+                  />
+                </div>
+                <div className="flex items-center mb-[15px]">
+                  <span className="block min-w-[150px] font-medium">Giới tính</span>
+                  <Select
+                    value={customerGender}
+                    onChange={(value) => setCustomerGender(value)}
+                    className="w-[130px]"
+                  >
+                    <Select.Option value="Nam">Nam</Select.Option>
+                    <Select.Option value="Nữ">Nữ</Select.Option>
+                  </Select>
+                </div>
+                <div className="flex items-center mb-[15px]">
+                  <Space>
+                    <Button onClick={handleSubmit}>Lưu khách hàng</Button>
+                    <Button onClick={handleCancel}>Hủy</Button>
+                  </Space>
+                </div>
+              </Form>
+            </div>
+          )}
+        </div>
+        <div className="flex w-full">
+          <div className="cart-summary mt-4 bg-white p-6 rounded-lg shadow-md w-1/2 mr-3">
+            <div className="cart-checkout mt-6">
+              <div className="flex-row">
+                <div className="flex justify-between mb-3 text-lg">
+                  <p>Tổng số lượng sản phẩm: </p>
+                  <p>{cartTotalQuantity}</p>
+                </div>
+                <div className="flex justify-between mb-3 text-lg">
+                  <p>Tạm tính</p>
+                  <p>{Number(cartTotalAmount.toFixed(0)).toLocaleString()}đ</p>
+                </div>
+              </div>
+              <div className="mt-14 flex justify-between">
+                <span className="text-lg font-semibold text-gray-800">
+                  Thành tiền
+                </span>
+                <span className="amount text-xl font-bold text-gray-800">
+                  {Number(cartTotalAmount.toFixed(0)).toLocaleString()}
+                  đ
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="cart-summary mt-4 bg-white p-6 rounded-lg shadow-md w-1/2">
+            <div>
+              <ConfigProvider
+                theme={{
+                  token: {
+                    colorPrimary: "rgb(101, 163, 13)",
+                    colorPrimaryHover: "rgb(101, 163, 13)"
+                  },
+                }}
+              >
+                <div className="flex justify-between">
+                <Button
                 className={`w-1/2 h-14 uppercase font-bold ${
                   paymentType === "Chuyển khoản"
                     ? "bg-gray-500 text-white"
@@ -258,7 +390,6 @@ const PaymentPage = () => {
                 }`}
                 onClick={() => {
                   setPaymentType("Chuyển khoản");
-                  showModal1();
                 }}
               >
                 Chuyển khoản
@@ -273,92 +404,28 @@ const PaymentPage = () => {
               >
                 Tiền mặt
               </Button>
+                </div>
+              </ConfigProvider>
+
             </div>
-          </div>
-          <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
-          <div>
-            <Link to="/sales-page/Payment/PrintReceiptPage">
-              <Button
-                className="w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500"
-                onClick={handleConfirm}
-              >
-                Xác Nhận
-              </Button>
-            </Link>
-            <Link to="/sales-page">
-              <Button className="w-full h-14 bg-white text-black uppercase font-bold hover:bg-gray-500 mt-4">
-                Hủy
-              </Button>
-            </Link>
+            <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
+            <div>
+              <Link to="/sales-page/Payment/PrintReceiptPage">
+                <Button className="w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500 " onClick={handleConfirm} >
+                  Xác Nhận
+                </Button>
+              </Link>
+              <Link to="/sales-page">
+                <Button className="w-full h-14 bg-white text-black uppercase font-bold hover:bg-gray-500 mt-4" onClick={handleCancel}>
+                  Hủy
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>
 
-      <Modal
-        title="Yêu cầu chiết khấu"
-        open={isModalOpen}
-        footer={
-          <div>
-            <Button
-              onClick={handleCancel}
-              className="text-black bg-white uppercase mr-3"
-            >
-              Hủy
-            </Button>
-            <Button
-              onClick={handleConfirm}
-              className="bg-blue-700 text-white uppercase"
-            >
-              Xác nhận
-            </Button>
-          </div>
-        }
-      >
-        <div className="flex my-4 justify-between mr-8">
-          <p>Mức chiết khấu (0.00)</p>
-          <Input className="w-72" />
-        </div>
-        <div className="flex justify-between my-4">
-          <p>Quản lý</p>
-          <Space wrap className="w-2/3">
-            <Select
-              defaultValue="Đạt"
-              style={{ width: "440%" }}
-              options={[
-                { value: "Đạt", label: "Đạt" },
-                { value: "Chí", label: "Chí" },
-              ]}
-            />
-          </Space>
-        </div>
-        <div className="my-4">
-          <TextArea rows={4} placeholder="Ghi Chú" maxLength={6} />
-        </div>
-      </Modal>
-      <Modal
-        open={isModalOpen1}
-        footer={
-          <div>
-            <Button
-              onClick={handleCancel1}
-              className="text-black bg-white uppercase mr-3"
-            >
-              Hủy
-            </Button>
-            <Button
-              onClick={handleOk1}
-              className="bg-blue-700 text-white uppercase"
-            >
-              Hoàn tất
-            </Button>
-          </div>
-        }
-      >
-         <div className="flex justify-center">
-          <img src={QRCode} alt="QRcode" className="w-72"/>
-         </div>
-      </Modal>
-    </div>
+    </ConfigProvider>
   );
 };
 
