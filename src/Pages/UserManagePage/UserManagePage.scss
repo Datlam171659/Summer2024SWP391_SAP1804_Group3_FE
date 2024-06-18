@@ -80,7 +80,6 @@
       width: 100%;
         
       th {
-        border: 1px solid #3433339a;
         background-color: #f0f2f5;
       }
   
@@ -100,3 +99,7 @@
       }
     }
   }
+
+.table-column-word-wrap {
+  word-wrap: break-word;
+}
