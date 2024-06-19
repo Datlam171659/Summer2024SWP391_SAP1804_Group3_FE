@@ -33,22 +33,22 @@ function CustomerSearchDetail() {
 
   const columns = [
     {
-      title: 'Invoice ID',
+      title: 'Mã hóa đơn',
       dataIndex: 'id',
       key: 'id',
     },
     {
-      title: 'companyName',
+      title: 'Tên công ty',
       dataIndex: 'companyName',
       key: 'companyName',
     },
     {
-      title: 'buyerAddress',
+      title: 'Địa chỉ',
       dataIndex: 'buyerAddress',
       key: 'buyerAddress',
     },
     {
-      title: 'paymentType',
+      title: 'Hình thức thanh toán',
       dataIndex: 'paymentType',
       key: 'paymentType',
     },
