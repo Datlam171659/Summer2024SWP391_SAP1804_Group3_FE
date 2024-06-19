@@ -1,27 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Input, message, Table, Select, Space, Spin } from "antd";
-import {
-  MinusCircleOutlined,
-  MinusOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
+import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import SalepageApi from "../../Features/Salepage/SalepageApi";
 import {
   addItem,
   decrementQuantity,
   incrementQuantity,
   removeItem,
   updateTotals,
-  applyDiscount,
-  resetDiscount,
 } from "../../Features/product/cartSlice";
 import { fetchDiscountData } from "../../Features/Discount/DiscountSlice";
+import { fetchProductData } from "../../Features/product/productSlice";
 
 const ProductList = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const productData = useSelector((state) => state.product.productData);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
@@ -46,6 +41,7 @@ const ProductList = () => {
     (state) => state.discount.isLoadingDiscountData
   );
   const [discountDataSelect, setDiscountDataSelect] = useState(""); // State to store selected discount ID
+  const [discountPercentage, setDiscountPercentage] = useState(0);
 
   useEffect(() => {
     const cartTotalQuantity = cartItems.reduce(
@@ -87,11 +83,13 @@ const ProductList = () => {
       return acc + itemTotalPrice;
     }, 0);
 
-    dispatch(updateTotals({ cartTotalQuantity, cartTotalAmount }));
-  }, [cartItems, buyGold10k, buyGold14k, buyGold18k, buyGold24k, dispatch]);
+    const discountedAmount = cartTotalAmount * (1 - discountPercentage / 100);
+    dispatch(updateTotals({ cartTotalQuantity, cartTotalAmount: discountedAmount }));
+  }, [cartItems, buyGold10k, buyGold14k, buyGold18k, buyGold24k, discountPercentage, dispatch]);
 
   useEffect(() => {
     dispatch(fetchDiscountData());
+    dispatch(fetchProductData());
   }, [dispatch]);
 
   const discountOptions = discountData.map((item) => ({
@@ -107,18 +105,25 @@ const ProductList = () => {
     }
   };
 
-  const handleSearch = async () => {
+  const handleSearch = () => {
     setLoading(true);
     try {
-      const item = await SalepageApi.getItem(searchQuery);
-      const itemExists = cartItems.some(
-        (cartItem) => cartItem.itemId === item.itemId
+      const item = productData.find(
+        (product) =>
+          product.itemId === searchQuery || product.itemName === searchQuery
       );
-      if (itemExists) {
-        message.error("Sản phẩm đã tồn tại");
+      if (!item) {
+        message.error("Không tìm thấy sản phẩm. Vui lòng thử lại");
       } else {
-        dispatch(addItem(item));
-        message.success("Sản phẩm đã được thêm vào giỏ hàng");
+        const itemExists = cartItems.some(
+          (cartItem) => cartItem.itemId === item.itemId
+        );
+        if (itemExists) {
+          message.error("Sản phẩm đã tồn tại");
+        } else {
+          dispatch(addItem(item));
+          message.success("Sản phẩm đã được thêm vào giỏ hàng");
+        }
       }
       setSearchQuery("");
     } catch (error) {
@@ -136,15 +141,15 @@ const ProductList = () => {
 
   const handleChange = (value) => {
     if (value === undefined) {
-      dispatch(resetDiscount());
       setDiscountDataSelect(""); // Clear selected discount ID
+      setDiscountPercentage(0);
     } else {
       setDiscountDataSelect(value); // Set selected discount ID
       const selectedDiscount = discountData.find(
         (discount) => discount.discountId === value
       );
       if (selectedDiscount) {
-        dispatch(applyDiscount(selectedDiscount.discountPercentage));
+        setDiscountPercentage(selectedDiscount.discountPercentage);
       }
     }
   };
@@ -294,7 +299,7 @@ const ProductList = () => {
         <Input
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Nhập mã hàng"
+          placeholder="Nhập mã hàng hoặc tên hàng"
           className="mr-2"
         />
         <Button type="primary" onClick={handleSearch} loading={loading}>
