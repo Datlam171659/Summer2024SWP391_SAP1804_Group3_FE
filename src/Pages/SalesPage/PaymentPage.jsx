@@ -7,7 +7,7 @@ import { resetCart, updateCustomerInfo } from "../../Features/product/cartSlice"
 import SalepageApi from "../../Features/Salepage/SalepageApi";
 import { createInvoice } from "../../Features/Invoice/InvoiceSlice";
 import { addWarranty } from "../../Features/Warranty/warrantyaddSlice";
-
+import {rewardCustomer} from "../../Features/Customer/rewardSlice"
 const PaymentPage = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
@@ -30,10 +30,19 @@ const PaymentPage = () => {
   const [customerAddress, setCustomerAddress] = useState("");
   const [paymentType, setPaymentType] = useState("");
 
+  const [pointsTotal, setPointsTotal] = useState(0);
   useEffect(() => {
     dispatch(fetchCustomerData());
-  }, [dispatch]);
+    setPointsTotal(calculatePoints(cartTotalAmount));
+  }, [dispatch, cartTotalAmount]);
 
+  const calculatePoints = (totalAmount) => {
+    let points = 0;
+    if (totalAmount > 0) {
+      points = Math.floor(totalAmount / 5000000) * 5;
+    }
+    return points;
+  };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     switch (name) {
@@ -138,8 +147,14 @@ const PaymentPage = () => {
     } catch (error) {
       message.error(`Tạo bảo hành thất bại: ${error.message}`);
     }
+    try {
+      await dispatch(rewardCustomer({ customerId,  pointsTotal })).unwrap();
+      message.success("Khách hàng đã được tích điểm thành công!");
+    } catch (error) {
+      message.error(`Tích điểm thất bại: ${error.message}`);
+    }
   };
-
+console.log(pointsTotal)
   const handleSelectChange = (value) => {
     setCustomerType(value);
     handleCancel();

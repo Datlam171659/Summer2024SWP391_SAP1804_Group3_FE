@@ -11,4 +11,7 @@ const getCustomerAll = () => {
   const response= axios.get(`/api/Customer/phone/${phoneNumber}`)
 return response;
 }
-  export{getCustomerAll,getCustomerById,getCustomerByPhone}
+const rewardCustomer = (customerId,pointsTotal) => {
+  return axios.post(`/api/RewardsProgram`, {customerId,pointsTotal});
+};
+  export{getCustomerAll,getCustomerById,getCustomerByPhone,rewardCustomer}
