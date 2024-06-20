@@ -1,4 +1,3 @@
-
 import React, { useRef } from "react";
 import ReactToPrint from "react-to-print";
 import { useSelector, useDispatch } from "react-redux";
@@ -7,6 +6,7 @@ import { CheckCircleOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { resetCart } from "../../Features/product/cartSlice";
 import InvoiceComponent from "../../Components/Common/InvoiceComponent";
+import WarrantyComponent from "../../Components/Common/WarrantyComponent";
 
 function PrintReceiptPage() {
   const dispatch = useDispatch();
@@ -19,6 +19,7 @@ function PrintReceiptPage() {
   const cartTotalQuantity = useSelector((state) => state.cart.cartTotalQuantity);
   const cartTotalAmount = useSelector((state) => state.cart.cartTotalAmount);
   const invoiceComponentRef = useRef();
+  const warrantyComponentRef = useRef();
 
   return (
     <ConfigProvider
@@ -38,6 +39,10 @@ function PrintReceiptPage() {
               trigger={() => <Button className="w-80 h-14 bg-black text-white uppercase font-bold">In hóa đơn</Button>}
               content={() => invoiceComponentRef.current}
             />
+            <ReactToPrint
+              trigger={() => <Button className="w-80 h-14 bg-black text-white uppercase font-bold mt-4">In bảo hành</Button>}
+              content={() => warrantyComponentRef.current}
+            />
             <Link to="/sales-page">
               <Button onClick={handleReset} className="w-80 h-14 bg-white text-black uppercase font-bold ml-4">
                 Tạo đơn mới
@@ -54,9 +59,12 @@ function PrintReceiptPage() {
           cartTotalQuantity={cartTotalQuantity}
           cartTotalAmount={cartTotalAmount}
         />
+        <WarrantyComponent
+          ref={warrantyComponentRef}
+          customerInfor={customerInfor}
+        />
       </div>
     </ConfigProvider>
-    
   );
 }
 
