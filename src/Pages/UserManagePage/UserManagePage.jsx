@@ -11,12 +11,12 @@ import { editUser } from "../../Features/User/userEditSlice";
 
 export default function UserManagePage() {
   const dispatch = useDispatch();
-  const [currentUser, setCurrentUser] = useState({});
   const [searchValue, setSearchValue] = useState("");
   const [loading, setLoading] = useState(false);
-  const [isAddModalVisible1, setAddModalVisible] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [form] = Form.useForm();
+  const [isAddModalVisible, setAddModalVisible] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [addForm] = Form.useForm();
+  const [editForm] = Form.useForm();
   const navigate = useNavigate();
   const userData = useSelector((state) => state.user.userData);
   const isLoading = useSelector((state) => state.user.isLoading);
@@ -28,21 +28,20 @@ export default function UserManagePage() {
   const numStaff = userData.filter(user => user.roleId === 2).length;
   const numActive = userData.filter(user => user.status && user.status.toLowerCase() === "active").length;
   const numInactive = userData.filter(user => user.status && user.status.toLowerCase() === "inactive").length;
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [users, setUsers] = useState([]);
+
   useEffect(() => {
     dispatch(fetchUserData());
   }, [dispatch]);
 
   const handleEditOk = () => {
-    form
+    editForm
       .validateFields()
       .then((values) => {
         dispatch(editUser({ staffId: selectedUser.staffId, userdetail: values }))
           .then(() => {
             message.success("Cập nhật nhân viên thành công");
             dispatch(fetchUserData());
-            form.resetFields();
+            editForm.resetFields();
           })
           .catch((error) => {
             message.error("Cập nhật nhân viên thất bại");
@@ -56,13 +55,13 @@ export default function UserManagePage() {
 
   const showEditModal = (user) => {
     setSelectedUser(user);
-    form.setFieldsValue(user); 
+    editForm.setFieldsValue(user); 
     setIsEditModalOpen(true);
   };
 
   const handleEditCancel = () => {
     setIsEditModalOpen(false);
-    form.resetFields();
+    editForm.resetFields();
   };
 
   const handleDelete = (staffId) => {
@@ -100,11 +99,11 @@ export default function UserManagePage() {
 
   const handleAddCancel = () => {
     setAddModalVisible(false);
-    form.resetFields();
+    addForm.resetFields();
   };
 
   const handleAddOk = () => {
-    form
+    addForm
       .validateFields()
       .then((values) => {
         const newUser = {
@@ -122,7 +121,7 @@ export default function UserManagePage() {
         dispatch(addUser(newUser))
           .then(() => {
             dispatch(fetchUserData());
-            form.resetFields();
+            addForm.resetFields();
             message.success("Thêm nhân viên thành công");
           })
           .catch((error) => {
@@ -272,16 +271,26 @@ export default function UserManagePage() {
               <div className="w-[11%]">
                 <Button
                   onClick={() => setAddModalVisible(true)}
-                  className="add-user-btn"
                   type="primary"
-                  style={{ width: "100%", fontWeight: "600" }}
+                  className="add-user-btn"
                 >
-                  Add User
+                  Thêm nhân viên
                 </Button>
               </div>
             </div>
-            <div className="user-table mt-3">
-              <Table columns={columns} dataSource={userData} loading={isLoading} rowKey="staffId" />
+            <div className="overflow-scroll">
+              <Table
+                columns={columns}
+                dataSource={userData.filter(user =>
+                  user.fullName.toLowerCase().includes(searchValue.toLowerCase()) ||
+                  user.email.toLowerCase().includes(searchValue.toLowerCase())
+                ).map((user, index) => ({
+                  ...user,
+                  key: index + 1,
+                }))}
+                loading={isLoading}
+                rowKey="staffId"
+              />
             </div>
           </div>
         </div>
@@ -293,7 +302,7 @@ export default function UserManagePage() {
           onCancel={handleEditCancel}
           confirmLoading={editLoading}
         >
-          <Form form={form} layout="vertical" initialValues={selectedUser}>
+          <Form form={editForm} layout="vertical" initialValues={selectedUser}>
             <Form.Item name="fullName" label="Full Name" rules={[{ required: true, message: "Please enter the full name" }]}>
               <Input />
             </Form.Item>
@@ -314,104 +323,83 @@ export default function UserManagePage() {
             </Form.Item>
           </Form>
         </Modal>
+
         <Modal
-            title="Thêm nhân viên"
-            visible={isAddModalVisible1}
-            onCancel={() => {
-              setAddModalVisible(false);
-              form.resetFields();
-            }}
-            footer={
-              <div className="text-right">
-                <Button onClick={handleAddCancel} className="mr-3">
-                  Hủy
-                </Button>
-                <Button onClick={handleAddOk} type="primary">
-                  Xác nhận
-                </Button>
-              </div>
-            }
-          >
-            <Form
-              form={form}
-              layout="vertical"
-              onFinish={(values) => {
-                const updatedUsers = users.map((user) =>
-                  user.id === currentUser.id ? { ...user, ...values } : user
-                );
-                setIsModalVisible(false);
-                setUsers(updatedUsers);
-                message.success("Thông tin nhân viên đã được cập nhật!");
-              }}
+          title="Thêm nhân viên"
+          visible={isAddModalVisible}
+          onCancel={handleAddCancel}
+          footer={
+            <div className="text-right">
+              <Button onClick={handleAddCancel} className="mr-3">
+                Hủy
+              </Button>
+              <Button onClick={handleAddOk} type="primary">
+                Xác nhận
+              </Button>
+            </div>
+          }
+        >
+          <Form form={addForm} layout="vertical">
+            <Form.Item
+              label="Tên"
+              name="fullName"
+              rules={[{ required: true, message: "Vui lòng nhập tên!" }]}
             >
-              <Form.Item
-                label="Tên"
-                name="fullName"
-                rules={[{ required: true, message: "Vui lòng nhập tên!" }]}
-              >
-                <Input />
-              </Form.Item>
-
-
-              <Form.Item
-                label="Email"
-                name="email"
-                rules={[{ required: true, message: "Vui lòng nhập Email!" }]}
-              >
-                <Input />
-              </Form.Item>
-
-              <Form.Item
-                label="Vai trò"
-                name="role"
-                rules={[{ required: true, message: "Vui lòng chọn vai trò!" }]}
-              >
-                <Select placeholder="Chọn vai trò">
-                  <Select.Option value={0}>Admin</Select.Option>
-                  <Select.Option value={1}>Manager</Select.Option>
-                  <Select.Option value={2}>Staff</Select.Option>
-                </Select>
-              </Form.Item>
-
-              <Form.Item
-                label="Địa chỉ"
-                name="address"
-                rules={[{ required: true, message: "Vui lòng nhập địa chỉ!" }]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                label="Số điện thoại"
-                name="phoneNumber"
-                rules={[
-                  { required: true, message: "Vui lòng nhập số điện thoại!" },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-
-              <Form.Item
-                label="Giới tính"
-                name="gender"
-                rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}
-              >
-                <Select placeholder="Chọn giới tính">
-                  <Select.Option value="Male">Nam</Select.Option>
-                  <Select.Option value="Female">Nữ</Select.Option>
-                </Select>
-              </Form.Item>
-              <Form.Item
-                label="Mật khẩu"
-                name="passwordHash"
-                rules={[
-                  { required: true, message: 'Vui lòng nhập mật khẩu' },
-                ]}
-              >
-                <Input.Password placeholder="Nhập mật khẩu" />
-              </Form.Item>
-            </Form>
-          </Modal>
-
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label="Email"
+              name="email"
+              rules={[{ required: true, message: "Vui lòng nhập Email!" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label="Vai trò"
+              name="role"
+              rules={[{ required: true, message: "Vui lòng chọn vai trò!" }]}
+            >
+              <Select placeholder="Chọn vai trò">
+                <Select.Option value={0}>Admin</Select.Option>
+                <Select.Option value={1}>Manager</Select.Option>
+                <Select.Option value={2}>Staff</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label="Địa chỉ"
+              name="address"
+              rules={[{ required: true, message: "Vui lòng nhập địa chỉ!" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label="Số điện thoại"
+              name="phoneNumber"
+              rules={[{ required: true, message: "Vui lòng nhập số điện thoại!" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label="Giới tính"
+              name="gender"
+              rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}
+            >
+              <Select placeholder="Chọn giới tính">
+                <Select.Option value="Male">Nam</Select.Option>
+                <Select.Option value="Female">Nữ</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              label="Mật khẩu"
+              name="passwordHash"
+              rules={[
+                { required: true, message: 'Vui lòng nhập mật khẩu' },
+              ]}
+            >
+              <Input.Password placeholder="Nhập mật khẩu" />
+            </Form.Item>
+          </Form>
+        </Modal>
       </div>
     </ConfigProvider>
   );
