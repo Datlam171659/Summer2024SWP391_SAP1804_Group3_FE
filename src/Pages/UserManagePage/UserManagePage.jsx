@@ -3,7 +3,6 @@ import { Input, Table, Space, Button, Modal, message, Form, Select, Statistic, C
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import './UserManagePage.scss'
-import { createEntityAdapter } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserData } from "../../Features/User/userListSlice";
 import { addUser } from "../../Features/User/userAddSlice";
@@ -13,18 +12,17 @@ export default function UserManagePage() {
   const [searchValue, setSearchValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [isAddModalVisible, setAddModalVisible] = useState(false);
-  const [users, setUsers] = useState([]);
-  const [allUsers, setAllUsers] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentUser, setCurrentUser] = useState({});
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const userData = useSelector((state) => state.user.userData);
   const isLoading = useSelector((state) => state.user.isLoading);
-  const numManagers = users.filter(user => user.roleId === 1).length;
-  const numStaff = users.filter(user => user.roleId === 2).length;
-  const numActive = users.filter(user => user.status === "Active").length;
-  const numInactive = users.filter(user => user.status === "Inactive").length;
+
+  const numManagers = userData.filter(user => user.roleId === 1).length;
+  const numStaff = userData.filter(user => user.roleId === 2).length;
+  const numActive = userData.filter(user => user.status.toLowerCase() === "active").length;
+  const numInactive = userData.filter(user => user.status.toLowerCase() === "inactive").length;
 
   useEffect(() => {
     dispatch(fetchUserData());
@@ -56,24 +54,10 @@ export default function UserManagePage() {
     }
   }
 
-  // const handleDelete = (userId) => {
-  //   Modal.confirm({
-  //     title: "Are you sure to delete this user?",
-  //     style: { top: '50%', transform: 'translateY(-50%)' },
-  //     onOk() {
-  //       // const remainingUsers = users.filter((user) => user.id !== userId);
-  //       // setUsers(remainingUsers);
-  //       // message.success(`User Id: ${userId} has been deleted.`);
-  //     },
-  //     onCancel() { },
-  //   });
-  // };
-
   const handleAddCancel = () => {
     setAddModalVisible(false);
     form.resetFields();
   };
-
 
   const handleAddOk = () => {
     form
@@ -96,7 +80,6 @@ export default function UserManagePage() {
             dispatch(fetchUserData());
             form.resetFields();
             message.success("Thêm nhân viên thành công");
-
           })
           .catch((error) => {
             message.error("Thêm sản phẩm thất bại");
@@ -108,24 +91,11 @@ export default function UserManagePage() {
       });
   };
 
-  const handleStatusChange = (value, id,) => {
-    const index = users.findIndex(user => user.id === id);
-    let tempUsers = [...users];
-    tempUsers[index]['status'] = value;
-    setUsers(tempUsers);
-    setAllUsers(tempUsers);
-    const userName = tempUsers[index]['fullName'];
-    message.success(`${userName}: Status Updated`);
-  }
-
-
   const columns = [
     {
       title: "STT",
       dataIndex: 'key',
       key: 'key',
-      rowScope: 'row',
-      // render: (_, __, index) => index + 1,
       width: 50,
     },
     {
@@ -245,7 +215,6 @@ export default function UserManagePage() {
                   placeholder="Search by name or email"
                   value={searchValue}
                   onChange={async event => { setSearchValue(event.target.value); }}
-                  // onPressEnter={handleSearch}
                   allowClear
                 />
                 <Button
@@ -268,7 +237,6 @@ export default function UserManagePage() {
               </div>
             </div>
 
-
             <div className="cart-items flex flex-col items-center space-y-8 w-full ">
               <Table
                 columns={columns}
@@ -278,11 +246,9 @@ export default function UserManagePage() {
                 style={{ marginTop: 5, }}
                 className="w-full rounded-[5px] font-medium"
                 fixed
-
               />
             </div>
           </div>
-
 
           <Modal
             title="Update User"
@@ -297,11 +263,10 @@ export default function UserManagePage() {
               form={form}
               layout="vertical"
               onFinish={(values) => {
-                const updatedUsers = users.map((user) =>
+                const updatedUsers = userData.map((user) =>
                   user.id === currentUser.id ? { ...user, ...values } : user
                 );
                 setIsModalVisible(false);
-                setUsers(updatedUsers);
                 message.success("Thông tin nhân viên đã được cập nhật!");
               }}
             >
@@ -391,11 +356,10 @@ export default function UserManagePage() {
               form={form}
               layout="vertical"
               onFinish={(values) => {
-                const updatedUsers = users.map((user) =>
+                const updatedUsers = userData.map((user) =>
                   user.id === currentUser.id ? { ...user, ...values } : user
                 );
                 setIsModalVisible(false);
-                setUsers(updatedUsers);
                 message.success("Thông tin nhân viên đã được cập nhật!");
               }}
             >
@@ -406,7 +370,6 @@ export default function UserManagePage() {
               >
                 <Input />
               </Form.Item>
-
 
               <Form.Item
                 label="Email"
