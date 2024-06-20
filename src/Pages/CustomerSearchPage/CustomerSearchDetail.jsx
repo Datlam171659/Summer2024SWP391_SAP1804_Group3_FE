@@ -64,7 +64,7 @@ function CustomerSearchDetail() {
 
   const customerRewards = rewardsallData ? rewardsallData.filter(reward => reward.customerId === id) : [];
   const hasRewards = customerRewards.length > 0;
-
+console.log(customerRewards)
   const items = [
     {
       key: '1',
@@ -91,8 +91,11 @@ function CustomerSearchDetail() {
               <ul>
                 {customerRewards.map((reward) => (
                   <li key={reward.id} className='text-xl mt-5'>
+
+{console.log(reward.pointsTotal)}
                     {customer && customer.customerName}: {reward.pointsTotal} điểm ({calculateRewardLevel(reward.pointsTotal)})
                   </li>
+                
                 ))}
               </ul>
             </div>
