@@ -19,6 +19,7 @@ import buyBackCustomerSlice from '../Features/buy-back/buyBackCustomerSlice';
 import userListReducer from '../Features/User/userListSlice';
 import userAddReducer from '../Features/User/userAddSlice';
 import rewardSlice from '../Features/Customer/rewardSlice';
+import userEditReducer from '../Features/User/userEditSlice';
 import rewardallSlice from '../Features/Customer/rewardallSlice';
 const store = configureStore({
   reducer: {
@@ -41,7 +42,8 @@ const store = configureStore({
     user: userListReducer,
     userAdd: userAddReducer,
     reward:rewardSlice,
-    rewardsAll:rewardallSlice
+    rewardsAll:rewardallSlice,
+    userEdit: userEditReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });

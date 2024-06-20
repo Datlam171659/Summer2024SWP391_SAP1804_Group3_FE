@@ -30,8 +30,7 @@ const userkApi = {
         throw error;
       });
   },
-
-
 };
+
 
 export default userkApi;

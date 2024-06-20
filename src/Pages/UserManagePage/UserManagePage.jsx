@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Input, Table, Space, Button, Modal, message, Form, Select, Statistic, Card, Row, Col, ConfigProvider, Tag } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import './UserManagePage.scss'
+import './UserManagePage.scss';
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserData } from "../../Features/User/userListSlice";
 import { addUser } from "../../Features/User/userAddSlice";
+import { deleteUser } from "../../Features/User/userdeleteSlice"; 
+import { editUser } from "../../Features/User/userEditSlice"; 
 
 export default function UserManagePage() {
   const dispatch = useDispatch();
@@ -13,32 +15,73 @@ export default function UserManagePage() {
   const [loading, setLoading] = useState(false);
   const [isAddModalVisible, setAddModalVisible] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [currentUser, setCurrentUser] = useState({});
   const [form] = Form.useForm();
   const navigate = useNavigate();
   const userData = useSelector((state) => state.user.userData);
   const isLoading = useSelector((state) => state.user.isLoading);
-
+  const editLoading = useSelector((state) => state.userEdit.loading);
+  const editError = useSelector((state) => state.userEdit.error);
+  const editSuccess = useSelector((state) => state.userEdit.success);
+  const [selectedUser, setSelectedUser] = useState(null);
   const numManagers = userData.filter(user => user.roleId === 1).length;
   const numStaff = userData.filter(user => user.roleId === 2).length;
-  const numActive = userData.filter(user => user.status.toLowerCase() === "active").length;
-  const numInactive = userData.filter(user => user.status.toLowerCase() === "inactive").length;
+  const numActive = userData.filter(user => user.status && user.status.toLowerCase() === "active").length;
+  const numInactive = userData.filter(user => user.status && user.status.toLowerCase() === "inactive").length;
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchUserData());
   }, [dispatch]);
 
-  const handleUpdate = (record) => {
-    form.setFieldsValue({
-      fullName: record.fullName,
-      role: record.roleId,
-      address: record.address,
-      phoneNumber: record.phoneNumber,
-      gender: record.gender,
-      status: record.status,
+  const handleEditOk = () => {
+    form
+      .validateFields()
+      .then((values) => {
+        dispatch(editUser({ staffId: selectedUser.staffId, userdetail: values }))
+          .then(() => {
+            message.success("Cập nhật nhân viên thành công");
+            dispatch(fetchUserData());
+            form.resetFields();
+          })
+          .catch((error) => {
+            message.error("Cập nhật nhân viên thất bại");
+          });
+        setIsEditModalOpen(false);
+      })
+      .catch((errorInfo) => {
+        console.log("Xác thực thất bại:", errorInfo);
+      });
+  };
+
+  const showEditModal = (user) => {
+    setSelectedUser(user);
+    form.setFieldsValue(user); 
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditCancel = () => {
+    setIsEditModalOpen(false);
+    form.resetFields();
+  };
+
+  const handleDelete = (staffId) => {
+    Modal.confirm({
+      title: 'Xác nhận xóa',
+      content: 'Bạn có chắc chắn muốn xóa nhân viên này không?',
+      okText: 'Xóa',
+      okType: 'danger',
+      cancelText: 'Hủy',
+      onOk: () => {
+        dispatch(deleteUser(staffId))
+          .then(() => {
+            message.success("Xóa nhân viên thành công");
+            dispatch(fetchUserData());
+          })
+          .catch((error) => {
+            message.error("Xóa nhân viên thất bại");
+          });
+      },
     });
-    setCurrentUser(record);
-    setIsModalVisible(true);
   };
 
   const getRoleNameById = (roleId) => {
@@ -52,7 +95,7 @@ export default function UserManagePage() {
       default:
         return "Unknown";
     }
-  }
+  };
 
   const handleAddCancel = () => {
     setAddModalVisible(false);
@@ -138,7 +181,7 @@ export default function UserManagePage() {
       dataIndex: "status",
       key: "status",
       render: (text, record) => (
-        text.toLowerCase() === "active" ?
+        text && text.toLowerCase() === "active" ?
           <Tag color="green">Active</Tag> :
           <Tag color="red">Inactive</Tag>
       )
@@ -148,8 +191,8 @@ export default function UserManagePage() {
       key: "actions",
       render: (text, record) => (
         <Space size="middle">
-          <EditOutlined onClick={() => handleUpdate(record)} />
-          <DeleteOutlined />
+          <EditOutlined onClick={() => showEditModal(record)} />
+          <DeleteOutlined onClick={() => handleDelete(record.staffId)} />
         </Space>
       ),
     },
@@ -232,205 +275,45 @@ export default function UserManagePage() {
                   type="primary"
                   style={{ width: "100%", fontWeight: "600" }}
                 >
-                  Thêm nhân viên
+                  Add User
                 </Button>
               </div>
             </div>
-
-            <div className="cart-items flex flex-col items-center space-y-8 w-full ">
-              <Table
-                columns={columns}
-                dataSource={userData}
-                loading={isLoading}
-                rowKey="id"
-                style={{ marginTop: 5, }}
-                className="w-full rounded-[5px] font-medium"
-                fixed
-              />
+            <div className="user-table mt-3">
+              <Table columns={columns} dataSource={userData} loading={isLoading} rowKey="staffId" />
             </div>
           </div>
-
-          <Modal
-            title="Update User"
-            visible={isModalVisible}
-            onCancel={() => {
-              setIsModalVisible(false);
-              form.resetFields();
-            }}
-            footer={null}
-          >
-            <Form
-              form={form}
-              layout="vertical"
-              onFinish={(values) => {
-                const updatedUsers = userData.map((user) =>
-                  user.id === currentUser.id ? { ...user, ...values } : user
-                );
-                setIsModalVisible(false);
-                message.success("Thông tin nhân viên đã được cập nhật!");
-              }}
-            >
-              <Form.Item
-                label="Tên"
-                name="fullName"
-                rules={[{ required: true, message: "Vui lòng nhập tên!" }]}
-              >
-                <Input />
-              </Form.Item>
-
-              <Form.Item
-                label="Vai trò"
-                name="role"
-                rules={[{ required: true, message: "Vui lòng chọn vai trò!" }]}
-              >
-                <Select placeholder="Chọn vai trò">
-                  <Select.Option value={0}>Admin</Select.Option>
-                  <Select.Option value={1}>Manager</Select.Option>
-                  <Select.Option value={2}>Staff</Select.Option>
-                </Select>
-              </Form.Item>
-
-              <Form.Item
-                label="Địa chỉ"
-                name="address"
-                rules={[{ required: true, message: "Vui lòng nhập địa chỉ!" }]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                label="Số điện thoại"
-                name="phoneNumber"
-                rules={[
-                  { required: true, message: "Vui lòng nhập số điện thoại!" },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-
-              <Form.Item
-                label="Giới tính"
-                name="gender"
-                rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}
-              >
-                <Select placeholder="Chọn giới tính">
-                  <Select.Option value="Male">Nam</Select.Option>
-                  <Select.Option value="Female">Nữ</Select.Option>
-                </Select>
-              </Form.Item>
-              <Form.Item
-                label="Đặt lại mật khẩu"
-                name="resetPassword"
-                rules={[
-                  { required: false, message: 'Nhập mật khẩu mới' },
-                ]}
-              >
-                <Input.Password placeholder="Nhập mật khẩu mới hoặc để trống để giữ mật khẩu hiện tại" />
-              </Form.Item>
-              <Form.Item>
-                <Button type="primary" htmlType="submit">
-                  Cập nhật
-                </Button>
-              </Form.Item>
-            </Form>
-          </Modal>
-
-          <Modal
-            title="Thêm nhân viên"
-            visible={isAddModalVisible}
-            onCancel={() => {
-              setAddModalVisible(false);
-              form.resetFields();
-            }}
-            footer={
-              <div className="text-right">
-                <Button onClick={handleAddCancel} className="mr-3">
-                  Hủy
-                </Button>
-                <Button onClick={handleAddOk} type="primary">
-                  Xác nhận
-                </Button>
-              </div>
-            }
-          >
-            <Form
-              form={form}
-              layout="vertical"
-              onFinish={(values) => {
-                const updatedUsers = userData.map((user) =>
-                  user.id === currentUser.id ? { ...user, ...values } : user
-                );
-                setIsModalVisible(false);
-                message.success("Thông tin nhân viên đã được cập nhật!");
-              }}
-            >
-              <Form.Item
-                label="Tên"
-                name="fullName"
-                rules={[{ required: true, message: "Vui lòng nhập tên!" }]}
-              >
-                <Input />
-              </Form.Item>
-
-              <Form.Item
-                label="Email"
-                name="email"
-                rules={[{ required: true, message: "Vui lòng nhập Email!" }]}
-              >
-                <Input />
-              </Form.Item>
-
-              <Form.Item
-                label="Vai trò"
-                name="role"
-                rules={[{ required: true, message: "Vui lòng chọn vai trò!" }]}
-              >
-                <Select placeholder="Chọn vai trò">
-                  <Select.Option value={0}>Admin</Select.Option>
-                  <Select.Option value={1}>Manager</Select.Option>
-                  <Select.Option value={2}>Staff</Select.Option>
-                </Select>
-              </Form.Item>
-
-              <Form.Item
-                label="Địa chỉ"
-                name="address"
-                rules={[{ required: true, message: "Vui lòng nhập địa chỉ!" }]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                label="Số điện thoại"
-                name="phoneNumber"
-                rules={[
-                  { required: true, message: "Vui lòng nhập số điện thoại!" },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-
-              <Form.Item
-                label="Giới tính"
-                name="gender"
-                rules={[{ required: true, message: "Vui lòng chọn giới tính!" }]}
-              >
-                <Select placeholder="Chọn giới tính">
-                  <Select.Option value="Male">Nam</Select.Option>
-                  <Select.Option value="Female">Nữ</Select.Option>
-                </Select>
-              </Form.Item>
-              <Form.Item
-                label="Mật khẩu"
-                name="passwordHash"
-                rules={[
-                  { required: true, message: 'Vui lòng nhập mật khẩu' },
-                ]}
-              >
-                <Input.Password placeholder="Nhập mật khẩu" />
-              </Form.Item>
-            </Form>
-          </Modal>
         </div>
+
+        <Modal
+          title="Edit User"
+          visible={isEditModalOpen}
+          onOk={handleEditOk}
+          onCancel={handleEditCancel}
+          confirmLoading={editLoading}
+        >
+          <Form form={form} layout="vertical" initialValues={selectedUser}>
+            <Form.Item name="fullName" label="Full Name" rules={[{ required: true, message: "Please enter the full name" }]}>
+              <Input />
+            </Form.Item>
+            <Form.Item name="email" label="Email" rules={[{ required: true, message: "Please enter the email" }]}>
+              <Input />
+            </Form.Item>
+            <Form.Item name="address" label="Address" rules={[{ required: true, message: "Please enter the address" }]}>
+              <Input />
+            </Form.Item>
+            <Form.Item name="phoneNumber" label="Phone Number" rules={[{ required: true, message: "Please enter the phone number" }]}>
+              <Input />
+            </Form.Item>
+            <Form.Item name="status" label="Status" rules={[{ required: true, message: "Please select the status" }]}>
+              <Select>
+                <Select.Option value="Active">Active</Select.Option>
+                <Select.Option value="Inactive">Inactive</Select.Option>
+              </Select>
+            </Form.Item>
+          </Form>
+        </Modal>
       </div>
     </ConfigProvider>
-  )
-};
+  );
+}
