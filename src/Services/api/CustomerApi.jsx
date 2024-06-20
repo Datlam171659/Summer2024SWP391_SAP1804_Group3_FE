@@ -41,5 +41,5 @@ export default {
     updateCustomer,
     getCustomerByEmail,
     getCustomerByPhoneNumber,
-    getCustomerByID
+    getCustomerByID,
 };

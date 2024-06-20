@@ -14,7 +14,7 @@ const Login = () => {
       setLoading(true);
       const { token } = await loginUser(values.email, values.password);
       if (token) {
-        navigate("/");
+        navigate("/dashboard");
       }
       else {
         message.error("Incorrect email or password. Please try again.");
