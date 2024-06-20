@@ -30,10 +30,10 @@ const PaymentPage = () => {
   const [customerAddress, setCustomerAddress] = useState("");
   const [paymentType, setPaymentType] = useState("");
 
-  const [pointsTotal, setPointsTotal] = useState(0);
+  const [addPoints, setPaddPoints] = useState(0);
   useEffect(() => {
     dispatch(fetchCustomerData());
-    setPointsTotal(calculatePoints(cartTotalAmount));
+    setPaddPoints(calculatePoints(cartTotalAmount));
   }, [dispatch, cartTotalAmount]);
 
   const calculatePoints = (totalAmount) => {
@@ -148,13 +148,13 @@ const PaymentPage = () => {
       message.error(`Tạo bảo hành thất bại: ${error.message}`);
     }
     try {
-      await dispatch(rewardCustomer({ customerId,  pointsTotal })).unwrap();
+      await dispatch(rewardCustomer({ customerId,  addPoints })).unwrap();
       message.success("Khách hàng đã được tích điểm thành công!");
     } catch (error) {
       message.error(`Tích điểm thất bại: ${error.message}`);
     }
   };
-console.log(pointsTotal)
+console.log(addPoints)
   const handleSelectChange = (value) => {
     setCustomerType(value);
     handleCancel();
