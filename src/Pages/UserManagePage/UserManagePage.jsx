@@ -55,7 +55,14 @@ export default function UserManagePage() {
 
   const showEditModal = (user) => {
     setSelectedUser(user);
-    editForm.setFieldsValue(user); 
+    editForm.setFieldsValue({
+      fullName: user.fullName,
+      email: user.email,
+      address: user.address,
+      phoneNumber: user.phoneNumber,
+      status: user.status,
+      roleId: user.roleId
+    });
     setIsEditModalOpen(true);
   };
 
@@ -311,6 +318,17 @@ export default function UserManagePage() {
             </Form.Item>
             <Form.Item name="address" label="Address" rules={[{ required: true, message: "Please enter the address" }]}>
               <Input />
+            </Form.Item>
+            <Form.Item
+              label="Vai trò"
+              name="roleId"
+              rules={[{ required: true, message: "Vui lòng chọn vai trò!" }]}
+            >
+              <Select placeholder="Chọn vai trò">
+                <Select.Option value={0}>Admin</Select.Option>
+                <Select.Option value={1}>Manager</Select.Option>
+                <Select.Option value={2}>Staff</Select.Option>
+              </Select>
             </Form.Item>
             <Form.Item name="phoneNumber" label="Phone Number" rules={[{ required: true, message: "Please enter the phone number" }]}>
               <Input />
