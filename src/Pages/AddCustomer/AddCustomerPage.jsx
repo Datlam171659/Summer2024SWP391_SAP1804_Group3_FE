@@ -66,6 +66,7 @@ const AddCustomerPage = () => {
               okText: "OK"
             });
             console.log('Failed to add customer:', error);
+
           }
         };
 

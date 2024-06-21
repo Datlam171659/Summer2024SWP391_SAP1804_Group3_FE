@@ -40,7 +40,7 @@ const ProductList = () => {
   const isLoadingDiscountData = useSelector(
     (state) => state.discount.isLoadingDiscountData
   );
-  const [discountDataSelect, setDiscountDataSelect] = useState(""); // State to store selected discount ID
+  const [discountDataSelect, setDiscountDataSelect] = useState("");
   const [discountPercentage, setDiscountPercentage] = useState(0);
 
   useEffect(() => {
@@ -93,7 +93,7 @@ const ProductList = () => {
   }, [dispatch]);
 
   const discountOptions = discountData.map((item) => ({
-    value: item.discountId,
+    value: item.discountCode,
     label: `${item.discountPercentage}%`,
   }));
 
@@ -104,26 +104,31 @@ const ProductList = () => {
       navigate("/sales-page/Payment");
     }
   };
-
+  console.log(discountData);
+  console.log(discountOptions);
   const handleSearch = () => {
     setLoading(true);
     try {
-      const item = productData.find(
-        (product) =>
-          product.itemId === searchQuery || product.itemName === searchQuery
+      const trimmedQuery = searchQuery.replace(/\s/g, "").toLowerCase();
+      const matchingItems = productData.filter((product) =>
+        product.itemId.replace(/\s/g, "").toLowerCase().includes(trimmedQuery) ||
+        product.itemName.replace(/\s/g, "").toLowerCase().includes(trimmedQuery)
       );
-      if (!item) {
+  
+      if (matchingItems.length === 0) {
         message.error("Không tìm thấy sản phẩm. Vui lòng thử lại");
       } else {
-        const itemExists = cartItems.some(
-          (cartItem) => cartItem.itemId === item.itemId
-        );
-        if (itemExists) {
-          message.error("Sản phẩm đã tồn tại");
-        } else {
-          dispatch(addItem(item));
-          message.success("Sản phẩm đã được thêm vào giỏ hàng");
-        }
+        matchingItems.forEach((item) => {
+          const itemExists = cartItems.some(
+            (cartItem) => cartItem.itemId === item.itemId
+          );
+          if (itemExists) {
+            message.error(`Sản phẩm ${item.itemName} đã tồn tại`);
+          } else {
+            dispatch(addItem(item));
+            message.success(`Sản phẩm ${item.itemName} đã được thêm vào giỏ hàng`);
+          }
+        });
       }
       setSearchQuery("");
     } catch (error) {
@@ -141,13 +146,14 @@ const ProductList = () => {
 
   const handleChange = (value) => {
     if (value === undefined) {
-      setDiscountDataSelect(""); // Clear selected discount ID
+      setDiscountDataSelect(""); 
       setDiscountPercentage(0);
     } else {
-      setDiscountDataSelect(value); // Set selected discount ID
+      setDiscountDataSelect(value); 
       const selectedDiscount = discountData.find(
-        (discount) => discount.discountId === value
+        (discount) => discount.discountCode === value
       );
+      console.log(selectedDiscount);
       if (selectedDiscount) {
         setDiscountPercentage(selectedDiscount.discountPercentage);
       }
@@ -336,10 +342,11 @@ const ProductList = () => {
                 {discountDataSelect
                   ? `${
                       discountData.find(
-                        (d) => d.discountId === discountDataSelect
+                        (d) => d.discountCode === discountDataSelect
                       ).discountPercentage
                     }%`
                   : "0%"}
+                  {console.log(discountData)}
               </p>
             </div>
           </div>
