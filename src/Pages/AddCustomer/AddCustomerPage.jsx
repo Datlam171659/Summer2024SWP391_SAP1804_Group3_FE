@@ -42,6 +42,7 @@ const AddCustomerPage = () => {
               content: `${errorMessage.join(' và ')} đã được sử dụng, xin vui lòng thử lại`,
               okText: "OK"
           });
+          setLoading(false)
           return;
           }
 
@@ -64,6 +65,7 @@ const AddCustomerPage = () => {
               okText: "OK"
             });
             console.log('Failed to add customer:', error);
+
           }
         };
 
