@@ -156,27 +156,26 @@ const ProductList = () => {
   return (
     <div className="product-list-container">
       <div className="header">
-        <h2 className="title">Jaegar Resto</h2>
+        <h2 className="title">Cửa hàng trang sức</h2>
         <div className="search-container">
           <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search for food, coffee, etc..."
+            placeholder="Tìm kiếm cho vàng,bạc,kim cương...."
             className="search-bar"
           />
           <Button onClick={handleSearch} loading={loading} className="search-btn">
-            Search
+            Tìm kiếm
           </Button>
         </div>
       </div>
       <div className="content">
         <div className="menu">
           <div className="menu-header">
-            <span>Choose Dishes</span>
             <Select
               style={{ width: 200 }}
               onChange={handleChange}
-              placeholder="Select discount"
+              placeholder="Chọn mã giảm giá"
               options={discountOptions}
               allowClear
             />
@@ -192,14 +191,14 @@ const ProductList = () => {
                   onClick={() => dispatch(addItem(product))}
                   className="add-to-cart-btn"
                 >
-                  Add to Cart
+                  Thêm vào giỏ hàng
                 </Button>
               </div>
             ))}
           </div>
         </div>
         <div className="cart">
-          <h2>Orders</h2>
+          <h2>Đơn hàng</h2>
           {cartItems.map((item) => (
             <div key={item.itemId} className="cart-item">
               <span>{item.itemName}</span>
@@ -214,25 +213,25 @@ const ProductList = () => {
               </div>
               <span className="item-price">{currencyFormatter.format(item.price)}</span>
               <Button type="primary" danger onClick={() => handleRemove(item.itemId)} className="remove-item-btn">
-                Remove
+                Xóa
               </Button>
             </div>
           ))}
           <div className="add-product">
             <Input placeholder="Enter Product ID" className="add-product-input" />
-            <Button className="add-product-btn">Add to Cart</Button>
+            <Button className="add-product-btn">Thêm vào giỏ hàng</Button>
           </div>
           <div className="cart-summary">
             <div>
-              <span>Total Quantity: </span>
+              <span>Tổng số lượng: </span>
               <span>{cartTotalQuantity}</span>
             </div>
             <div>
-              <span>Total Amount: </span>
+              <span>Tổng giá: </span>
               <span>{currencyFormatter.format(cartTotalAmount)}</span>
             </div>
             <Button type="primary" onClick={handleCreateOrder} className="checkout-btn">
-              Checkout
+              Thanh Toán
             </Button>
           </div>
         </div>
