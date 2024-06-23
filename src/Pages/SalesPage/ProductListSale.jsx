@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Input, message, Table, Select, Space, Spin } from "antd";
+import { Button, Input, message, Select } from "antd";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import {
@@ -12,42 +12,34 @@ import {
 } from "../../Features/product/cartSlice";
 import { fetchDiscountData } from "../../Features/Discount/DiscountSlice";
 import { fetchProductData } from "../../Features/product/productSlice";
+import "./ProductListSale.scss";
 
 const ProductList = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const productData = useSelector((state) => state.product.productData);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
-  const cartTotalQuantity = useSelector(
-    (state) => state.cart.cartTotalQuantity
-  );
+  const cartTotalQuantity = useSelector((state) => state.cart.cartTotalQuantity);
   const cartTotalAmount = useSelector((state) => state.cart.cartTotalAmount);
-  const buyGold24k = useSelector(
-    (state) => state.goldPrice.sellPrice[0]?.sellGold24k
-  );
-  const buyGold18k = useSelector(
-    (state) => state.goldPrice.sellPrice[0]?.sellGold18k
-  );
-  const buyGold14k = useSelector(
-    (state) => state.goldPrice.sellPrice[0]?.sellGold14k
-  );
-  const buyGold10k = useSelector(
-    (state) => state.goldPrice.sellPrice[0]?.sellGold10k
-  );
+  const buyGold24k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold24k);
+  const buyGold18k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold18k);
+  const buyGold14k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold14k);
+  const buyGold10k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold10k);
   const discountData = useSelector((state) => state.discount.discountData);
-  const isLoadingDiscountData = useSelector(
-    (state) => state.discount.isLoadingDiscountData
-  );
+  const isLoadingDiscountData = useSelector((state) => state.discount.isLoadingDiscountData);
   const [discountDataSelect, setDiscountDataSelect] = useState("");
   const [discountPercentage, setDiscountPercentage] = useState(0);
 
+  const currencyFormatter = new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  });
+
   useEffect(() => {
-    const cartTotalQuantity = cartItems.reduce(
-      (acc, item) => acc + item.itemQuantity,
-      0
-    );
+    const cartTotalQuantity = cartItems.reduce((acc, item) => acc + item.itemQuantity, 0);
 
     const cartTotalAmount = cartItems.reduce((acc, item) => {
       let goldType = "";
@@ -92,6 +84,10 @@ const ProductList = () => {
     dispatch(fetchProductData());
   }, [dispatch]);
 
+  useEffect(() => {
+    setFilteredProducts(productData);
+  }, [productData]);
+
   const discountOptions = discountData.map((item) => ({
     value: item.discountCode,
     label: `${item.discountPercentage}%`,
@@ -99,40 +95,30 @@ const ProductList = () => {
 
   const handleCreateOrder = () => {
     if (cartItems.length === 0) {
-      message.error("Giỏ hàng trống. Không thể tạo đơn.");
+      message.error("Cart is empty. Cannot create order.");
     } else {
       navigate("/sales-page/Payment");
     }
   };
-  console.log(discountData);
-  console.log(discountOptions);
+
   const handleSearch = () => {
     setLoading(true);
     try {
       const trimmedQuery = searchQuery.replace(/\s/g, "").toLowerCase();
-      const matchingItems = productData.filter((product) =>
-        product.itemId.replace(/\s/g, "").toLowerCase().includes(trimmedQuery) ||
-        product.itemName.replace(/\s/g, "").toLowerCase().includes(trimmedQuery)
+      const matchingItems = productData.filter(
+        (product) =>
+          product.itemId.replace(/\s/g, "").toLowerCase().includes(trimmedQuery) ||
+          product.itemName.replace(/\s/g, "").toLowerCase().includes(trimmedQuery)
       );
-  
+
+      setFilteredProducts(matchingItems);
+
       if (matchingItems.length === 0) {
-        message.error("Không tìm thấy sản phẩm. Vui lòng thử lại");
-      } else {
-        matchingItems.forEach((item) => {
-          const itemExists = cartItems.some(
-            (cartItem) => cartItem.itemId === item.itemId
-          );
-          if (itemExists) {
-            message.error(`Sản phẩm ${item.itemName} đã tồn tại`);
-          } else {
-            dispatch(addItem(item));
-            message.success(`Sản phẩm ${item.itemName} đã được thêm vào giỏ hàng`);
-          }
-        });
+        message.error("Product not found. Please try again.");
       }
       setSearchQuery("");
     } catch (error) {
-      message.error("Không tìm thấy sản phẩm. Vui lòng thử lại");
+      message.error("Product not found. Please try again.");
       setSearchQuery("");
     } finally {
       setLoading(false);
@@ -141,19 +127,18 @@ const ProductList = () => {
 
   const handleRemove = (itemId) => {
     dispatch(removeItem(itemId));
-    message.success("Sản phẩm đã được xóa khỏi giỏ hàng");
+    message.success("Product removed from cart.");
   };
 
   const handleChange = (value) => {
     if (value === undefined) {
-      setDiscountDataSelect(""); 
+      setDiscountDataSelect("");
       setDiscountPercentage(0);
     } else {
-      setDiscountDataSelect(value); 
+      setDiscountDataSelect(value);
       const selectedDiscount = discountData.find(
         (discount) => discount.discountCode === value
       );
-      console.log(selectedDiscount);
       if (selectedDiscount) {
         setDiscountPercentage(selectedDiscount.discountPercentage);
       }
@@ -168,208 +153,88 @@ const ProductList = () => {
     dispatch(decrementQuantity(itemId));
   };
 
-  const columns = [
-    {
-      title: "STT",
-      dataIndex: "numericalOrder",
-      key: "numericalOrder",
-      width: 50,
-      render: (_, __, index) => index + 1,
-    },
-    {
-      title: "Mã Hàng",
-      dataIndex: "serialNumber",
-      key: "serialNumber",
-      width: 120,
-    },
-    {
-      title: "Tên Hàng",
-      dataIndex: "itemName",
-      key: "itemName",
-      width: 150,
-    },
-    {
-      title: "Loại Hàng",
-      dataIndex: "accessoryType",
-      key: "accessoryType",
-      width: 100,
-    },
-    {
-      title: "Loại Vàng",
-      dataIndex: "goldType",
-      key: "goldType",
-      width: 100,
-      render: (_, record) => {
-        let goldType = "";
-        if (record.itemName.toLowerCase().includes("10k")) {
-          goldType = "10K";
-        } else if (record.itemName.toLowerCase().includes("14k")) {
-          goldType = "14K";
-        } else if (record.itemName.toLowerCase().includes("18k")) {
-          goldType = "18K";
-        } else if (record.itemName.toLowerCase().includes("24k")) {
-          goldType = "24K";
-        }
-        return goldType;
-      },
-    },
-    {
-      title: "Số Lượng",
-      dataIndex: "itemQuantity",
-      key: "itemQuantity",
-      width: 100,
-      render: (_, record) => (
-        <div className="flex items-center">
-          <button
-            onClick={() => handleDecrement(record.itemId)}
-            className="h-7 w-7 flex justify-center items-center text-[8px] bg-gray-200 hover:bg-gray-300 rounded-lg transition duration-200"
-          >
-            <MinusOutlined />
-          </button>
-          <span className="mx-2">{record.itemQuantity}</span>
-          <button
-            onClick={() => handleIncrement(record.itemId)}
-            className="h-7 w-7 flex justify-center items-center text-[8px] bg-gray-200 hover:bg-gray-300 rounded-lg transition duration-200"
-          >
-            <PlusOutlined />
-          </button>
-        </div>
-      ),
-    },
-    {
-      title: "Trọng Lượng",
-      dataIndex: "weight",
-      key: "weight",
-      width: 100,
-    },
-    {
-      title: "Giá",
-      dataIndex: "price",
-      key: "price",
-      width: 120,
-      render: (_, record) => {
-        let goldType = "";
-        if (record.itemName.toLowerCase().includes("10k")) {
-          goldType = "10K";
-        } else if (record.itemName.toLowerCase().includes("14k")) {
-          goldType = "14K";
-        } else if (record.itemName.toLowerCase().includes("18k")) {
-          goldType = "18K";
-        } else if (record.itemName.toLowerCase().includes("24k")) {
-          goldType = "24K";
-        }
-
-        let kara;
-        switch (goldType) {
-          case "10K":
-            kara = buyGold10k;
-            break;
-          case "14K":
-            kara = buyGold14k;
-            break;
-          case "18K":
-            kara = buyGold18k;
-            break;
-          case "24K":
-            kara = buyGold24k;
-            break;
-          default:
-            kara = 0;
-        }
-
-        return (record.weight * kara).toLocaleString("en-US", {
-          style: "currency",
-          currency: "USD",
-        });
-      },
-    },
-    {
-      title: "Thao Tác",
-      key: "action",
-      render: (_, record) => (
-        <Button
-          type="primary"
-          danger
-          onClick={() => handleRemove(record.itemId)}
-        >
-          Xóa
-        </Button>
-      ),
-    },
-  ];
-
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Bán hàng</h2>
-      <div className="mb-4 flex">
-        <Input
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Nhập mã hàng hoặc tên hàng"
-          className="mr-2"
-        />
-        <Button type="primary" onClick={handleSearch} loading={loading}>
-          {loading ? "Đang tìm kiếm..." : "Thêm vào giỏ hàng"}
-        </Button>
+    <div className="product-list-container">
+      <div className="header">
+        <h2 className="title">Jaegar Resto</h2>
+        <div className="search-container">
+          <Input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search for food, coffee, etc..."
+            className="search-bar"
+          />
+          <Button onClick={handleSearch} loading={loading} className="search-btn">
+            Search
+          </Button>
+        </div>
       </div>
-      <Spin spinning={loading}>
-        <Table
-          columns={columns}
-          dataSource={cartItems}
-          rowKey="itemId"
-          pagination={false}
-        />
-      </Spin>
-      <div className="flex">
-        <div className="flex-col  mt-6 bg-white p-6 pt-2 rounded-lg shadow-md w-[49%] mr-3s">
-          <div className="flex justify-between mb-3 text-lg font-medium">
-            <p className="font-bold mr-2">Tổng số lượng:</p>
-            <p>{cartTotalQuantity}</p>
+      <div className="content">
+        <div className="menu">
+          <div className="menu-header">
+            <span>Choose Dishes</span>
+            <Select
+              style={{ width: 200 }}
+              onChange={handleChange}
+              placeholder="Select discount"
+              options={discountOptions}
+              allowClear
+            />
           </div>
-          <div className="flex-col">
-            <div className="flex justify-between mb-3 text-lg font-medium ">
-              <p className="font-bold mr-2">Tổng tiền:</p>
-              <p>
-                {cartTotalAmount.toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                })}
-              </p>
-            </div>
-            <div className="flex justify-between mb-3 text-lg font-medium">
-              <p>Giảm giá:</p>
-              <p>
-                {discountDataSelect
-                  ? `${
-                      discountData.find(
-                        (d) => d.discountCode === discountDataSelect
-                      ).discountPercentage
-                    }%`
-                  : "0%"}
-                  {console.log(discountData)}
-              </p>
-            </div>
-          </div>
-          <div className="mt-4">
-            <Space wrap>
-              <span className="font-bold">Chọn khuyến mãi:</span>
-              <Select
-                style={{
-                  width: 200,
-                  height: 50,
-                }}
-                allowClear
-                onChange={handleChange}
-                options={discountOptions}
-              />
-            </Space>
+          <div className="product-grid">
+            {filteredProducts.map((product) => (
+              <div key={product.itemId} className="product-card">
+                <img src={product.image} alt={product.itemName} className="product-image" />
+                <h3 className="product-name">{product.itemName}</h3>
+                <p className="product-price">{currencyFormatter.format(product.price)}</p>
+                <Button
+                  type="primary"
+                  onClick={() => dispatch(addItem(product))}
+                  className="add-to-cart-btn"
+                >
+                  Add to Cart
+                </Button>
+              </div>
+            ))}
           </div>
         </div>
-
-        <div className="cart-summary mt-6 bg-white p-6 pt-2 rounded-lg shadow-md  w-[49%] ml-7 flex justify-center ">
-          <Button type="primary" onClick={handleCreateOrder} className="w-full h-14 bg-black text-white uppercase font-bold mt-12">
-            Tạo đơn hàng
-          </Button>
+        <div className="cart">
+          <h2>Orders</h2>
+          {cartItems.map((item) => (
+            <div key={item.itemId} className="cart-item">
+              <span>{item.itemName}</span>
+              <div className="quantity-controls">
+                <Button onClick={() => handleDecrement(item.itemId)} className="quantity-btn">
+                  <MinusOutlined />
+                </Button>
+                <span>{item.itemQuantity}</span>
+                <Button onClick={() => handleIncrement(item.itemId)} className="quantity-btn">
+                  <PlusOutlined />
+                </Button>
+              </div>
+              <span className="item-price">{currencyFormatter.format(item.price)}</span>
+              <Button type="primary" danger onClick={() => handleRemove(item.itemId)} className="remove-item-btn">
+                Remove
+              </Button>
+            </div>
+          ))}
+          <div className="add-product">
+            <Input placeholder="Enter Product ID" className="add-product-input" />
+            <Button className="add-product-btn">Add to Cart</Button>
+          </div>
+          <div className="cart-summary">
+            <div>
+              <span>Total Quantity: </span>
+              <span>{cartTotalQuantity}</span>
+            </div>
+            <div>
+              <span>Total Amount: </span>
+              <span>{currencyFormatter.format(cartTotalAmount)}</span>
+            </div>
+            <Button type="primary" onClick={handleCreateOrder} className="checkout-btn">
+              Checkout
+            </Button>
+          </div>
         </div>
       </div>
     </div>
