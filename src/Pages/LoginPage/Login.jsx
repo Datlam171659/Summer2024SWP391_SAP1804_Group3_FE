@@ -21,7 +21,7 @@ const Login = () => {
       }
     } catch (error) {
       console.error("Error during login:", error);
-      message.error("An error occurred during login. Please try again later.");
+      message.error("Xảy ra lỗi. Vui lòng thử lại");
     } finally {
       setLoading(false);
     }
