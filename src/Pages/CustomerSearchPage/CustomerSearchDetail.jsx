@@ -5,6 +5,7 @@ import { fetchCustomerDetail } from '../../Features/Customer/CustomerdetailSlice
 import { fetchAllInvoice } from '../../Features/Invoice/fullinvoiceSlice';
 import { fetchRewardAll } from '../../Features/Customer/rewardallSlice';
 import { Tabs, Table } from 'antd';
+import { UserOutlined } from "@ant-design/icons";
 
 function CustomerSearchDetail() {
   const dispatch = useDispatch();
@@ -111,13 +112,16 @@ console.log(customerRewards)
     <div className='m-6 flex-col justify-center align-middle mx-8'>
       <h1 className='text-4xl uppercase font-bold'>Trang thông tin khách hàng</h1>
       <div className='mt-8 flex'>
-        <div className='bg-white px-32 pt-2 rounded-lg shadow-md w-full ml-7 flex justify-center'>
+        <div className='bg-white px-32 pt-2 rounded-lg shadow-md w-full ml-1 flex justify-center'>
           <div>
             {customerLoading ? (
               <p>Đợi chút.....</p>
             ) : customer ? (
               <>
-                <div className='flex w-[500%] mt-5 mr-'>
+              <div className='flex mr-3'>
+              <UserOutlined className='mr-6 text-7xl mt-3' />
+              <div className='flex-col'>
+              <div className='flex w-[500%] mt-5 mr-'>
                   <h1 className='mr-6 text-xl font-bold uppercase'>Tên:</h1>
                   <p className='text-lg'>{customer.customerName}</p>
                 </div>
@@ -125,6 +129,8 @@ console.log(customerRewards)
                   <h1 className='mr-6 text-xl font-bold uppercase'>Số điện thoại:</h1>
                   <p className='text-lg'>{customer.phoneNumber}</p>
                 </div>
+                </div>
+              </div>      
               </>
             ) : (
               <p>Không tìm thấy thông tin khách hàng.</p>
