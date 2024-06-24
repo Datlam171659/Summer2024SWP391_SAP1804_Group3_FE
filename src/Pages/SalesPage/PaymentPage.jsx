@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { Button, Input, Table, Select, Space, ConfigProvider, Spin, Form, message } from "antd";
+import { Button, Input, Table, Select, Space, ConfigProvider, Spin, Form, message,Modal } from "antd";
 import { fetchCustomerData } from "../../Features/Customer/customerSlice";
 import { resetCart, updateCustomerInfo } from "../../Features/product/cartSlice";
 import SalepageApi from "../../Features/Salepage/SalepageApi";
 import { createInvoice } from "../../Features/Invoice/InvoiceSlice";
 import { addWarranty } from "../../Features/Warranty/warrantyaddSlice";
 import {rewardCustomer} from "../../Features/Customer/rewardSlice"
+import { requestPromotionCus } from "../../Features/Promotion/promotionSlice";
+import { fetchPromotions } from "../../Features/Promotion/promotionallSlice";
 const PaymentPage = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
+  let discountIdCounter = 5;
+  const isLoadingPromotion = useSelector(
+    (state) => state.promotions.isLoadingPromotion
+  );
   const customerData = useSelector((state) => state.customer.customerData);
   const isLoading = useSelector((state) => state.customer.isLoading);
   const buyGold24k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold24k);
@@ -20,7 +26,7 @@ const PaymentPage = () => {
   const cartTotalAmount = useSelector((state) => state.cart.cartTotalAmount);
   const cartTotalQuantity = useSelector((state) => state.cart.cartTotalQuantity);
   const customerInfor = useSelector((state) => state.cart.customerInfor);
-  
+  const promotions = useSelector((state) => state.promotions.promotions);
   const [customerType, setCustomerType] = useState('newCustomer');
   const [searchedCustomer, setSearchedCustomer] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -29,13 +35,19 @@ const PaymentPage = () => {
   const [customerGender, setCustomerGender] = useState("Nam");
   const [customerAddress, setCustomerAddress] = useState("");
   const [paymentType, setPaymentType] = useState("");
-
+  const [discountPct, setDiscountPct] = useState("");
+  const [discountId, setDiscountId] = useState("");
+   const [isModalVisible, setIsModalVisible] = useState(false); 
   const [addPoints, setPaddPoints] = useState(0);
+  const [promotionDataSelect, setPromotionDataSelect] = useState("");
+  const [promotionPercentage, setPromotionPercentage] = useState(0);
   useEffect(() => {
     dispatch(fetchCustomerData());
     setPaddPoints(calculatePoints(cartTotalAmount));
   }, [dispatch, cartTotalAmount]);
-
+  useEffect(() => {
+    dispatch(fetchPromotions());
+  }, [dispatch]);
   const calculatePoints = (totalAmount) => {
     let points = 0;
     if (totalAmount > 0) {
@@ -43,6 +55,12 @@ const PaymentPage = () => {
     }
     return points;
   };
+  const discountOptions = promotions
+  .filter((item) => customerInfor && item.cusId === customerInfor.id && item.status==="Duyệt")
+  .map((item) => ({
+    value: item.id,
+    label: `${item.discountPct}%`,
+  }));
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     switch (name) {
@@ -64,6 +82,33 @@ const PaymentPage = () => {
       default:
         break;
     }
+  };
+  
+  const handleOk = async () => {
+    discountIdCounter += 1; 
+    const discountId = `DISC8`; 
+
+    const discountData = {
+      id: discountId,
+      code: "DISCOUNT_CODE", 
+      discountPct,
+      status: "Chờ duyệt",
+      cusID: customerInfor.id,
+    };
+
+    try {
+      await dispatch(requestPromotionCus(discountData)).unwrap();
+      message.success("Yêu cầu giảm giá thành công!");
+      setIsModalVisible(false);
+    } catch (error) {
+      message.error(`Yêu cầu giảm giá thất bại: ${error.message}`);
+    }
+  };
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+ const handleModalCancel = () => {
+    setIsModalVisible(false);
   };
 
   const handleSearchClick = () => {
@@ -238,6 +283,20 @@ console.log(addPoints)
     },
   ];
 
+  const handleChange = (value) => {
+    if (value === undefined) {
+      setPromotionDataSelect("");
+      setPromotionPercentage(0);
+    } else {
+      setPromotionDataSelect(value);
+      const selectedDiscount = promotions.find(
+        (discount) => discount.id === value
+      );
+      if (selectedDiscount) {
+        setPromotionPercentage(selectedDiscount.discountPct);
+      }
+    }
+  };
   return (
     <ConfigProvider
       theme={{
@@ -384,6 +443,26 @@ console.log(addPoints)
                   đ
                 </span>
               </div>
+              <div>
+          <Button type="primary" onClick={showModal}>
+            Yêu Cầu Giảm Giá
+          </Button>
+          <Select
+              style={{ width: 200 }}
+              onChange={handleChange}
+              placeholder="Chọn mã giảm giá"
+              loading={isLoadingPromotion}
+              options={discountOptions}
+              allowClear
+            />
+          <Modal title="Yêu Cầu Giảm Giá" visible={isModalVisible} onOk={handleOk} onCancel={handleModalCancel}>
+            <Form layout="vertical">
+              <Form.Item label="Phần Trăm Giảm Giá" required>
+                <Input value={discountPct} onChange={(e) => setDiscountPct(e.target.value)} />
+              </Form.Item>
+            </Form>
+          </Modal>
+        </div>
             </div>
           </div>
           <div className="cart-summary mt-4 bg-white p-6 rounded-lg shadow-md w-1/2">

@@ -26,6 +26,9 @@ const WarrantyComponent = React.forwardRef(({ customerInfor }, ref) => {
                 <li className="text-sm font-semibold">Địa chỉ: {customerInfor.address}</li>
                 <li className="text-sm font-semibold">Sđt: {customerInfor.phoneNumber}</li>
             </ul>
+            <div>
+                
+            </div>
             <div className='w-full flex justify-end mt-6'>
                 <div className='w-1/4'>
                     <p className="w-full flex justify-between text-md font-semibold"><span className='font-semibold mr-3'>Ngày mua:</span> <span>{currentDateString}</span></p>
