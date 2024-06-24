@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Input, message, Table, Select, Space, Spin } from "antd";
-import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Input, message, Table, Select, Space, Spin, Modal } from "antd";
+import { MinusOutlined, PlusOutlined, ScanOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import {
   addItem,
@@ -12,12 +12,15 @@ import {
 } from "../../Features/product/cartSlice";
 import { fetchDiscountData } from "../../Features/Discount/DiscountSlice";
 import { fetchProductData } from "../../Features/product/productSlice";
+import { Html5QrcodeScanner } from "html5-qrcode";
 
 const ProductList = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const productData = useSelector((state) => state.product.productData);
   const [loading, setLoading] = useState(false);
+  const [isScanModalVisible, setIsScanModalVisible] = useState(false);
+
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const cartTotalQuantity = useSelector(
@@ -92,6 +95,34 @@ const ProductList = () => {
     dispatch(fetchProductData());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (!isScanModalVisible) return;
+
+    const scanner = new Html5QrcodeScanner('reader', {
+      qrbox: {
+        width: 250,
+        height: 250,
+      },
+      fps: 5,
+    });
+
+    const success = (result) => {
+      scanner.clear();
+      setSearchQuery(result);
+      setIsScanModalVisible(false);
+    };
+
+    const error = (err) => {
+      console.warn(err);
+    };
+
+    scanner.render(success, error);
+
+    return () => {
+      scanner.clear();
+    };
+  }, [isScanModalVisible]);
+
   const discountOptions = discountData.map((item) => ({
     value: item.discountCode,
     label: `${item.discountPercentage}%`,
@@ -114,7 +145,7 @@ const ProductList = () => {
         product.itemId.replace(/\s/g, "").toLowerCase().includes(trimmedQuery) ||
         product.itemName.replace(/\s/g, "").toLowerCase().includes(trimmedQuery)
       );
-  
+
       if (matchingItems.length === 0) {
         message.error("Không tìm thấy sản phẩm. Vui lòng thử lại");
       } else {
@@ -146,10 +177,10 @@ const ProductList = () => {
 
   const handleChange = (value) => {
     if (value === undefined) {
-      setDiscountDataSelect(""); 
+      setDiscountDataSelect("");
       setDiscountPercentage(0);
     } else {
-      setDiscountDataSelect(value); 
+      setDiscountDataSelect(value);
       const selectedDiscount = discountData.find(
         (discount) => discount.discountCode === value
       );
@@ -302,15 +333,31 @@ const ProductList = () => {
     <div className="p-4">
       <h2 className="text-xl font-bold mb-4">Bán hàng</h2>
       <div className="mb-4 flex">
-        <Input
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Nhập mã hàng hoặc tên hàng"
-          className="mr-2"
-        />
-        <Button type="primary" onClick={handleSearch} loading={loading}>
-          {loading ? "Đang tìm kiếm..." : "Thêm vào giỏ hàng"}
-        </Button>
+        <div className="flex w-full justify-between">
+          <div className="w-[85%] flex">
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Nhập mã hàng hoặc tên hàng"
+              className="mr-2"
+            />
+            <Button type="primary" onClick={handleSearch} loading={loading}>
+              {loading ? "Đang tìm kiếm..." : "Thêm vào giỏ hàng"}
+            </Button>
+
+          </div>
+
+          <Button
+            type="default"
+            className="ml-2 flex items-center"
+            style={{ fontWeight: "600", heigh: "30px" }}
+            onClick={() => setIsScanModalVisible(true)}
+          >
+            <ScanOutlined className="mr-2" />
+            Quét QR
+          </Button>
+        </div>
+
       </div>
       <Spin spinning={loading}>
         <Table
@@ -340,13 +387,12 @@ const ProductList = () => {
               <p>Giảm giá:</p>
               <p>
                 {discountDataSelect
-                  ? `${
-                      discountData.find(
-                        (d) => d.discountCode === discountDataSelect
-                      ).discountPercentage
-                    }%`
+                  ? `${discountData.find(
+                    (d) => d.discountCode === discountDataSelect
+                  ).discountPercentage
+                  }%`
                   : "0%"}
-                  {console.log(discountData)}
+                {console.log(discountData)}
               </p>
             </div>
           </div>
@@ -372,6 +418,19 @@ const ProductList = () => {
           </Button>
         </div>
       </div>
+      <Modal
+        title="Quét QR"
+        visible={isScanModalVisible}
+        onCancel={() => setIsScanModalVisible(false)}
+        footer={[
+          <Button key="back" onClick={() => setIsScanModalVisible(false)}>
+            Hủy
+          </Button>,
+        ]}
+      >
+        <div id='reader'></div>
+      </Modal>
+
     </div>
   );
 };
