@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Input, message, Select } from "antd";
-import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Input, message, Select, Spin, Modal } from "antd";
+import { MinusOutlined, PlusOutlined, ScanOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import {
   addItem,
@@ -13,6 +13,7 @@ import {
 import { fetchDiscountData } from "../../Features/Discount/DiscountSlice";
 import { fetchProductData } from "../../Features/product/productSlice";
 import "./ProductListSale.scss";
+import { Html5QrcodeScanner } from "html5-qrcode";
 
 const ProductList = () => {
   const navigate = useNavigate();
@@ -20,6 +21,8 @@ const ProductList = () => {
   const productData = useSelector((state) => state.product.productData);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isScanModalVisible, setIsScanModalVisible] = useState(false);
+
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const cartTotalQuantity = useSelector((state) => state.cart.cartTotalQuantity);
@@ -33,9 +36,9 @@ const ProductList = () => {
   const [discountDataSelect, setDiscountDataSelect] = useState("");
   const [discountPercentage, setDiscountPercentage] = useState(0);
 
-  const currencyFormatter = new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
+  const currencyFormatter = new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
   });
 
   useEffect(() => {
@@ -87,6 +90,34 @@ const ProductList = () => {
   useEffect(() => {
     setFilteredProducts(productData);
   }, [productData]);
+
+  useEffect(() => {
+    if (!isScanModalVisible) return;
+
+    const scanner = new Html5QrcodeScanner("reader", {
+      qrbox: {
+        width: 250,
+        height: 250,
+      },
+      fps: 5,
+    });
+
+    const success = (result) => {
+      scanner.clear();
+      setSearchQuery(result);
+      setIsScanModalVisible(false);
+    };
+
+    const error = (err) => {
+      console.warn(err);
+    };
+
+    scanner.render(success, error);
+
+    return () => {
+      scanner.clear();
+    };
+  }, [isScanModalVisible]);
 
   const discountOptions = discountData.map((item) => ({
     value: item.discountCode,
@@ -167,6 +198,15 @@ const ProductList = () => {
           <Button onClick={handleSearch} loading={loading} className="search-btn">
             Tìm kiếm
           </Button>
+          <Button
+            type="default"
+            className="ml-2 flex items-center"
+            style={{ fontWeight: "600", height: "30px" }}
+            onClick={() => setIsScanModalVisible(true)}
+          >
+            <ScanOutlined className="mr-2" />
+            Quét QR
+          </Button>
         </div>
       </div>
       <div className="content">
@@ -212,7 +252,12 @@ const ProductList = () => {
                 </Button>
               </div>
               <span className="item-price">{currencyFormatter.format(item.price)}</span>
-              <Button type="primary" danger onClick={() => handleRemove(item.itemId)} className="remove-item-btn">
+              <Button
+                type="primary"
+                danger
+                onClick={() => handleRemove(item.itemId)}
+                className="remove-item-btn"
+              >
                 Xóa
               </Button>
             </div>
@@ -236,6 +281,18 @@ const ProductList = () => {
           </div>
         </div>
       </div>
+      <Modal
+        title="Quét QR"
+        visible={isScanModalVisible}
+        onCancel={() => setIsScanModalVisible(false)}
+        footer={[
+          <Button key="back" onClick={() => setIsScanModalVisible(false)}>
+            Hủy
+          </Button>,
+        ]}
+      >
+        <div id="reader"></div>
+      </Modal>
     </div>
   );
 };
