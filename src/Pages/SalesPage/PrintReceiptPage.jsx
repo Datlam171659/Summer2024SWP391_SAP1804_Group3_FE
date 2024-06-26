@@ -62,6 +62,7 @@ function PrintReceiptPage() {
         <WarrantyComponent
           ref={warrantyComponentRef}
           customerInfor={customerInfor}
+          cartItems={cartItems}
         />
       </div>
     </ConfigProvider>

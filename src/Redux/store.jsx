@@ -21,6 +21,7 @@ import userAddReducer from '../Features/User/userAddSlice';
 import rewardSlice from '../Features/Customer/rewardSlice';
 import userEditReducer from '../Features/User/userEditSlice';
 import rewardallSlice from '../Features/Customer/rewardallSlice';
+import promotionReducer from '../Features/Promotion/promotionallSlice';
 const store = configureStore({
   reducer: {
     product: productReducer,
@@ -44,6 +45,7 @@ const store = configureStore({
     reward:rewardSlice,
     rewardsAll:rewardallSlice,
     userEdit: userEditReducer,
+    promotions: promotionReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
