@@ -335,7 +335,7 @@ const ProductList = () => {
           <div className="product-grid">
             {filteredProducts.map((product) => (
               <div key={product.itemId} className="product-card">
-                <img src={product.image} alt={product.itemName} className="product-image" />
+                <img src={product.itemImagesId} alt={product.itemName} className="product-image" />
                 <h3 className="product-name">{product.itemName}</h3>
                 <p className="product-price">{currencyFormatter.format(product.price)}</p>
                 <Button
@@ -347,6 +347,7 @@ const ProductList = () => {
                 </Button>
               </div>
             ))}
+            
           </div>
         </div>
         <div className="cart">
