@@ -4,8 +4,8 @@ import {requestPromotion} from '../../Services/api/promotionApi'
 
 export const requestPromotionCus = createAsyncThunk(
   'promotion/requestPromotionCus',
-  async ({ id, code, discountPct, status, cusID }) => {
-    const response = await requestPromotion(id, code, discountPct, status, cusID );
+  async ({ id, code, discountPct, status, cusID,description }) => {
+    const response = await requestPromotion(id, code, discountPct, status, cusID,description );
     return response.data;
   }
 );

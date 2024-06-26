@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Input, message, Select, Spin, Modal } from "antd";
+import { Button, Input, message, Select, Spin, Modal,Form } from "antd";
 import { MinusOutlined, PlusOutlined, ScanOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import {
@@ -14,7 +14,11 @@ import { fetchDiscountData } from "../../Features/Discount/DiscountSlice";
 import { fetchProductData } from "../../Features/product/productSlice";
 import "./ProductListSale.scss";
 import { Html5QrcodeScanner } from "html5-qrcode";
-
+import { fetchCustomerData } from "../../Features/Customer/customerSlice";
+import { updateCustomerInfo } from "../../Features/product/cartSlice";
+import SalepageApi from "../../Features/Salepage/SalepageApi";
+import { requestPromotionCus } from "../../Features/Promotion/promotionSlice";
+import { fetchPromotions } from "../../Features/Promotion/promotionallSlice";
 const ProductList = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -22,7 +26,9 @@ const ProductList = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isScanModalVisible, setIsScanModalVisible] = useState(false);
-
+  const isLoadingPromotion = useSelector(
+    (state) => state.promotions.isLoadingPromotion
+  );
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const cartTotalQuantity = useSelector((state) => state.cart.cartTotalQuantity);
@@ -35,12 +41,29 @@ const ProductList = () => {
   const isLoadingDiscountData = useSelector((state) => state.discount.isLoadingDiscountData);
   const [discountDataSelect, setDiscountDataSelect] = useState("");
   const [discountPercentage, setDiscountPercentage] = useState(0);
-
+  const customerData = useSelector((state) => state.customer.customerData);
+  const isLoading = useSelector((state) => state.customer.isLoading);
+  const customerInfor = useSelector((state) => state.cart.customerInfor);
+  const [customerType, setCustomerType] = useState('newCustomer');
+  const [searchedCustomer, setSearchedCustomer] = useState(null);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [customerGender, setCustomerGender] = useState("Nam");
+  const [customerAddress, setCustomerAddress] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState(false); 
+  const [discountPct, setDiscountPct] = useState("");
+  const[description,setDescription]=useState("")
+  const promotions = useSelector((state) => state.promotions.promotions);
+  const [promotionDataSelect, setPromotionDataSelect] = useState("");
+  const [promotionPercentage, setPromotionPercentage] = useState(0);
   const currencyFormatter = new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
   });
-
+  useEffect(() => {
+    dispatch(fetchPromotions());
+  }, [dispatch]);
   useEffect(() => {
     const cartTotalQuantity = cartItems.reduce((acc, item) => acc + item.itemQuantity, 0);
 
@@ -77,14 +100,83 @@ const ProductList = () => {
       const itemTotalPrice = item.weight * item.itemQuantity * kara;
       return acc + itemTotalPrice;
     }, 0);
-
-    const discountedAmount = cartTotalAmount * (1 - discountPercentage / 100);
+    const discountedAmount = cartTotalAmount * (1 - promotionPercentage / 100);
     dispatch(updateTotals({ cartTotalQuantity, cartTotalAmount: discountedAmount }));
-  }, [cartItems, buyGold10k, buyGold14k, buyGold18k, buyGold24k, discountPercentage, dispatch]);
+  }, [cartItems, buyGold10k, buyGold14k, buyGold18k, buyGold24k, promotionPercentage, dispatch]);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    switch (name) {
+      case 'customerName':
+        setCustomerName(value);
+        break;
+      case 'address':
+        setCustomerAddress(value);
+        break;
+      case 'gender':
+        setCustomerGender(value);
+        break;
+      case 'phoneNumber':
+        setPhoneNumber(value);
+        break;
+      case 'email':
+        setCustomerEmail(value);
+        break;
+      default:
+        break;
+    }
+  };
+  const handleSearchClick = () => {
+    if (!phoneNumber) {
+      message.warning("Vui lòng nhập số điện thoại");
+      return;
+    }
 
+    const foundCustomer = customerData.find(customer => customer.phoneNumber === phoneNumber && customer.status === "active");
+    if (foundCustomer) {
+      setSearchedCustomer(foundCustomer);
+      dispatch(updateCustomerInfo(foundCustomer));
+    } else {
+      message.warning("Không tìm thấy khách hàng với số điện thoại này");
+    }
+  };
+
+  const handleSubmit = async () => {
+    const newCustomerInfo = {
+      customerName,
+      address: customerAddress,
+      gender: customerGender,
+      phoneNumber,
+      email: customerEmail,
+      status: "active",
+    };
+
+    try {
+      const response = await SalepageApi.createCustomer(newCustomerInfo);
+      message.success("Khách hàng đã được tạo thành công");
+      dispatch(updateCustomerInfo(response));
+    } catch (error) {
+      message.error(`Có lỗi xảy ra: ${error.message}`);
+    }
+  };
+
+  const handleCancel = () => {
+    setCustomerName("");
+    setCustomerAddress("");
+    setCustomerGender("Nam");
+    setPhoneNumber("");
+    setCustomerEmail("");
+    setSearchedCustomer(null);
+    dispatch(updateCustomerInfo([]));
+  };
+
+  const handleSelectChange = (value) => {
+    setCustomerType(value);
+    handleCancel();
+  };
   useEffect(() => {
     dispatch(fetchDiscountData());
     dispatch(fetchProductData());
+    dispatch(fetchCustomerData());
   }, [dispatch]);
 
   useEffect(() => {
@@ -119,11 +211,12 @@ const ProductList = () => {
     };
   }, [isScanModalVisible]);
 
-  const discountOptions = discountData.map((item) => ({
-    value: item.discountCode,
-    label: `${item.discountPercentage}%`,
+  const discountOptions = promotions
+  .filter((item) => customerInfor && item.cusId === customerInfor.id && item.status==="Duyệt")
+  .map((item) => ({
+    value: item.id,
+    label: `${item.discountPct}%`,
   }));
-
   const handleCreateOrder = () => {
     if (cartItems.length === 0) {
       message.error("Cart is empty. Cannot create order.");
@@ -145,15 +238,41 @@ const ProductList = () => {
       setFilteredProducts(matchingItems);
 
       if (matchingItems.length === 0) {
-        message.error("Product not found. Please try again.");
+        message.error("Không tìm thấy sản phẩm .Hãy thử lại.");
       }
       setSearchQuery("");
     } catch (error) {
-      message.error("Product not found. Please try again.");
+      message.error("Không tìm thấy sản phẩm .Hãy thử lại.");
       setSearchQuery("");
     } finally {
       setLoading(false);
     }
+  };
+  const handleOk = async () => {
+    const discountId = `DISC8`; 
+
+    const discountData = {
+      id: discountId,
+      code: "DISCOUNT_CODE", 
+      discountPct,
+      status: "Chờ duyệt",
+      description,
+      cusID: customerInfor.id,
+    };
+
+    try {
+      await dispatch(requestPromotionCus(discountData)).unwrap();
+      message.success("Yêu cầu giảm giá thành công!");
+      setIsModalVisible(false);
+    } catch (error) {
+      message.error(`Yêu cầu giảm giá thất bại: ${error.message}`);
+    }
+  };
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+ const handleModalCancel = () => {
+    setIsModalVisible(false);
   };
 
   const handleRemove = (itemId) => {
@@ -163,15 +282,15 @@ const ProductList = () => {
 
   const handleChange = (value) => {
     if (value === undefined) {
-      setDiscountDataSelect("");
-      setDiscountPercentage(0);
+      setPromotionDataSelect("");
+      setPromotionPercentage(0);
     } else {
-      setDiscountDataSelect(value);
-      const selectedDiscount = discountData.find(
-        (discount) => discount.discountCode === value
+      setPromotionDataSelect(value);
+      const selectedDiscount = promotions.find(
+        (discount) => discount.id === value
       );
       if (selectedDiscount) {
-        setDiscountPercentage(selectedDiscount.discountPercentage);
+        setPromotionPercentage(selectedDiscount.discountPct);
       }
     }
   };
@@ -212,13 +331,6 @@ const ProductList = () => {
       <div className="content">
         <div className="menu">
           <div className="menu-header">
-            <Select
-              style={{ width: 200 }}
-              onChange={handleChange}
-              placeholder="Chọn mã giảm giá"
-              options={discountOptions}
-              allowClear
-            />
           </div>
           <div className="product-grid">
             {filteredProducts.map((product) => (
@@ -239,6 +351,124 @@ const ProductList = () => {
         </div>
         <div className="cart">
           <h2>Đơn hàng</h2>
+          <div>
+          <Button type="primary" onClick={showModal}>
+            Yêu Cầu Giảm Giá
+          </Button>
+          <Select
+              style={{ width: 200 }}
+              onChange={handleChange}
+              placeholder="Chọn mã giảm giá"
+              loading={isLoadingPromotion}
+              options={discountOptions}
+              allowClear
+            />
+          <Modal title="Yêu Cầu Giảm Giá" visible={isModalVisible} onOk={handleOk} onCancel={handleModalCancel}>
+            <Form layout="vertical">
+              <Form.Item label="Phần Trăm Giảm Giá" required>
+                <Input value={discountPct} onChange={(e) => setDiscountPct(e.target.value)} />
+              
+              </Form.Item>
+              <Form.Item label="Nội dung" required>
+              <Input value={description} onChange={(e) => setDescription(e.target.value)} />             
+              </Form.Item>     
+            </Form>
+          </Modal>
+        </div>
+          <div className="customer-info bg-white p-4 rounded-lg mb-4">
+        <div className="flex items-center mb-[15px]">
+          <span className="block min-w-[150px] font-medium">Loại khách hàng</span>
+          <Select
+            value={customerType}
+            onChange={handleSelectChange}
+            className="w-[130px]"
+          >
+            <Select.Option value="newCustomer">Khách mới</Select.Option>
+            <Select.Option value="member">Thành viên</Select.Option>
+          </Select>
+        </div>
+        {customerType === "member" && (
+          <div className="member-info">
+            <div className="flex items-center mb-[15px]">
+              <span className="block min-w-[150px] font-medium">Số điện thoại</span>
+              <Input
+                name="phoneNumber"
+                value={phoneNumber}
+                onChange={handleInputChange}
+                className="rounded-[5px]"
+              />
+              <Button onClick={handleSearchClick} className="ml-2">Tìm kiếm</Button>
+            </div>
+            {isLoading ? (
+              <Spin className="ml-[100px]" />
+            ) : searchedCustomer && (
+              <div className="customer-details ml-[100px]">
+                <p><strong>Tên:</strong> {searchedCustomer.customerName}</p>
+                <p><strong>Địa chỉ:</strong> {searchedCustomer.address}</p>
+                <p><strong>Giới tính:</strong> {searchedCustomer.gender}</p>
+                <p><strong>Email:</strong> {searchedCustomer.email}</p>
+              </div>
+            )}
+          </div>
+        )}
+        {customerType === "newCustomer" && (
+          <div className="new-customer">
+            <div className="flex items-center mb-[15px]">
+              <span className="block min-w-[150px] font-medium">Tên khách hàng</span>
+              <Input
+                name="customerName"
+                value={customerName}
+                onChange={handleInputChange}
+                className="rounded-[5px]"
+              />
+            </div>
+            <div className="flex items-center mb-[15px]">
+              <span className="block min-w-[150px] font-medium">Địa chỉ</span>
+              <Input
+                name="address"
+                value={customerAddress}
+                onChange={handleInputChange}
+                className="rounded-[5px]"
+              />
+            </div>
+            <div className="flex items-center mb-[15px]">
+              <span className="block min-w-[150px] font-medium">Giới tính</span>
+              <Select
+                name="gender"
+                value={customerGender}
+                onChange={value => setCustomerGender(value)}
+                className="rounded-[5px]"
+              >
+                <Select.Option value="Nam">Nam</Select.Option>
+                <Select.Option value="Nữ">Nữ</Select.Option>
+                <Select.Option value="Khác">Khác</Select.Option>
+              </Select>
+            </div>
+            <div className="flex items-center mb-[15px]">
+              <span className="block min-w-[150px] font-medium">Số điện thoại</span>
+              <Input
+                name="phoneNumber"
+                value={phoneNumber}
+                onChange={handleInputChange}
+                className="rounded-[5px]"
+              />
+            </div>
+            <div className="flex items-center mb-[15px]">
+              <span className="block min-w-[150px] font-medium">Email</span>
+              <Input
+                name="email"
+                value={customerEmail}
+                onChange={handleInputChange}
+                className="rounded-[5px]"
+              />
+            </div>
+            <div className="flex justify-center">
+              <Button onClick={handleSubmit} className="mx-2">Tạo mới</Button>
+              <Button onClick={handleCancel} className="mx-2">Hủy</Button>
+            </div>
+          </div>
+        )}
+      </div>
           {cartItems.map((item) => (
             <div key={item.itemId} className="cart-item">
               <span>{item.itemName}</span>

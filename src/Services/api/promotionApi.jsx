@@ -1,6 +1,6 @@
 import axios from "../axios/config";
-const requestPromotion = (id,code,discountPct,status,cusID) => {
-  return axios.post(`/api/CustomerPromotion`, {id,code,discountPct,status,cusID});
+const requestPromotion = (id,code,discountPct,status,cusID,description) => {
+  return axios.post(`/api/CustomerPromotion`, {id,code,discountPct,status,cusID,description});
 };
 const promotionAll = () => {
   return axios.get(`/api/CustomerPromotion`);

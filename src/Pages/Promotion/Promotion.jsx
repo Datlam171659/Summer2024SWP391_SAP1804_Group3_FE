@@ -65,6 +65,11 @@ function Promotion() {
       key: "status",
     },
     {
+      title: "Nội dung",
+      dataIndex: "description",
+      key: "description",
+    },
+    {
       title: "Action",
       dataIndex: "",
       key: "action",
