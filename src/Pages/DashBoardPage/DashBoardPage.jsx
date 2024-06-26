@@ -1,76 +1,87 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { Line } from '@ant-design/charts';
 import '../DashBoardPage/DashBoardPage.scss';
-import {Row, Col, Card, Table} from 'antd';
-
+import { Space } from 'antd';
+import { UserOutlined, ShoppingCartOutlined, ShoppingOutlined, DollarCircleOutlined } from '@ant-design/icons';
+import CustomerApi from '../../Services/api/CustomerApi';
+import {getinvoiceAll} from '../../Services/api/InvoiceApi'
+import {getProductAll} from '../../Services/api/productApi'
+import DashBoardCard from './DashboardCard';
 const DashBoardPage = () => {
-    const data = [
-        {
-          key: '1',
-          name: 'John',
-          sales: 32,
-          revenue: '$1000',
-        },
-        {
-          key: '2',
-          name: 'Joe',
-          sales: 42,
-          revenue: '$1500',
-        }
-      ];
-    
-      const columns = [
-        {
-          title: 'Name',
-          dataIndex: 'name',
-          key: 'name',
-        },
-        {
-          title: 'Sales',
-          dataIndex: 'sales',
-          key: 'sales',
-        },
-        {
-          title: 'Revenue',
-          dataIndex: 'revenue',
-          key: 'revenue',
-        },
-      ];
+  const [customerCount, setCustomerCount] = useState(0); 
+  const [invoiceCount, setInvoiceCount] = useState(0); 
+  const [productCount, setProductCount] = useState(0); 
+      const [data, setData] = useState([
+        {date: "2022-01-01", value: 3000},
+        {date: "2022-02-01", value: 3500},
+        {date: "2022-03-01", value: 5000},
+        {date: "2022-04-01", value: 4000},
+      ]);
 
-    //   useEffect(() => {
-    //     axios.get('https://api.example.com/top-sellers')
-    //       .then((response) => {
-    //            const topSellers = response.data.slice(0,3); // Get the first 3 records
-    //            setData(topSellers);
-    //       })
-    //       .catch((error) => {
-    //            console.error(`Error: ${error}`);
-    //       });
-    //   }, []);
-    return (
+      const config = {
+        data,
+        xField: 'date',
+        yField: 'value',
+        seriesField: 'series',
+        color: '#1970F1',
+        width: 700, 
+        height: 400, 
+      };
+      useEffect(() => {
+        const fetchCustomerCount = async () => {
+            try {
+                const customers = await CustomerApi.getAllCustomers();
+                
+                if (Array.isArray(customers)) { 
+                    setCustomerCount(customers.length); 
+                }
+            } catch (error) {
+                console.error(`Error: ${error}`);
+            }
+        }
+
+        const fetchInvoiceCount = async () => {
+          try {
+            const response = await getinvoiceAll();
+            if (response && Array.isArray(response.data)) {
+              setInvoiceCount(response.data.length);
+            }
+          } catch (error) {
+            console.error(`Error: ${error}`);
+          }
+        }
+
+        const fetchProductCount = async () => {
+          try {
+            const response = await getProductAll();
+            if (response && Array.isArray(response.data)) {
+              setProductCount(response.data.length);
+            }
+          } catch (error) {
+            console.error(`Error: ${error}`);
+          }
+        }
+
+        fetchCustomerCount(); 
+        fetchInvoiceCount();
+        fetchProductCount();
+      }, []);  
+
+      return (
         <div className='dashboard-content'>
-            <Row gutter={16}>
-                <Col className="gutter-row" span={12}>
-                    <div className="overview">
-                        <Card title="Sales Overview">Content</Card>
-                        <Card title="Purchase Overview">Content</Card>
-                        <Card title="Monthly Earnings Chart">Content</Card>
-                        <Table title={() => <b>Top Sellers</b>} dataSource={data} 
-                                                            columns={columns} 
-                                                            pagination={false}
-                                                        />
-                    </div>
-                </Col>
-                <Col className="gutter-row" span={12}>
-                    <div className="overView">
-                        <Card title="Inventory Summary">Content</Card>
-                        <Card title="Product Summary">Content</Card>
-                        <Card title="Top Selling Stocks">Content</Card>
-                        <Card title="Low Quantity Stocks">Content</Card>
-                    </div>
-                </Col>
-            </Row>
+          <div className="overview">
+            <Space direction='horizontal'>
+              <DashBoardCard  icon={<UserOutlined style={{color: "red"}} />} title={"Customers"} value={customerCount}/>
+              <DashBoardCard  icon={<ShoppingCartOutlined style={{color: "blue"}}/>} title={"Orders"} value={invoiceCount}/>
+              <DashBoardCard  icon={<ShoppingOutlined style={{color: "brown"}}/>} title={"Inventory"} value={productCount}/>
+              <DashBoardCard  icon={<DollarCircleOutlined style={{color: "green"}}/>} title={"Revenue"} value={4586}/>
+            </Space>
+          </div>
+          <div className="line-chart-container">
+            <Line {...config} />
+          </div>
         </div>
-    )
+      )
 }
 
 export default DashBoardPage

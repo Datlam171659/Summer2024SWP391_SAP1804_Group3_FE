@@ -17,8 +17,8 @@ const ExchangeRatePage = () => {
                     <thead>
                         <tr>
                             <th className="py-3 text-lg  bg-[#1e1e28] text-white">Loại vàng</th>
-                            <th className="py-3 text-lg  bg-[#1e1e28] text-white">Giá Mua</th>
-                            <th className="py-3 text-lg  bg-[#1e1e28] text-white">Giá Bán</th>
+                            <th className="py-3 text-lg  bg-[#1e1e28] text-white">Giá Mua (đ)</th>
+                            <th className="py-3 text-lg  bg-[#1e1e28] text-white">Giá Bán (đ)</th>
                         </tr>
                     </thead>
                     <tbody>

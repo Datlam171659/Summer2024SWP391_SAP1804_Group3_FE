@@ -14,14 +14,14 @@ const Login = () => {
       setLoading(true);
       const { token } = await loginUser(values.email, values.password);
       if (token) {
-        navigate("/");
+        navigate("/dashboard");
       }
       else {
         message.error("Incorrect email or password. Please try again.");
       }
     } catch (error) {
       console.error("Error during login:", error);
-      message.error("An error occurred during login. Please try again later.");
+      message.error("Xảy ra lỗi. Vui lòng thử lại");
     } finally {
       setLoading(false);
     }

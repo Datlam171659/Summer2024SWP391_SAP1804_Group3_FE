@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Input, message, Table, Select, Space, Spin, Form, Modal } from "antd";
-import { MinusCircleOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import { MinusCircleOutlined, MinusOutlined, PlusOutlined, ScanOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import buyBackApi from "../../Services/api/buyBackApi";
 import { addItem, decrementQuantity, incrementQuantity, removeItem, updateTotals } from "../../Features/buy-back/buyBackCartSlice";
+import { Html5QrcodeScanner } from "html5-qrcode";
 
 const ProductListBuyBack = () => {
   const navigate = useNavigate();
@@ -12,6 +13,8 @@ const ProductListBuyBack = () => {
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [newItem, setNewItem] = useState({ itemName: "", weight: "", accessoryType: "", description: "" });
+  const [isScanModalVisible, setIsScanModalVisible] = useState(false);
+
   const isButtonDisabled = !searchQuery;
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.buyBackCart.cartItems);
@@ -62,6 +65,35 @@ const ProductListBuyBack = () => {
 
     dispatch(updateTotals({ cartTotalQuantity, cartTotalAmount }));
   }, [cartItems, buyGold10k, buyGold14k, buyGold18k, buyGold24k, dispatch]);
+
+  useEffect(() => {
+    if (!isScanModalVisible) return;
+
+    const scanner = new Html5QrcodeScanner('reader', {
+      qrbox: {
+        width: 250,
+        height: 250,
+      },
+      fps: 5,
+    });
+
+    const success = (result) => {
+      scanner.clear();
+      setSearchQuery(result);
+      setIsScanModalVisible(false);
+    };
+
+    const error = (err) => {
+      console.warn(err);
+    };
+
+    scanner.render(success, error);
+
+    return () => {
+      scanner.clear();
+    };
+  }, [isScanModalVisible]);
+
 
   const handleSearch = async () => {
     setLoading(true);
@@ -291,22 +323,38 @@ const ProductListBuyBack = () => {
     <div className="flex flex-col lg:flex-row">
       <div className="my-5 w-screen lg:w-full p-4">
         <div className="h-[40%] min-h-[485px] w-full lg:w-full text-center p-3 bg-[#FFFFFF] rounded-[7px] shadow-md">
-          <Input
-            placeholder="Nhập Id sản phẩm"
-            style={{ width: "89.7%", marginBottom: "5px" }}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+          <div className="flex w-full justify-between">
+            <div className="w-[85%] flex">
+              <Input
+                placeholder="Nhập Id sản phẩm"
+                style={{ width: "89.7%", marginBottom: "5px" }}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
 
-          />
-          <Button
-            disabled={isButtonDisabled}
-            type="primary"
-            className="ml-2"
-            style={{ fontWeight: "600", heigh: "30px" }}
-            onClick={handleSearch}
-          >
-            Tìm sản phẩm
-          </Button>
+              />
+              <Button
+                disabled={isButtonDisabled}
+                type="primary"
+                className="ml-2"
+                style={{ fontWeight: "600", heigh: "30px" }}
+                onClick={handleSearch}
+              >
+                Tìm sản phẩm
+              </Button>
+            </div>
+
+            <Button
+              type="default"
+              className="ml-2 flex items-center"
+              style={{ fontWeight: "600", heigh: "30px" }}
+              onClick={() => setIsScanModalVisible(true)}
+            >
+              <ScanOutlined className="mr-2"/>
+              Quét QR
+            </Button>
+          </div>
+
+
           <Spin spinning={loading}>
             <div className="cart-items flex flex-col items-center space-y-8 w-full ">
               <Table
@@ -400,6 +448,19 @@ const ProductListBuyBack = () => {
           </Form.Item>
         </Form>
       </Modal>
+      <Modal
+        title="Quét QR"
+        visible={isScanModalVisible}
+        onCancel={() => setIsScanModalVisible(false)}
+        footer={[
+          <Button key="back" onClick={() => setIsScanModalVisible(false)}>
+            Hủy
+          </Button>,
+        ]}
+      >
+        <div id='reader'></div>
+      </Modal>
+
     </div>
   );
 };

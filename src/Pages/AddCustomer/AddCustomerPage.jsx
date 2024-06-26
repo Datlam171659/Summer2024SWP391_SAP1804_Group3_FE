@@ -42,6 +42,7 @@ const AddCustomerPage = () => {
               content: `${errorMessage.join(' và ')} đã được sử dụng, xin vui lòng thử lại`,
               okText: "OK"
           });
+          setLoading(false);
           return;
           }
 
@@ -56,6 +57,7 @@ const AddCustomerPage = () => {
               navigate(-1); 
             }
           })} catch (error) {
+            setLoading(false);
             message.error(strAddCustomer.ERR_AddCustomer);
             Modal.warning({
               title: strAddCustomer.Confirm_CreateCustomer_Fail,
@@ -64,6 +66,7 @@ const AddCustomerPage = () => {
               okText: "OK"
             });
             console.log('Failed to add customer:', error);
+
           }
         };
 

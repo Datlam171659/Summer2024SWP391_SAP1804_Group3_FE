@@ -9,23 +9,6 @@ const initialState = {
   discount: 0,
 };
 
-// Async thunk to fetch discount data
-export const fetchDiscount = createAsyncThunk(
-  'cart/fetchDiscount',
-  async () => {
-    const response = await fetchDiscountData();
-    return response.discountPercentage;
-  }
-);
-
-// Utility function to calculate total amount with discount
-function calculateTotalAmount(cartItems, discount) {
-  return cartItems.reduce((acc, item) => {
-    const itemTotalPrice = item.price * item.itemQuantity * (1 - discount / 100);
-    return acc + itemTotalPrice;
-  }, 0);
-}
-
 const cartSlice = createSlice({
   name: 'SaleCart',
   initialState,
@@ -62,14 +45,6 @@ const cartSlice = createSlice({
       state.cartTotalQuantity = action.payload.cartTotalQuantity;
       state.cartTotalAmount = action.payload.cartTotalAmount;
     },
-    applyDiscount(state, action) {
-      state.discount = action.payload;
-      state.cartTotalAmount = calculateTotalAmount(state.cartItems, state.discount);
-    },
-    resetDiscount(state) {
-      state.discount = 0;
-      state.cartTotalAmount = calculateTotalAmount(state.cartItems, state.discount);
-    },
     updateCustomerInfo(state, action) {
       state.customerInfor = action.payload;
     },
@@ -81,13 +56,7 @@ const cartSlice = createSlice({
       state.discount = 0;
     },
   },
-  extraReducers: (builder) => {
-    builder.addCase(fetchDiscount.fulfilled, (state, action) => {
-      state.discount = action.payload;
-      state.cartTotalAmount = calculateTotalAmount(state.cartItems, state.discount);
-    });
-  },
 });
 
-export const { addItem, removeItem, incrementQuantity, decrementQuantity, updateTotals, updateCustomerInfo, resetCart, applyDiscount, resetDiscount } = cartSlice.actions;
+export const { addItem, removeItem, incrementQuantity, decrementQuantity, updateTotals, updateCustomerInfo, resetCart } = cartSlice.actions;
 export default cartSlice.reducer;

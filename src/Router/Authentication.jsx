@@ -12,6 +12,8 @@ function Authentication({ children }) {
     const dispatch = useDispatch();
     const [dataFetched, setDataFetched] = useState(false);
 
+    const roundToNearestThousand = (value) => Math.round(value / 1000) * 1000;
+
     const authenticate = async () => {
         const token = localStorage.getItem("token");
 
@@ -52,10 +54,10 @@ function Authentication({ children }) {
                         const goldPriceInVND = (goldPrice * vndRate) / 8.29;
                         const buyPrice = goldPriceInVND * 1.02;
 
-                        const buyGold24k = parseFloat(buyPrice);
-                        const buyGold18k = buyGold24k * 0.75;
-                        const buyGold14k = buyGold24k * 0.583;
-                        const buyGold10k = buyGold24k * 0.417;
+                        const buyGold24k = roundToNearestThousand(parseFloat(buyPrice));
+                        const buyGold18k = roundToNearestThousand(buyGold24k * 0.75);
+                        const buyGold14k = roundToNearestThousand(buyGold24k * 0.583);
+                        const buyGold10k = roundToNearestThousand(buyGold24k * 0.417);
 
                         const buyPriceObject = {
                             buyGold24k: buyGold24k.toFixed(0),
@@ -66,10 +68,10 @@ function Authentication({ children }) {
 
                         const sellPrice = goldPriceInVND * 1.05;
 
-                        const sellGold24k = parseFloat(sellPrice);
-                        const sellGold18k = sellGold24k * 0.75;
-                        const sellGold14k = sellGold24k * 0.583;
-                        const sellGold10k = sellGold24k * 0.417;
+                        const sellGold24k = roundToNearestThousand(parseFloat(sellPrice));
+                        const sellGold18k = roundToNearestThousand(sellGold24k * 0.75);
+                        const sellGold14k = roundToNearestThousand(sellGold24k * 0.583);
+                        const sellGold10k = roundToNearestThousand(sellGold24k * 0.417);
 
                         const sellPriceObject = {
                             sellGold24k: sellGold24k.toFixed(0),
@@ -80,7 +82,7 @@ function Authentication({ children }) {
 
                         dispatch(addBuyPrice(buyPriceObject));
                         dispatch(addSellPrice(sellPriceObject));
-                        setDataFetched(true); // Mark data as fetched
+                        setDataFetched(true);
 
                     } catch (error) {
                         console.error("Error fetching exchange rates or calculating prices:", error);
