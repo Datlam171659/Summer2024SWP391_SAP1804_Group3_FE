@@ -1,4 +1,4 @@
-import { Outlet, createBrowserRouter } from "react-router-dom";
+import { Outlet, createBrowserRouter, Navigate } from "react-router-dom";
 import Authentication from "./Authentication";
 import RootLayoput from "./RootLayout";
 import ErrorPage from "../Pages/ErrorPage/ErrorPage";
@@ -17,8 +17,11 @@ import BuyBackPage from "../Pages/BuyBackPage/BuyBackPage";
 import BuyBackPaymentPage from "../Pages/BuyBackPage/BuyBackPaymentPage";
 import UserManagePage from "../Pages/UserManagePage/UserManagePage";
 import AddUserPage from "../Pages/AddUserPage/AddUserPage";
-import CustomerSearchDetail from "../Pages/CustomerSearchPage/CustomerSearchDetail"
+import CustomerSearchDetail from "../Pages/CustomerSearchPage/CustomerSearchDetail";
 import Promotion from "../Pages/Promotion/Promotion";
+import RoleBasedRoute from "../Components/Common/RoleBasedRoute";
+import NoAccess from "../Pages/Authen/NoAccess";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -41,9 +44,12 @@ const router = createBrowserRouter([
       },
       {
         path: "promotion",
-        element: <Promotion />,
+        element: (
+          <RoleBasedRoute roles={['manager', 'admin']}>
+            <Promotion />
+          </RoleBasedRoute>
+        ),
       },
-
       {
         path: "sales-page/Payment",
         element: <PaymentPage />,
@@ -55,18 +61,39 @@ const router = createBrowserRouter([
       {
         path: "buy-back-page",
         element: <BuyBackPage />,
-    },
-    {
+      },
+      {
         path: "buy-back-page/Payment",
         element: <BuyBackPaymentPage />,
-    },
-    {
+      },
+      {
         path: "buy-back-page/Payment/PrintReceiptPage",
         element: <BuyBackSuccessPaymentPage />,
-    },
+      },
       {
         path: "exchange-rate",
         element: <ExchangeRatePage />,
+      },
+      {
+        path: "no-access",
+        element: 
+       <NoAccess />,
+      },
+      {
+        path: "user",
+        element: (
+          <RoleBasedRoute roles={['admin']}>
+          <UserManagePage />
+        </RoleBasedRoute>
+        ),
+      },
+      {
+        path: "user/user-add",
+        element: (
+            <RoleBasedRoute roles={['admin']}>
+            <AddUserPage />
+          </RoleBasedRoute>
+        ),
       },
     ],
   },
@@ -115,22 +142,6 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "customer-search",
-    element: (
-      <RootLayoput>
-        <CustomerSearchPage />
-      </RootLayoput>
-    ),
-  },
-  {
-    path: "customer-search/customer-add",
-    element: (
-      <RootLayoput>
-        <AddCustomerPage />
-      </RootLayoput>
-    ),
-  },
-  {
     path: "dashboard",
     element: (
       <RootLayoput>
@@ -138,22 +149,8 @@ const router = createBrowserRouter([
       </RootLayoput>
     ),
   },
-  {
-    path: "user",
-    element: (
-      <RootLayoput>
-        <UserManagePage />
-      </RootLayoput>
-    ),
-  },
-  {
-    path: "user/user-add",
-    element: (
-      <RootLayoput>
-        <AddUserPage />
-      </RootLayoput>
-    ),
-  },
+  
+
 ]);
 
 export default router;
