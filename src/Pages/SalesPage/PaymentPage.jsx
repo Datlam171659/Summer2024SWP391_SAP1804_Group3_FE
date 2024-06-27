@@ -33,7 +33,7 @@ const PaymentPage = () => {
   const [customerGender, setCustomerGender] = useState("Nam");
   const [customerAddress, setCustomerAddress] = useState("");
   const [paymentType, setPaymentType] = useState("");
-  const [addPoints, setPaddPoints] = useState(0);
+  const [pointsTotal, setPpointsTotal] = useState(0);
   const [customerInfo, setCustomerInfo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -44,10 +44,10 @@ const PaymentPage = () => {
     TEMPLATE: "compact2"
   };
 
-  const calculatePoints = (totalAmount) => {
+  const calculatePoints = (cartTotalAmount) => {
     let points = 0;
-    if (totalAmount > 0) {
-      points = Math.floor(totalAmount / 5000000) * 5;
+    if (cartTotalAmount > 0) {
+      points = Math.floor(cartTotalAmount / 5000000) * 5;
     }
     return points;
   };
@@ -59,7 +59,7 @@ const PaymentPage = () => {
 
   useEffect(() => {
     dispatch(fetchCustomerData());
-    setPaddPoints(calculatePoints(cartTotalAmount));
+    setPpointsTotal(calculatePoints(cartTotalAmount));
   }, [dispatch, cartTotalAmount]);
 
   useEffect(() => {
@@ -194,7 +194,7 @@ const PaymentPage = () => {
     try {
       await dispatch(createInvoice(invoiceData)).unwrap();
       await dispatch(addWarranty(customerId)).unwrap();
-      await dispatch(rewardCustomer({ customerId, addPoints })).unwrap();
+      await dispatch(rewardCustomer({ customerId, pointsTotal })).unwrap();
       
       // Reduce item quantities
       for (const item of cartItems) {

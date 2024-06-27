@@ -155,7 +155,7 @@ const ProductList = () => {
       message.success("Khách hàng đã được tạo thành công");
       dispatch(updateCustomerInfo(response));
     } catch (error) {
-      message.error(`Có lỗi xảy ra: ${error.message}`);
+      message.error(`Có lỗi xảy ra: ${error.response.data.message}`);
     }
   };
 
@@ -185,7 +185,7 @@ const ProductList = () => {
 
   useEffect(() => {
     if (!isScanModalVisible) return;
-
+  
     const scanner = new Html5QrcodeScanner("reader", {
       qrbox: {
         width: 250,
@@ -193,24 +193,37 @@ const ProductList = () => {
       },
       fps: 5,
     });
-
+  
     const success = (result) => {
       scanner.clear();
-      setSearchQuery(result);
       setIsScanModalVisible(false);
+  
+      const scannedQuery = result.replace(/\s/g, "").toLowerCase();
+      const matchedProduct = productData.find(
+        (product) =>
+          product.itemId.replace(/\s/g, "").toLowerCase() === scannedQuery ||
+          product.itemName.replace(/\s/g, "").toLowerCase() === scannedQuery
+      );
+  
+      if (matchedProduct) {
+        dispatch(addItem(matchedProduct));
+        message.success("Sản phẩm đã được thêm vào giỏ hàng");
+      } else {
+        message.error("Không tìm thấy sản phẩm với mã QR này");
+      }
     };
-
+  
     const error = (err) => {
       console.warn(err);
     };
-
+  
     scanner.render(success, error);
-
+  
     return () => {
       scanner.clear();
     };
-  }, [isScanModalVisible]);
-
+  }, [isScanModalVisible, productData, dispatch]);
+  
   const discountOptions = promotions
   .filter((item) => customerInfor && item.cusId === customerInfor.id && item.status==="Duyệt")
   .map((item) => ({
@@ -219,7 +232,9 @@ const ProductList = () => {
   }));
   const handleCreateOrder = () => {
     if (cartItems.length === 0) {
-      message.error("Cart is empty. Cannot create order.");
+      message.error("Giỏ hàng trống. Không thể tạo đơn");
+    } else if (!customerInfor || !customerInfor.customerName || !customerInfor.phoneNumber) {
+      message.error("Vui lòng nhập thông tin khách hàng trước khi thanh toán");
     } else {
       navigate("/sales-page/Payment");
     }
@@ -277,7 +292,7 @@ const ProductList = () => {
 
   const handleRemove = (itemId) => {
     dispatch(removeItem(itemId));
-    message.success("Product removed from cart.");
+    message.success("Sản phẩm đã bị xóa khỏi giỏ hàng");
   };
 
   const handleChange = (value) => {
@@ -314,7 +329,7 @@ const ProductList = () => {
             placeholder="Tìm kiếm cho vàng,bạc,kim cương...."
             className="search-bar"
           />
-          <Button onClick={handleSearch} loading={loading} className="search-btn">
+          <Button onClick={handleSearch} loading={loading} className=" bg-black text-white">
             Tìm kiếm
           </Button>
           <Button
@@ -353,7 +368,7 @@ const ProductList = () => {
         <div className="cart">
           <h2>Đơn hàng</h2>
           <div>
-          <Button type="primary" onClick={showModal}>
+          <Button type="primary" onClick={showModal} className=" bg-black text-white">
             Yêu Cầu Giảm Giá
           </Button>
           <Select
@@ -494,8 +509,8 @@ const ProductList = () => {
             </div>
           ))}
           <div className="add-product">
-            <Input placeholder="Enter Product ID" className="add-product-input" />
-            <Button className="add-product-btn">Thêm vào giỏ hàng</Button>
+            <Input placeholder="Nhập id sản phẩm" className="add-product-input" />
+            <Button className="  bg-black text-white">Thêm vào giỏ hàng</Button>
           </div>
           <div className="cart-summary">
             <div>
@@ -506,7 +521,7 @@ const ProductList = () => {
               <span>Tổng giá: </span>
               <span>{currencyFormatter.format(cartTotalAmount)}</span>
             </div>
-            <Button type="primary" onClick={handleCreateOrder} className="checkout-btn">
+            <Button type="primary" onClick={handleCreateOrder} className="w-full text-center bg-black text-white">
               Thanh Toán
             </Button>
           </div>
