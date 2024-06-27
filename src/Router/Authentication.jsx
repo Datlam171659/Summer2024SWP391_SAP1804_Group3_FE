@@ -5,7 +5,6 @@ import { useDispatch } from 'react-redux';
 import { addBuyPrice, addSellPrice, resetBuyPrice, resetSellPrice } from '../Features/goldTransaction/goldTransactionSlice';
 import getVNDExchangeRate from '../Services/api/exchangeRateApi';
 import getGoldExchangeRate from '../Services/api/goldApi';
-import constants from '../constants.json'; 
 
 function Authentication({ children }) {
     const navigate = useNavigate();
@@ -17,6 +16,8 @@ function Authentication({ children }) {
 
     const authenticate = async () => {
         const token = localStorage.getItem("token");
+        const response = await fetch('/constants.json');
+        const constants = await response.json();
 
         if (token) {
             const decodedToken = jwtDecode(token);
