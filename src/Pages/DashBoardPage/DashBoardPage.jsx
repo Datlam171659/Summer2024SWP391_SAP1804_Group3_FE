@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Line } from '@ant-design/charts';
 import '../DashBoardPage/DashBoardPage.scss';
 import { Space } from 'antd';
-import { UserOutlined, ShoppingCartOutlined, ShoppingOutlined, DollarCircleOutlined } from '@ant-design/icons';
+import { UserOutlined, ShoppingCartOutlined, ShoppingOutlined, DollarCircleOutlined, TeamOutlined } from '@ant-design/icons';
 import CustomerApi from '../../Services/api/CustomerApi';
 import {getinvoiceAll} from '../../Services/api/InvoiceApi'
 import {getProductAll} from '../../Services/api/productApi'
+import userkApi from "../../Services/api/UserApi";
 import DashBoardCard from './DashboardCard';
 const DashBoardPage = () => {
   const [customerCount, setCustomerCount] = useState(0); 
+  const [userCount, setUserCount] = useState(0); 
   const [invoiceCount, setInvoiceCount] = useState(0); 
   const [productCount, setProductCount] = useState(0); 
       const [data, setData] = useState([
@@ -62,9 +64,19 @@ const DashBoardPage = () => {
           }
         }
 
+        const fetchUserCount = async () => {
+          try {
+            const response = await userkApi.getUserListApi();
+               setUserCount(response.length);
+              } catch (error) {
+            console.error(`Error: ${error}`);
+          }
+        }
+
         fetchCustomerCount(); 
         fetchInvoiceCount();
         fetchProductCount();
+        fetchUserCount();
       }, []);  
 
       return (
@@ -72,6 +84,7 @@ const DashBoardPage = () => {
           <div className="overview">
             <Space direction='horizontal'>
               <DashBoardCard  icon={<UserOutlined style={{color: "red"}} />} title={"Customers"} value={customerCount}/>
+              <DashBoardCard  icon={<TeamOutlined style={{color: "purple"}} />} title={"Users"} value={userCount}/>
               <DashBoardCard  icon={<ShoppingCartOutlined style={{color: "blue"}}/>} title={"Orders"} value={invoiceCount}/>
               <DashBoardCard  icon={<ShoppingOutlined style={{color: "brown"}}/>} title={"Inventory"} value={productCount}/>
               <DashBoardCard  icon={<DollarCircleOutlined style={{color: "green"}}/>} title={"Revenue"} value={4586}/>
