@@ -33,8 +33,11 @@ const ExchangeRatePage = () => {
         <div className='w-full block'>
             <div className="w-11/12 mt-10 block justify-center mx-auto">
                 <h2 className="w-full text-center text-2xl font-semibold">Giá Vàng Hôm Nay</h2>
-                <div className="w-full flex justify-center mt-9">
-                    <table className="w-4/5 text-center border-collapse border border-black">
+                <div className="button-container w-full flex justify-center mt-9">
+                    <button className="full-screen-button" onClick={handleFullScreen}>Toàn màn hình</button>
+                </div>
+                <div ref={tableRef} className="table-container w-full flex justify-center mt-9">
+                    <table className="gold-price-table w-4/5 text-center border-collapse border border-black">
                         <thead>
                             <tr>
                                 <th className="py-3 text-lg  bg-[#1e1e28] text-white">Loại vàng</th>
