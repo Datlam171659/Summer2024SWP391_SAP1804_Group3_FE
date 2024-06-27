@@ -93,6 +93,7 @@ function Sidebar() {
 
   return (
     <Sider
+      id='sidebar'
       className='sidebar'
       collapsed={collapsed}
       theme='light'
