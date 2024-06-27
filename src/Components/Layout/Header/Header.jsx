@@ -18,12 +18,13 @@ function Header() {
     <header className="header">
       <div className="logo" />
       <div className="body">
-        <div className="user flex">
+        <div className="user flex">  
           <div className="flex items-center">
-            <button>
-              <BellFilled className="mr-6 text-[18px] hover:text-gray-200" />
-            </button>
-          </div>
+            <p style={{ paddingRight: '25px'}}> Xin chào, {uniqueName}</p>
+              {/* <button>
+                <BellFilled className="mr-6 text-[18px] hover:text-gray-200" />
+              </button> */}
+            </div>
 
           <div className="relative">
             <Avatar
@@ -42,9 +43,9 @@ function Header() {
               {initial}
             </Avatar>
             {showName && (
-              <div className="absolute right-0 mt-2 p-2 bg-white border border-gray-300 rounded shadow-lg whitespace-nowrap">
-                <p className="text-[small] text-gray-700 font-semibold">{uniqueName}</p>
-              </div>
+                <div className="absolute right-0 mt-2 p-2 bg-white border border-gray-300 rounded shadow-lg whitespace-nowrap">
+                  <p className="text-[small] text-gray-700 font-semibold">{uniqueName}</p>
+                </div>
             )}
           </div>
         </div>
