@@ -1,4 +1,4 @@
-// RoleBasedRoute.jsx
+
 import { Navigate } from "react-router-dom";
 
 const RoleBasedRoute = ({ children, role }) => {

@@ -230,11 +230,10 @@ function Product() {
           </div>
         }
       >
-        <Form form={form} layout="vertical">
+      <Form form={form} layout="vertical">
           <Form.Item name="itemId" label="Mã Hàng" rules={[{ required: true, message: 'Vui lòng nhập mã hàng' }]}>
             <Input />
           </Form.Item>
-        
           <Form.Item name="brandId" label="Mã Thương Hiệu" rules={[{ required: true, message: 'Vui lòng nhập mã thương hiệu' }]}>
             <Input />
           </Form.Item>
@@ -257,6 +256,9 @@ function Product() {
             <Input />
           </Form.Item>
           <Form.Item name="weight" label="Trọng Lượng" rules={[{ required: true, message: 'Vui lòng nhập trọng lượng' }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="quantity" label="Số lượng" rules={[{ required: true, message: 'Vui lòng nhập số lượng' }]}>
             <Input />
           </Form.Item>
           <Form.Item name="status" label="Trạng Thái" rules={[{ required: true, message: 'Vui lòng nhập trạng thái' }]}>
@@ -304,6 +306,9 @@ function Product() {
             <Input />
           </Form.Item>
           <Form.Item name="weight" label="Trọng Lượng" rules={[{ required: true, message: 'Vui lòng nhập trọng lượng' }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="quantity" label="Số lượng" rules={[{ required: true, message: 'Vui lòng nhập số lượng' }]}>
             <Input />
           </Form.Item>
           <Form.Item name="status" label="Trạng Thái" rules={[{ required: true, message: 'Vui lòng nhập trạng thái' }]}>
