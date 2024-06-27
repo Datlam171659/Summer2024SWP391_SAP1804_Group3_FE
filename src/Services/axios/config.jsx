@@ -1,7 +1,9 @@
 import axios from 'axios';
 
 const axiosClient = axios.create({
-  baseURL: 'https://gjewellery.bsite.net/',
+  // baseURL: 'https://localhost:7262/',
+  baseURL: 'https://gjewellery.bsite.net',
+
   headers: {
     'Content-type': 'application/json',
   },
