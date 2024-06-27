@@ -1,20 +1,19 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Table, ConfigProvider, Spin, message, Modal, Form } from "antd";
+import { Button, Table, ConfigProvider, message, Modal } from "antd";
 import { fetchCustomerData } from "../../Features/Customer/customerSlice";
 import { resetCart, updateCustomerInfo } from "../../Features/product/cartSlice";
 import SalepageApi from "../../Features/Salepage/SalepageApi";
 import { createInvoice } from "../../Features/Invoice/InvoiceSlice";
 import { addWarranty } from "../../Features/Warranty/warrantyaddSlice";
 import { rewardCustomer } from "../../Features/Customer/rewardSlice";
-import { requestPromotionCus } from "../../Features/Promotion/promotionSlice";
 import { fetchPromotions } from "../../Features/Promotion/promotionallSlice";
+import { reduceItemQuantity } from "../../Features/product/quantitySlice"; 
 
 const PaymentPage = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
-  const isLoadingPromotion = useSelector((state) => state.promotions.isLoadingPromotion);
   const customerData = useSelector((state) => state.customer.customerData);
   const isLoading = useSelector((state) => state.customer.isLoading);
   const buyGold24k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold24k);
@@ -196,6 +195,12 @@ const PaymentPage = () => {
       await dispatch(createInvoice(invoiceData)).unwrap();
       await dispatch(addWarranty(customerId)).unwrap();
       await dispatch(rewardCustomer({ customerId, addPoints })).unwrap();
+      
+      // Reduce item quantities
+      for (const item of cartItems) {
+        await dispatch(reduceItemQuantity({ itemId: item.itemId, quantity: item.itemQuantity })).unwrap();
+      }
+
       message.success("Tạo hóa đơn thành công!");
     } catch (error) {
       message.error(`Tạo hóa đơn thất bại: ${error.message}`);

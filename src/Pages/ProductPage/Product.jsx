@@ -147,6 +147,11 @@ function Product() {
       },
     },
     {
+      title: "Số lượng",
+      dataIndex: "quantity",
+      key: "quantity",
+    },
+    {
       title: "Action",
       dataIndex: "",
       key: "action",

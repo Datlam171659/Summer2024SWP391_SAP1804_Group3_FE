@@ -19,4 +19,7 @@ const edititem = async (itemId, productDetails) => {
     },
   });
 };
-export { getProductAll, getProductById, removeItem, addItem,edititem };
+const reduceitem = async (itemId, quantity) => {
+  return axios.put(`/api/Item/updateQuantity/${itemId}?quantity=${quantity}`);
+};
+export { getProductAll, getProductById, removeItem, addItem,edititem,reduceitem };
