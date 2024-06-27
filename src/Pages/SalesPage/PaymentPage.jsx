@@ -1,18 +1,21 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { Button, Input, Table, Select, Space, ConfigProvider, Spin, Form, message, Modal } from "antd";
+import { Link } from "react-router-dom";
+import { Button, Table, ConfigProvider, Spin, message, Modal, Form } from "antd";
 import { fetchCustomerData } from "../../Features/Customer/customerSlice";
 import { resetCart, updateCustomerInfo } from "../../Features/product/cartSlice";
 import SalepageApi from "../../Features/Salepage/SalepageApi";
 import { createInvoice } from "../../Features/Invoice/InvoiceSlice";
 import { addWarranty } from "../../Features/Warranty/warrantyaddSlice";
-import {rewardCustomer} from "../../Features/Customer/rewardSlice";
+import { rewardCustomer } from "../../Features/Customer/rewardSlice";
+import { requestPromotionCus } from "../../Features/Promotion/promotionSlice";
+import { fetchPromotions } from "../../Features/Promotion/promotionallSlice";
 import QRCode from "react-qr-code";
 
 const PaymentPage = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
+  const isLoadingPromotion = useSelector((state) => state.promotions.isLoadingPromotion);
   const customerData = useSelector((state) => state.customer.customerData);
   const isLoading = useSelector((state) => state.customer.isLoading);
   const buyGold24k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold24k);
@@ -22,7 +25,8 @@ const PaymentPage = () => {
   const cartTotalAmount = useSelector((state) => state.cart.cartTotalAmount);
   const cartTotalQuantity = useSelector((state) => state.cart.cartTotalQuantity);
   const customerInfor = useSelector((state) => state.cart.customerInfor);
-  
+  const promotions = useSelector((state) => state.promotions.promotions);
+  const [qrCode, setQrCode] = useState("");
   const [customerType, setCustomerType] = useState('newCustomer');
   const [searchedCustomer, setSearchedCustomer] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -31,20 +35,15 @@ const PaymentPage = () => {
   const [customerGender, setCustomerGender] = useState("Nam");
   const [customerAddress, setCustomerAddress] = useState("");
   const [paymentType, setPaymentType] = useState("");
-  const [qrCode, setQrCode] = useState("");
   const [addPoints, setPaddPoints] = useState(0);
-  const [isQRCodeModalVisible, setIsQRCodeModalVisible] = useState(false);
-  const navigate = useNavigate();
+  const [customerInfo, setCustomerInfo] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  let MY_BANK = {
+  const MY_BANK = {
     BANK_ID: "Vietcombank",
     ACCOUNT_NO: "1025210358",
     TEMPLATE: "compact2"
-  }
-  useEffect(() => {
-    dispatch(fetchCustomerData());
-    setPaddPoints(calculatePoints(cartTotalAmount));
-  }, [dispatch, cartTotalAmount]);
+  };
 
   const calculatePoints = (totalAmount) => {
     let points = 0;
@@ -53,7 +52,22 @@ const PaymentPage = () => {
     }
     return points;
   };
-  const handleInputChange = (e) => {
+
+  useEffect(() => {
+    const qrLink = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-${MY_BANK.TEMPLATE}.png?amount=${cartTotalAmount}`;
+    setQrCode(qrLink);
+  }, [cartTotalAmount]);
+
+  useEffect(() => {
+    dispatch(fetchCustomerData());
+    setPaddPoints(calculatePoints(cartTotalAmount));
+  }, [dispatch, cartTotalAmount]);
+
+  useEffect(() => {
+    dispatch(fetchPromotions());
+  }, [dispatch]);
+
+  const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
     switch (name) {
       case 'customerName':
@@ -74,12 +88,21 @@ const PaymentPage = () => {
       default:
         break;
     }
+  }, []);
+
+  const showModalPay = () => {
+    setIsModalOpen(true);
   };
-  const NavigatePrintReceipt = () => {
-    setIsQRCodeModalVisible(false);
-    navigate('/sales-page/Payment/PrintReceiptPage');
+
+  const handleOkPay = () => {
+    setPaymentType("Chuyển khoản");
+    setIsModalOpen(false);
   };
-  
+
+  const handleCancelPay = () => {
+    setIsModalOpen(false);
+  };
+
   const handleSearchClick = () => {
     if (!phoneNumber) {
       message.warning("Vui lòng nhập số điện thoại");
@@ -113,7 +136,7 @@ const PaymentPage = () => {
       message.error(`Có lỗi xảy ra: ${error.message}`);
     }
   };
-  
+
   const handleCancel = () => {
     setCustomerName("");
     setCustomerAddress("");
@@ -149,29 +172,24 @@ const PaymentPage = () => {
     };
 
     try {
-      if (paymentType === "Chuyển khoản") {
-        var qrLink = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-${MY_BANK.TEMPLATE}.png?amount=${cartTotalAmount}`;
-        console.log(qrLink);
-        setQrCode(qrLink);
-        setIsQRCodeModalVisible(true);
-      }
       await dispatch(createInvoice(invoiceData)).unwrap();
+      message.success("Tạo hóa đơn thành công!");
     } catch (error) {
       message.error(`Tạo hóa đơn thất bại: ${error.message}`);
     }
 
     try {
       await dispatch(addWarranty(customerId)).unwrap();
+      message.success("Tạo bảo hành thành công!");
     } catch (error) {
       message.error(`Tạo bảo hành thất bại: ${error.message}`);
     }
     try {
       await dispatch(rewardCustomer({ customerId, addPoints })).unwrap();
+      message.success("Khách hàng đã được tích điểm thành công!");
     } catch (error) {
       message.error(`Tích điểm thất bại: ${error.message}`);
     }
-    message.success("Tạo hóa đơn thành công!");
-
   };
 
   const handleSelectChange = (value) => {
@@ -222,7 +240,7 @@ const PaymentPage = () => {
           "24k": "24K",
         };
         const goldType = Object.keys(goldTypeMap).find(key => record.itemName.toLowerCase().includes(key)) || "";
-        return goldTypeMap[goldType];
+        return goldTypeMap[goldType] || "";
       },
     },
     {
@@ -285,102 +303,6 @@ const PaymentPage = () => {
             />
           </div>
         </div>
-        <div className="customer-info bg-white p-4 rounded-lg mb-4">
-          <div className="flex items-center mb-[15px]">
-            <span className="block min-w-[150px] font-medium">Loại khách hàng</span>
-            <Select
-              value={customerType}
-              onChange={handleSelectChange}
-              className="w-[130px]"
-            >
-              <Select.Option value="newCustomer">Khách mới</Select.Option>
-              <Select.Option value="member">Thành viên</Select.Option>
-            </Select>
-          </div>
-          {customerType === "member" && (
-            <div className="member-info">
-              <div className="flex items-center mb-[15px]">
-                <span className="block min-w-[150px] font-medium">Số điện thoại</span>
-                <Input
-                  name="phoneNumber"
-                  value={phoneNumber}
-                  onChange={handleInputChange}
-                  className="rounded-[5px]"
-                />
-                <Button onClick={handleSearchClick} className="ml-2">Tìm kiếm</Button>
-              </div>
-              {isLoading ? (
-                <Spin className="ml-[100px]" />
-              ) : searchedCustomer && (
-                <div className="customer-details ml-[100px] bg-gray-100 p-2 rounded-lg">
-                  <p><strong>Tên khách hàng:</strong> {searchedCustomer.customerName}</p>
-                  <p><strong>Email:</strong> {searchedCustomer.email}</p>
-                  <p><strong>Địa chỉ:</strong> {searchedCustomer.address}</p>
-                  <p><strong>Giới tính:</strong> {searchedCustomer.gender}</p>
-                </div>
-              )}
-            </div>
-          )}
-          {customerType === "newCustomer" && (
-            <div className="new-customer-info">
-              <Form>
-                <div className="flex items-center mb-[15px]">
-                  <span className="block min-w-[150px] font-medium">Tên khách hàng</span>
-                  <Input
-                    name="customerName"
-                    value={customerName}
-                    onChange={handleInputChange}
-                    className="rounded-[5px]"
-                  />
-                </div>
-                <div className="flex items-center mb-[15px]">
-                  <span className="block min-w-[150px] font-medium">Số điện thoại</span>
-                  <Input
-                    name="phoneNumber"
-                    value={phoneNumber}
-                    onChange={handleInputChange}
-                    className="rounded-[5px]"
-                  />
-                </div>
-                <div className="flex items-center mb-[15px]">
-                  <span className="block min-w-[150px] font-medium">Email</span>
-                  <Input
-                    name="email"
-                    value={customerEmail}
-                    onChange={handleInputChange}
-                    className="rounded-[5px]"
-                  />
-                </div>
-                <div className="flex items-center mb-[15px]">
-                  <span className="block min-w-[150px] font-medium">Địa chỉ</span>
-                  <Input
-                    name="address"
-                    value={customerAddress}
-                    onChange={handleInputChange}
-                    className="rounded-[5px]"
-                  />
-                </div>
-                <div className="flex items-center mb-[15px]">
-                  <span className="block min-w-[150px] font-medium">Giới tính</span>
-                  <Select
-                    value={customerGender}
-                    onChange={(value) => setCustomerGender(value)}
-                    className="w-[130px]"
-                  >
-                    <Select.Option value="Nam">Nam</Select.Option>
-                    <Select.Option value="Nữ">Nữ</Select.Option>
-                  </Select>
-                </div>
-                <div className="flex items-center mb-[15px]">
-                  <Space>
-                    <Button onClick={handleSubmit}>Lưu khách hàng</Button>
-                    <Button onClick={handleCancel}>Hủy</Button>
-                  </Space>
-                </div>
-              </Form>
-            </div>
-          )}
-        </div>
         <div className="flex w-full">
           <div className="cart-summary mt-4 bg-white p-6 rounded-lg shadow-md w-1/2 mr-3">
             <div className="cart-checkout mt-6">
@@ -399,10 +321,9 @@ const PaymentPage = () => {
                   Thành tiền
                 </span>
                 <span className="amount text-xl font-bold text-gray-800">
-                  {Number(cartTotalAmount.toFixed(0)).toLocaleString()}
-                  đ
+                  {Number(cartTotalAmount.toFixed(0)).toLocaleString()}đ
                 </span>
-              </div> 
+              </div>
             </div>
           </div>
           <div className="cart-summary mt-4 bg-white p-6 rounded-lg shadow-md w-1/2">
@@ -422,9 +343,7 @@ const PaymentPage = () => {
                         ? "bg-gray-500 text-white"
                         : "bg-black text-white hover:bg-gray-500"
                     }`}
-                    onClick={() => {
-                      setPaymentType("Chuyển khoản");
-                    }}
+                    onClick={showModalPay}
                   >
                     Chuyển khoản
                   </Button>
@@ -443,9 +362,11 @@ const PaymentPage = () => {
             </div>
             <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
             <div>
-              <Button className="w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500 " onClick={handleConfirm}>
-                Xác Nhận
-              </Button>
+              <Link to="/sales-page/Payment/PrintReceiptPage">
+                <Button className="w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500" onClick={handleConfirm}>
+                  Xác Nhận
+                </Button>
+              </Link>
               <Link to="/sales-page">
                 <Button className="w-full h-14 bg-white text-black uppercase font-bold hover:bg-gray-500 mt-4" onClick={handleCancel}>
                   Hủy
@@ -454,17 +375,8 @@ const PaymentPage = () => {
             </div>
           </div>
         </div>
-        <Modal
-          title="QR Code Modal"
-          visible={isQRCodeModalVisible}
-          onCancel={() => setIsQRCodeModalVisible(false)}
-          footer={[
-            <Button key="back" onClick={NavigatePrintReceipt}>
-              Đóng
-            </Button>,
-          ]}
-        >
-           <img src={qrCode}/>
+        <Modal title="Basic Modal" open={isModalOpen} onOk={handleOkPay} onCancel={handleCancelPay}>
+          <img src={qrCode} alt="QR Code" />
         </Modal>
       </div>
     </ConfigProvider>

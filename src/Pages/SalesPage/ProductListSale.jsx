@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Input, message, Table, Select, Space, Spin } from "antd";
-import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import { Button, Input, message, Select, Spin, Modal,Form } from "antd";
+import { MinusOutlined, PlusOutlined, ScanOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import {
   addItem,
@@ -12,42 +12,60 @@ import {
 } from "../../Features/product/cartSlice";
 import { fetchDiscountData } from "../../Features/Discount/DiscountSlice";
 import { fetchProductData } from "../../Features/product/productSlice";
-
+import "./ProductListSale.scss";
+import { Html5QrcodeScanner } from "html5-qrcode";
+import { fetchCustomerData } from "../../Features/Customer/customerSlice";
+import { updateCustomerInfo } from "../../Features/product/cartSlice";
+import SalepageApi from "../../Features/Salepage/SalepageApi";
+import { requestPromotionCus } from "../../Features/Promotion/promotionSlice";
+import { fetchPromotions } from "../../Features/Promotion/promotionallSlice";
 const ProductList = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const productData = useSelector((state) => state.product.productData);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isScanModalVisible, setIsScanModalVisible] = useState(false);
+  const isLoadingPromotion = useSelector(
+    (state) => state.promotions.isLoadingPromotion
+  );
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
-  const cartTotalQuantity = useSelector(
-    (state) => state.cart.cartTotalQuantity
-  );
+  const cartTotalQuantity = useSelector((state) => state.cart.cartTotalQuantity);
   const cartTotalAmount = useSelector((state) => state.cart.cartTotalAmount);
-  const buyGold24k = useSelector(
-    (state) => state.goldPrice.sellPrice[0]?.sellGold24k
-  );
-  const buyGold18k = useSelector(
-    (state) => state.goldPrice.sellPrice[0]?.sellGold18k
-  );
-  const buyGold14k = useSelector(
-    (state) => state.goldPrice.sellPrice[0]?.sellGold14k
-  );
-  const buyGold10k = useSelector(
-    (state) => state.goldPrice.sellPrice[0]?.sellGold10k
-  );
+  const buyGold24k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold24k);
+  const buyGold18k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold18k);
+  const buyGold14k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold14k);
+  const buyGold10k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold10k);
   const discountData = useSelector((state) => state.discount.discountData);
-  const isLoadingDiscountData = useSelector(
-    (state) => state.discount.isLoadingDiscountData
-  );
+  const isLoadingDiscountData = useSelector((state) => state.discount.isLoadingDiscountData);
   const [discountDataSelect, setDiscountDataSelect] = useState("");
   const [discountPercentage, setDiscountPercentage] = useState(0);
-
+  const customerData = useSelector((state) => state.customer.customerData);
+  const isLoading = useSelector((state) => state.customer.isLoading);
+  const customerInfor = useSelector((state) => state.cart.customerInfor);
+  const [customerType, setCustomerType] = useState('newCustomer');
+  const [searchedCustomer, setSearchedCustomer] = useState(null);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [customerGender, setCustomerGender] = useState("Nam");
+  const [customerAddress, setCustomerAddress] = useState("");
+  const [isModalVisible, setIsModalVisible] = useState(false); 
+  const [discountPct, setDiscountPct] = useState("");
+  const[description,setDescription]=useState("")
+  const promotions = useSelector((state) => state.promotions.promotions);
+  const [promotionDataSelect, setPromotionDataSelect] = useState("");
+  const [promotionPercentage, setPromotionPercentage] = useState(0);
+  const currencyFormatter = new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+  });
   useEffect(() => {
-    const cartTotalQuantity = cartItems.reduce(
-      (acc, item) => acc + item.itemQuantity,
-      0
-    );
+    dispatch(fetchPromotions());
+  }, [dispatch]);
+  useEffect(() => {
+    const cartTotalQuantity = cartItems.reduce((acc, item) => acc + item.itemQuantity, 0);
 
     const cartTotalAmount = cartItems.reduce((acc, item) => {
       let goldType = "";
@@ -82,80 +100,197 @@ const ProductList = () => {
       const itemTotalPrice = item.weight * item.itemQuantity * kara;
       return acc + itemTotalPrice;
     }, 0);
-
-    const discountedAmount = cartTotalAmount * (1 - discountPercentage / 100);
+    const discountedAmount = cartTotalAmount * (1 - promotionPercentage / 100);
     dispatch(updateTotals({ cartTotalQuantity, cartTotalAmount: discountedAmount }));
-  }, [cartItems, buyGold10k, buyGold14k, buyGold18k, buyGold24k, discountPercentage, dispatch]);
+  }, [cartItems, buyGold10k, buyGold14k, buyGold18k, buyGold24k, promotionPercentage, dispatch]);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    switch (name) {
+      case 'customerName':
+        setCustomerName(value);
+        break;
+      case 'address':
+        setCustomerAddress(value);
+        break;
+      case 'gender':
+        setCustomerGender(value);
+        break;
+      case 'phoneNumber':
+        setPhoneNumber(value);
+        break;
+      case 'email':
+        setCustomerEmail(value);
+        break;
+      default:
+        break;
+    }
+  };
+  const handleSearchClick = () => {
+    if (!phoneNumber) {
+      message.warning("Vui lòng nhập số điện thoại");
+      return;
+    }
 
+    const foundCustomer = customerData.find(customer => customer.phoneNumber === phoneNumber && customer.status === "active");
+    if (foundCustomer) {
+      setSearchedCustomer(foundCustomer);
+      dispatch(updateCustomerInfo(foundCustomer));
+    } else {
+      message.warning("Không tìm thấy khách hàng với số điện thoại này");
+    }
+  };
+
+  const handleSubmit = async () => {
+    const newCustomerInfo = {
+      customerName,
+      address: customerAddress,
+      gender: customerGender,
+      phoneNumber,
+      email: customerEmail,
+      status: "active",
+    };
+
+    try {
+      const response = await SalepageApi.createCustomer(newCustomerInfo);
+      message.success("Khách hàng đã được tạo thành công");
+      dispatch(updateCustomerInfo(response));
+    } catch (error) {
+      message.error(`Có lỗi xảy ra: ${error.message}`);
+    }
+  };
+
+  const handleCancel = () => {
+    setCustomerName("");
+    setCustomerAddress("");
+    setCustomerGender("Nam");
+    setPhoneNumber("");
+    setCustomerEmail("");
+    setSearchedCustomer(null);
+    dispatch(updateCustomerInfo([]));
+  };
+
+  const handleSelectChange = (value) => {
+    setCustomerType(value);
+    handleCancel();
+  };
   useEffect(() => {
     dispatch(fetchDiscountData());
     dispatch(fetchProductData());
+    dispatch(fetchCustomerData());
   }, [dispatch]);
 
-  const discountOptions = discountData.map((item) => ({
-    value: item.discountCode,
-    label: `${item.discountPercentage}%`,
-  }));
+  useEffect(() => {
+    setFilteredProducts(productData);
+  }, [productData]);
 
+  useEffect(() => {
+    if (!isScanModalVisible) return;
+
+    const scanner = new Html5QrcodeScanner("reader", {
+      qrbox: {
+        width: 250,
+        height: 250,
+      },
+      fps: 5,
+    });
+
+    const success = (result) => {
+      scanner.clear();
+      setSearchQuery(result);
+      setIsScanModalVisible(false);
+    };
+
+    const error = (err) => {
+      console.warn(err);
+    };
+
+    scanner.render(success, error);
+
+    return () => {
+      scanner.clear();
+    };
+  }, [isScanModalVisible]);
+
+  const discountOptions = promotions
+  .filter((item) => customerInfor && item.cusId === customerInfor.id && item.status==="Duyệt")
+  .map((item) => ({
+    value: item.id,
+    label: `${item.discountPct}%`,
+  }));
   const handleCreateOrder = () => {
     if (cartItems.length === 0) {
-      message.error("Giỏ hàng trống. Không thể tạo đơn.");
+      message.error("Cart is empty. Cannot create order.");
     } else {
       navigate("/sales-page/Payment");
     }
   };
-  console.log(discountData);
-  console.log(discountOptions);
+
   const handleSearch = () => {
     setLoading(true);
     try {
       const trimmedQuery = searchQuery.replace(/\s/g, "").toLowerCase();
-      const matchingItems = productData.filter((product) =>
-        product.itemId.replace(/\s/g, "").toLowerCase().includes(trimmedQuery) ||
-        product.itemName.replace(/\s/g, "").toLowerCase().includes(trimmedQuery)
+      const matchingItems = productData.filter(
+        (product) =>
+          product.itemId.replace(/\s/g, "").toLowerCase().includes(trimmedQuery) ||
+          product.itemName.replace(/\s/g, "").toLowerCase().includes(trimmedQuery)
       );
-  
+
+      setFilteredProducts(matchingItems);
+
       if (matchingItems.length === 0) {
-        message.error("Không tìm thấy sản phẩm. Vui lòng thử lại");
-      } else {
-        matchingItems.forEach((item) => {
-          const itemExists = cartItems.some(
-            (cartItem) => cartItem.itemId === item.itemId
-          );
-          if (itemExists) {
-            message.error(`Sản phẩm ${item.itemName} đã tồn tại`);
-          } else {
-            dispatch(addItem(item));
-            message.success(`Sản phẩm ${item.itemName} đã được thêm vào giỏ hàng`);
-          }
-        });
+        message.error("Không tìm thấy sản phẩm .Hãy thử lại.");
       }
       setSearchQuery("");
     } catch (error) {
-      message.error("Không tìm thấy sản phẩm. Vui lòng thử lại");
+      message.error("Không tìm thấy sản phẩm .Hãy thử lại.");
       setSearchQuery("");
     } finally {
       setLoading(false);
     }
   };
+  const handleOk = async () => {
+    const discountId = `DISC8`; 
+
+    const discountData = {
+      id: discountId,
+      code: "DISCOUNT_CODE", 
+      discountPct,
+      status: "Chờ duyệt",
+      description,
+      cusID: customerInfor.id,
+    };
+
+    try {
+      await dispatch(requestPromotionCus(discountData)).unwrap();
+      message.success("Yêu cầu giảm giá thành công!");
+      setIsModalVisible(false);
+    } catch (error) {
+      message.error(`Yêu cầu giảm giá thất bại: ${error.message}`);
+    }
+  };
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+ const handleModalCancel = () => {
+    setIsModalVisible(false);
+  };
 
   const handleRemove = (itemId) => {
     dispatch(removeItem(itemId));
-    message.success("Sản phẩm đã được xóa khỏi giỏ hàng");
+    message.success("Product removed from cart.");
   };
 
   const handleChange = (value) => {
     if (value === undefined) {
-      setDiscountDataSelect(""); 
-      setDiscountPercentage(0);
+      setPromotionDataSelect("");
+      setPromotionPercentage(0);
     } else {
-      setDiscountDataSelect(value); 
-      const selectedDiscount = discountData.find(
-        (discount) => discount.discountCode === value
+      setPromotionDataSelect(value);
+      const selectedDiscount = promotions.find(
+        (discount) => discount.id === value
       );
-      console.log(selectedDiscount);
       if (selectedDiscount) {
-        setDiscountPercentage(selectedDiscount.discountPercentage);
+        setPromotionPercentage(selectedDiscount.discountPct);
       }
     }
   };
@@ -168,210 +303,227 @@ const ProductList = () => {
     dispatch(decrementQuantity(itemId));
   };
 
-  const columns = [
-    {
-      title: "STT",
-      dataIndex: "numericalOrder",
-      key: "numericalOrder",
-      width: 50,
-      render: (_, __, index) => index + 1,
-    },
-    {
-      title: "Mã Hàng",
-      dataIndex: "serialNumber",
-      key: "serialNumber",
-      width: 120,
-    },
-    {
-      title: "Tên Hàng",
-      dataIndex: "itemName",
-      key: "itemName",
-      width: 150,
-    },
-    {
-      title: "Loại Hàng",
-      dataIndex: "accessoryType",
-      key: "accessoryType",
-      width: 100,
-    },
-    {
-      title: "Loại Vàng",
-      dataIndex: "goldType",
-      key: "goldType",
-      width: 100,
-      render: (_, record) => {
-        let goldType = "";
-        if (record.itemName.toLowerCase().includes("10k")) {
-          goldType = "10K";
-        } else if (record.itemName.toLowerCase().includes("14k")) {
-          goldType = "14K";
-        } else if (record.itemName.toLowerCase().includes("18k")) {
-          goldType = "18K";
-        } else if (record.itemName.toLowerCase().includes("24k")) {
-          goldType = "24K";
-        }
-        return goldType;
-      },
-    },
-    {
-      title: "Số Lượng",
-      dataIndex: "itemQuantity",
-      key: "itemQuantity",
-      width: 100,
-      render: (_, record) => (
-        <div className="flex items-center">
-          <button
-            onClick={() => handleDecrement(record.itemId)}
-            className="h-7 w-7 flex justify-center items-center text-[8px] bg-gray-200 hover:bg-gray-300 rounded-lg transition duration-200"
-          >
-            <MinusOutlined />
-          </button>
-          <span className="mx-2">{record.itemQuantity}</span>
-          <button
-            onClick={() => handleIncrement(record.itemId)}
-            className="h-7 w-7 flex justify-center items-center text-[8px] bg-gray-200 hover:bg-gray-300 rounded-lg transition duration-200"
-          >
-            <PlusOutlined />
-          </button>
-        </div>
-      ),
-    },
-    {
-      title: "Trọng Lượng",
-      dataIndex: "weight",
-      key: "weight",
-      width: 100,
-    },
-    {
-      title: "Giá",
-      dataIndex: "price",
-      key: "price",
-      width: 120,
-      render: (_, record) => {
-        let goldType = "";
-        if (record.itemName.toLowerCase().includes("10k")) {
-          goldType = "10K";
-        } else if (record.itemName.toLowerCase().includes("14k")) {
-          goldType = "14K";
-        } else if (record.itemName.toLowerCase().includes("18k")) {
-          goldType = "18K";
-        } else if (record.itemName.toLowerCase().includes("24k")) {
-          goldType = "24K";
-        }
-
-        let kara;
-        switch (goldType) {
-          case "10K":
-            kara = buyGold10k;
-            break;
-          case "14K":
-            kara = buyGold14k;
-            break;
-          case "18K":
-            kara = buyGold18k;
-            break;
-          case "24K":
-            kara = buyGold24k;
-            break;
-          default:
-            kara = 0;
-        }
-
-        return (record.weight * kara).toLocaleString("en-US", {
-          style: "currency",
-          currency: "USD",
-        });
-      },
-    },
-    {
-      title: "Thao Tác",
-      key: "action",
-      render: (_, record) => (
-        <Button
-          type="primary"
-          danger
-          onClick={() => handleRemove(record.itemId)}
-        >
-          Xóa
-        </Button>
-      ),
-    },
-  ];
-
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Bán hàng</h2>
-      <div className="mb-4 flex">
-        <Input
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Nhập mã hàng hoặc tên hàng"
-          className="mr-2"
-        />
-        <Button type="primary" onClick={handleSearch} loading={loading}>
-          {loading ? "Đang tìm kiếm..." : "Thêm vào giỏ hàng"}
-        </Button>
-      </div>
-      <Spin spinning={loading}>
-        <Table
-          columns={columns}
-          dataSource={cartItems}
-          rowKey="itemId"
-          pagination={false}
-        />
-      </Spin>
-      <div className="flex">
-        <div className="flex-col  mt-6 bg-white p-6 pt-2 rounded-lg shadow-md w-[49%] mr-3s">
-          <div className="flex justify-between mb-3 text-lg font-medium">
-            <p className="font-bold mr-2">Tổng số lượng:</p>
-            <p>{cartTotalQuantity}</p>
-          </div>
-          <div className="flex-col">
-            <div className="flex justify-between mb-3 text-lg font-medium ">
-              <p className="font-bold mr-2">Tổng tiền:</p>
-              <p>
-                {cartTotalAmount.toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                })}
-              </p>
-            </div>
-            <div className="flex justify-between mb-3 text-lg font-medium">
-              <p>Giảm giá:</p>
-              <p>
-                {discountDataSelect
-                  ? `${
-                      discountData.find(
-                        (d) => d.discountCode === discountDataSelect
-                      ).discountPercentage
-                    }%`
-                  : "0%"}
-                  {console.log(discountData)}
-              </p>
-            </div>
-          </div>
-          <div className="mt-4">
-            <Space wrap>
-              <span className="font-bold">Chọn khuyến mãi:</span>
-              <Select
-                style={{
-                  width: 200,
-                  height: 50,
-                }}
-                allowClear
-                onChange={handleChange}
-                options={discountOptions}
-              />
-            </Space>
-          </div>
-        </div>
-
-        <div className="cart-summary mt-6 bg-white p-6 pt-2 rounded-lg shadow-md  w-[49%] ml-7 flex justify-center ">
-          <Button type="primary" onClick={handleCreateOrder} className="w-full h-14 bg-black text-white uppercase font-bold mt-12">
-            Tạo đơn hàng
+    <div className="product-list-container">
+      <div className="header">
+        <h2 className="title">Cửa hàng trang sức</h2>
+        <div className="search-container">
+          <Input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Tìm kiếm cho vàng,bạc,kim cương...."
+            className="search-bar"
+          />
+          <Button onClick={handleSearch} loading={loading} className="search-btn">
+            Tìm kiếm
+          </Button>
+          <Button
+            type="default"
+            className="ml-2 flex items-center"
+            style={{ fontWeight: "600", height: "30px" }}
+            onClick={() => setIsScanModalVisible(true)}
+          >
+            <ScanOutlined className="mr-2" />
+            Quét QR
           </Button>
         </div>
       </div>
+      <div className="content">
+        <div className="menu">
+          <div className="menu-header">
+          </div>
+          <div className="product-grid">
+            {filteredProducts.map((product) => (
+              <div key={product.itemId} className="product-card">
+                <img src={product.itemImagesId} alt={product.itemName} className="product-image" />
+                <h3 className="product-name">{product.itemName}</h3>
+                <p className="product-price">{currencyFormatter.format(product.price)}</p>
+                <Button
+                  type="primary"
+                  onClick={() => dispatch(addItem(product))}
+                  className="add-to-cart-btn"
+                >
+                  Thêm vào giỏ hàng
+                </Button>
+              </div>
+            ))}
+            
+          </div>
+        </div>
+        <div className="cart">
+          <h2>Đơn hàng</h2>
+          <div>
+          <Button type="primary" onClick={showModal}>
+            Yêu Cầu Giảm Giá
+          </Button>
+          <Select
+              style={{ width: 200 }}
+              onChange={handleChange}
+              placeholder="Chọn mã giảm giá"
+              loading={isLoadingPromotion}
+              options={discountOptions}
+              allowClear
+            />
+          <Modal title="Yêu Cầu Giảm Giá" visible={isModalVisible} onOk={handleOk} onCancel={handleModalCancel}>
+            <Form layout="vertical">
+              <Form.Item label="Phần Trăm Giảm Giá" required>
+                <Input value={discountPct} onChange={(e) => setDiscountPct(e.target.value)} />
+              
+              </Form.Item>
+              <Form.Item label="Nội dung" required>
+              <Input value={description} onChange={(e) => setDescription(e.target.value)} />             
+              </Form.Item>     
+            </Form>
+          </Modal>
+        </div>
+          <div className="customer-info bg-white p-4 rounded-lg mb-4">
+        <div className="flex items-center mb-[15px]">
+          <span className="block min-w-[150px] font-medium">Loại khách hàng</span>
+          <Select
+            value={customerType}
+            onChange={handleSelectChange}
+            className="w-[130px]"
+          >
+            <Select.Option value="newCustomer">Khách mới</Select.Option>
+            <Select.Option value="member">Thành viên</Select.Option>
+          </Select>
+        </div>
+        {customerType === "member" && (
+          <div className="member-info">
+            <div className="flex items-center mb-[15px]">
+              <span className="block min-w-[150px] font-medium">Số điện thoại</span>
+              <Input
+                name="phoneNumber"
+                value={phoneNumber}
+                onChange={handleInputChange}
+                className="rounded-[5px]"
+              />
+              <Button onClick={handleSearchClick} className="ml-2">Tìm kiếm</Button>
+            </div>
+            {isLoading ? (
+              <Spin className="ml-[100px]" />
+            ) : searchedCustomer && (
+              <div className="customer-details ml-[100px]">
+                <p><strong>Tên:</strong> {searchedCustomer.customerName}</p>
+                <p><strong>Địa chỉ:</strong> {searchedCustomer.address}</p>
+                <p><strong>Giới tính:</strong> {searchedCustomer.gender}</p>
+                <p><strong>Email:</strong> {searchedCustomer.email}</p>
+              </div>
+            )}
+          </div>
+        )}
+        {customerType === "newCustomer" && (
+          <div className="new-customer">
+            <div className="flex items-center mb-[15px]">
+              <span className="block min-w-[150px] font-medium">Tên khách hàng</span>
+              <Input
+                name="customerName"
+                value={customerName}
+                onChange={handleInputChange}
+                className="rounded-[5px]"
+              />
+            </div>
+            <div className="flex items-center mb-[15px]">
+              <span className="block min-w-[150px] font-medium">Địa chỉ</span>
+              <Input
+                name="address"
+                value={customerAddress}
+                onChange={handleInputChange}
+                className="rounded-[5px]"
+              />
+            </div>
+            <div className="flex items-center mb-[15px]">
+              <span className="block min-w-[150px] font-medium">Giới tính</span>
+              <Select
+                name="gender"
+                value={customerGender}
+                onChange={value => setCustomerGender(value)}
+                className="rounded-[5px]"
+              >
+                <Select.Option value="Nam">Nam</Select.Option>
+                <Select.Option value="Nữ">Nữ</Select.Option>
+                <Select.Option value="Khác">Khác</Select.Option>
+              </Select>
+            </div>
+            <div className="flex items-center mb-[15px]">
+              <span className="block min-w-[150px] font-medium">Số điện thoại</span>
+              <Input
+                name="phoneNumber"
+                value={phoneNumber}
+                onChange={handleInputChange}
+                className="rounded-[5px]"
+              />
+            </div>
+            <div className="flex items-center mb-[15px]">
+              <span className="block min-w-[150px] font-medium">Email</span>
+              <Input
+                name="email"
+                value={customerEmail}
+                onChange={handleInputChange}
+                className="rounded-[5px]"
+              />
+            </div>
+            <div className="flex justify-center">
+              <Button onClick={handleSubmit} className="mx-2">Tạo mới</Button>
+              <Button onClick={handleCancel} className="mx-2">Hủy</Button>
+            </div>
+          </div>
+        )}
+      </div>
+          {cartItems.map((item) => (
+            <div key={item.itemId} className="cart-item">
+              <span>{item.itemName}</span>
+              <div className="quantity-controls">
+                <Button onClick={() => handleDecrement(item.itemId)} className="quantity-btn">
+                  <MinusOutlined />
+                </Button>
+                <span>{item.itemQuantity}</span>
+                <Button onClick={() => handleIncrement(item.itemId)} className="quantity-btn">
+                  <PlusOutlined />
+                </Button>
+              </div>
+              <span className="item-price">{currencyFormatter.format(item.price)}</span>
+              <Button
+                type="primary"
+                danger
+                onClick={() => handleRemove(item.itemId)}
+                className="remove-item-btn"
+              >
+                Xóa
+              </Button>
+            </div>
+          ))}
+          <div className="add-product">
+            <Input placeholder="Enter Product ID" className="add-product-input" />
+            <Button className="add-product-btn">Thêm vào giỏ hàng</Button>
+          </div>
+          <div className="cart-summary">
+            <div>
+              <span>Tổng số lượng: </span>
+              <span>{cartTotalQuantity}</span>
+            </div>
+            <div>
+              <span>Tổng giá: </span>
+              <span>{currencyFormatter.format(cartTotalAmount)}</span>
+            </div>
+            <Button type="primary" onClick={handleCreateOrder} className="checkout-btn">
+              Thanh Toán
+            </Button>
+          </div>
+        </div>
+      </div>
+      <Modal
+        title="Quét QR"
+        visible={isScanModalVisible}
+        onCancel={() => setIsScanModalVisible(false)}
+        footer={[
+          <Button key="back" onClick={() => setIsScanModalVisible(false)}>
+            Hủy
+          </Button>,
+        ]}
+      >
+        <div id="reader"></div>
+      </Modal>
     </div>
   );
 };

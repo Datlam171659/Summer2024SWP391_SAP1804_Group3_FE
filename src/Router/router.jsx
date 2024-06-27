@@ -18,6 +18,7 @@ import BuyBackPaymentPage from "../Pages/BuyBackPage/BuyBackPaymentPage";
 import UserManagePage from "../Pages/UserManagePage/UserManagePage";
 import AddUserPage from "../Pages/AddUserPage/AddUserPage";
 import CustomerSearchDetail from "../Pages/CustomerSearchPage/CustomerSearchDetail"
+import Promotion from "../Pages/Promotion/Promotion";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
       {
         path: "sales-page",
         element: <SalesPage />,
+      },
+      {
+        path: "promotion",
+        element: <Promotion />,
       },
 
       {

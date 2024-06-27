@@ -5,6 +5,7 @@ import { editProduct } from '../../Features/product/producteditSlice';
 import { useParams } from 'react-router-dom';
 import { message, Button } from "antd";
 import { EditOutlined } from "@ant-design/icons";
+
 function ProductDetail() {
   const dispatch = useDispatch();
   const { itemId } = useParams(); 
