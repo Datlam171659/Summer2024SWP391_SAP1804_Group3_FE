@@ -1,15 +1,35 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useSelector } from 'react-redux';
+import './ExchangeRatePage.scss';
 
 const ExchangeRatePage = () => {
     const { buyPrice, sellPrice } = useSelector((state) => state.goldPrice);
+    const tableRef = useRef(null);
 
     const goldPrice = buyPrice.map((buyItem, index) => ({
         ...buyItem,
         ...sellPrice[index],
     }));
 
+    const handleFullScreen = () => {
+        const element = tableRef.current;
+        if (element) {
+            if (element.requestFullscreen) {
+                element.requestFullscreen();
+            } else if (element.mozRequestFullScreen) { /* Firefox */
+                element.mozRequestFullScreen();
+            } else if (element.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+                element.webkitRequestFullscreen();
+            } else if (element.msRequestFullscreen) { /* IE/Edge */
+                element.msRequestFullscreen();
+            }
+        } else {
+            console.error('Element is null');
+        }
+    };
+
     return (
+
         <div className='w-full block'>
             <div className="w-11/12 mt-10 block justify-center mx-auto">
                 <h2 className="w-full text-center text-2xl font-semibold">Giá Vàng Hôm Nay</h2>
@@ -57,6 +77,7 @@ const ExchangeRatePage = () => {
                     <p className="mb-2">Tỷ giá chuyển đổi: <a href="https://www.exchangerate-api.com/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">exchangerate-api.com</a></p>
                     <p>Tỷ giá vàng: <a href="https://www.gold-api.com/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">gold-api.com</a></p>
                 </div>
+
             </div>
         </div>
     );

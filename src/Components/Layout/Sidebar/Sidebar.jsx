@@ -69,7 +69,7 @@ function Sidebar() {
     {
       icon: <PercentageOutlined style={{ fontSize: "16px" }} />,
       title: 'Khuyến mãi',
-      to: "",
+      to: "/promotion",
       children: [],
     },
     {
@@ -93,6 +93,7 @@ function Sidebar() {
 
   return (
     <Sider
+      id='sidebar'
       className='sidebar'
       collapsed={collapsed}
       theme='light'
