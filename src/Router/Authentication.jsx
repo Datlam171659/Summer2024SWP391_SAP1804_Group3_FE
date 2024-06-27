@@ -52,13 +52,13 @@ function Authentication({ children }) {
 
                         const vndRate = await getVNDExchangeRate();
                         const goldPrice = await getGoldExchangeRate();
-                        const goldPriceInVND = (goldPrice * vndRate) / 8.29;
-                        const buyPrice = goldPriceInVND * 1.02;
+                        const goldPriceInVND = (goldPrice * vndRate) / constants.exchangeRate;
+                        const buyPrice = goldPriceInVND * constants.buyMultiplier;
 
                         const buyGold24k = roundToNearestThousand(parseFloat(buyPrice));
-                        const buyGold18k = roundToNearestThousand(buyGold24k * 0.75);
-                        const buyGold14k = roundToNearestThousand(buyGold24k * 0.583);
-                        const buyGold10k = roundToNearestThousand(buyGold24k * 0.417);
+                        const buyGold18k = roundToNearestThousand(buyGold24k * constants.goldWeightRatio["18k"]);
+                        const buyGold14k = roundToNearestThousand(buyGold24k * constants.goldWeightRatio["14k"]);
+                        const buyGold10k = roundToNearestThousand(buyGold24k * constants.goldWeightRatio["10k"]);
 
                         const buyPriceObject = {
                             buyGold24k: buyGold24k.toFixed(0),
@@ -67,12 +67,12 @@ function Authentication({ children }) {
                             buyGold10k: buyGold10k.toFixed(0),
                         };
 
-                        const sellPrice = goldPriceInVND * 1.05;
+                        const sellPrice = goldPriceInVND * constants.sellMultiplier;
 
                         const sellGold24k = roundToNearestThousand(parseFloat(sellPrice));
-                        const sellGold18k = roundToNearestThousand(sellGold24k * 0.75);
-                        const sellGold14k = roundToNearestThousand(sellGold24k * 0.583);
-                        const sellGold10k = roundToNearestThousand(sellGold24k * 0.417);
+                        const sellGold18k = roundToNearestThousand(sellGold24k * constants.goldWeightRatio["18k"]);
+                        const sellGold14k = roundToNearestThousand(sellGold24k * constants.goldWeightRatio["14k"]);
+                        const sellGold10k = roundToNearestThousand(sellGold24k * constants.goldWeightRatio["10k"]);
 
                         const sellPriceObject = {
                             sellGold24k: sellGold24k.toFixed(0),
