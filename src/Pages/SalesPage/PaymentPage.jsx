@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button, Table, ConfigProvider, Spin, message, Modal, Form } from "antd";
 import { fetchCustomerData } from "../../Features/Customer/customerSlice";
 import { resetCart, updateCustomerInfo } from "../../Features/product/cartSlice";
@@ -10,7 +10,6 @@ import { addWarranty } from "../../Features/Warranty/warrantyaddSlice";
 import { rewardCustomer } from "../../Features/Customer/rewardSlice";
 import { requestPromotionCus } from "../../Features/Promotion/promotionSlice";
 import { fetchPromotions } from "../../Features/Promotion/promotionallSlice";
-import QRCode from "react-qr-code";
 
 const PaymentPage = () => {
   const dispatch = useDispatch();
@@ -38,6 +37,7 @@ const PaymentPage = () => {
   const [addPoints, setPaddPoints] = useState(0);
   const [customerInfo, setCustomerInfo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const MY_BANK = {
     BANK_ID: "Vietcombank",
@@ -66,6 +66,26 @@ const PaymentPage = () => {
   useEffect(() => {
     dispatch(fetchPromotions());
   }, [dispatch]);
+
+  useEffect(() => {
+    const ContentElement = document.getElementById('content');
+    const SidebarElement = document.getElementById('sidebar'); 
+  
+    if(ContentElement && SidebarElement) {
+      if (isModalOpen) {
+        ContentElement.classList.add('blur-md');
+        SidebarElement.classList.add('invisible');
+      } else {
+        ContentElement.classList.remove('blur-md');
+        SidebarElement.classList.remove('invisible');
+      }
+  
+      return () => { 
+        ContentElement.classList.remove('blur-md');
+        SidebarElement.classList.remove('invisible');
+      };
+    }
+  }, [isModalOpen]);
 
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -97,6 +117,7 @@ const PaymentPage = () => {
   const handleOkPay = () => {
     setPaymentType("Chuyển khoản");
     setIsModalOpen(false);
+
   };
 
   const handleCancelPay = () => {
@@ -173,22 +194,11 @@ const PaymentPage = () => {
 
     try {
       await dispatch(createInvoice(invoiceData)).unwrap();
+      await dispatch(addWarranty(customerId)).unwrap();
+      await dispatch(rewardCustomer({ customerId, addPoints })).unwrap();
       message.success("Tạo hóa đơn thành công!");
     } catch (error) {
       message.error(`Tạo hóa đơn thất bại: ${error.message}`);
-    }
-
-    try {
-      await dispatch(addWarranty(customerId)).unwrap();
-      message.success("Tạo bảo hành thành công!");
-    } catch (error) {
-      message.error(`Tạo bảo hành thất bại: ${error.message}`);
-    }
-    try {
-      await dispatch(rewardCustomer({ customerId, addPoints })).unwrap();
-      message.success("Khách hàng đã được tích điểm thành công!");
-    } catch (error) {
-      message.error(`Tích điểm thất bại: ${error.message}`);
     }
   };
 
@@ -276,7 +286,7 @@ const PaymentPage = () => {
   ];
 
   return (
-    <ConfigProvider
+    <ConfigProvider 
       theme={{
         token: {
           colorPrimary: "var(--primary-color)",
@@ -288,7 +298,8 @@ const PaymentPage = () => {
           },
         },
       }}
-    >
+    > 
+    <div id="content">
       <div className="payment-page w-full p-4">
         <div className="order-summary bg-gray-50 p-4 rounded-lg mb-4">
           <h2 className="text-xl font-bold mb-4">Đơn hàng</h2>
@@ -375,10 +386,11 @@ const PaymentPage = () => {
             </div>
           </div>
         </div>
-        <Modal title="Basic Modal" open={isModalOpen} onOk={handleOkPay} onCancel={handleCancelPay}>
-          <img src={qrCode} alt="QR Code" />
+        <Modal open={isModalOpen} onOk={handleOkPay} onCancel={handleCancelPay}>
+          <img src={qrCode} alt="QR Code"/>
         </Modal>
       </div>
+    </div>
     </ConfigProvider>
   );
 };
