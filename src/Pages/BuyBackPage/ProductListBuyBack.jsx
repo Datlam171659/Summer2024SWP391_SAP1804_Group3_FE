@@ -80,6 +80,7 @@ const ProductListBuyBack = () => {
     const success = (result) => {
       scanner.clear();
       setSearchQuery(result);
+      
       setIsScanModalVisible(false);
     };
 
