@@ -28,4 +28,8 @@ const addinvoice = (
 const getinvoiceAll = () => {
   return axios.get(`/api/Sales/Invoices`, {});
 };
-export { addinvoice,getinvoiceAll };
+
+const GetMonthlyRevenue = () => {
+  return axios.get(`/api/Sales/MonthlyRevenue`, {});
+}
+export { addinvoice,getinvoiceAll, GetMonthlyRevenue };
