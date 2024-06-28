@@ -3,7 +3,7 @@ import { Card, Space, Statistic } from "antd";
 
 function DashBoardCard({ title, value, icon}){
     return (
-        <Card>
+        <Card className="dashboard-card">
             <Space direction="horizontal">
             {icon} 
             <Statistic title={title} value = {value} />
