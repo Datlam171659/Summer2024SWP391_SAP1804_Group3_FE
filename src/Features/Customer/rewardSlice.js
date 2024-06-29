@@ -2,8 +2,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { rewardCustomer as rewardCustomerAPI } from '../../Services/api/CustomerSApi';
 
-export const rewardCustomer = createAsyncThunk('reward/rewardCustomer', async ({ customerId, addPoints }) => {
-  const response = await rewardCustomerAPI(customerId, addPoints);
+export const rewardCustomer = createAsyncThunk('reward/rewardCustomer', async ({ customerId, pointsTotal }) => {
+  const response = await rewardCustomerAPI(customerId, pointsTotal);
   return response;
 });
 

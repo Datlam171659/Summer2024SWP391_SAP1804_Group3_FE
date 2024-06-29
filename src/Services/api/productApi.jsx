@@ -13,10 +13,13 @@ const addItem = (productDetails) => {
   return axios.post(`/api/Item`, productDetails);
 };
 const edititem = async (itemId, productDetails) => {
-  return axios.put(`/api/Item/${itemId}`, productDetails, {
+  return axios.put(`/api/Item/update/${itemId}`, productDetails, {
     headers: {
       'Content-Type': 'application/json',
     },
   });
 };
-export { getProductAll, getProductById, removeItem, addItem,edititem };
+const reduceitem = async (itemId, quantity) => {
+  return axios.put(`/api/Item/updateQuantity/${itemId}?quantity=${quantity}`);
+};
+export { getProductAll, getProductById, removeItem, addItem,edititem,reduceitem };

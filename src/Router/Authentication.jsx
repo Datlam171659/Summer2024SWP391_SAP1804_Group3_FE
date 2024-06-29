@@ -44,7 +44,6 @@ function Authentication({ children }) {
                 localStorage.setItem("email", decodedToken.email);
                 localStorage.setItem("UserName", decodedToken.UserName);
                 localStorage.setItem("UniqueName", decodedToken.unique_name);
-
                 if (!dataFetched) {
                     try {
                         dispatch(resetBuyPrice());

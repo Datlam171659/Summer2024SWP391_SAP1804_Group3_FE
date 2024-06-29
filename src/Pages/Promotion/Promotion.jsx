@@ -18,20 +18,18 @@ function Promotion() {
       dispatch(fetchPromotions());
     }
   }, [promotionStatus, dispatch]);
-
   const handleApprove = async () => {
     if (selectedPromotion) {
       try {
         await dispatch(approvePromotion(selectedPromotion.id)).unwrap();
         message.success('Promotion approved successfully');
         setIsModalOpen(false);
-        dispatch(fetchPromotions());
+        dispatch(fetchPromotions()); 
       } catch (err) {
         message.error('Failed to approve promotion');
       }
     }
   };
-
   const showPromotionModal = (promotion) => {
     setSelectedPromotion(promotion);
     setIsModalOpen(true);
@@ -63,6 +61,11 @@ function Promotion() {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
+      render: (status) => (
+        <span style={{ color: 'red' }}>
+          {status}
+        </span>
+      ),
     },
     {
       title: "Nội dung",
@@ -75,12 +78,12 @@ function Promotion() {
       key: "action",
       render: (_, record) => (
         <div className="flex space-x-2">
-          <button
+          <Button
             onClick={() => showPromotionModal(record)}
             className="text-red-500 hover:text-red-700 transition duration-200"
           >
             Duyệt
-          </button>
+          </Button>
         </div>
       ),
     },
