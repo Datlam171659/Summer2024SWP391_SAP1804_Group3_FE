@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Input, message, Select, Spin, Modal,Form } from "antd";
+import { Button, Input, message, Select, Spin, Modal, Form } from "antd";
 import { MinusOutlined, PlusOutlined, ScanOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import {
@@ -19,6 +19,7 @@ import { updateCustomerInfo } from "../../Features/product/cartSlice";
 import SalepageApi from "../../Features/Salepage/SalepageApi";
 import { requestPromotionCus } from "../../Features/Promotion/promotionSlice";
 import { fetchPromotions } from "../../Features/Promotion/promotionallSlice";
+import { fetchRewardAll } from "../../Features/Customer/rewardallSlice";
 const ProductList = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -29,31 +30,46 @@ const ProductList = () => {
   const isLoadingPromotion = useSelector(
     (state) => state.promotions.isLoadingPromotion
   );
+  const { rewardsallData, loading: rewardsLoading } = useSelector(
+    (state) => state.rewardsAll
+  );
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
-  const cartTotalQuantity = useSelector((state) => state.cart.cartTotalQuantity);
+  const cartTotalQuantity = useSelector(
+    (state) => state.cart.cartTotalQuantity
+  );
   const cartTotalAmount = useSelector((state) => state.cart.cartTotalAmount);
-  const buyGold24k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold24k);
-  const buyGold18k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold18k);
-  const buyGold14k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold14k);
-  const buyGold10k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold10k);
+  const buyGold24k = useSelector(
+    (state) => state.goldPrice.sellPrice[0]?.sellGold24k
+  );
+  const buyGold18k = useSelector(
+    (state) => state.goldPrice.sellPrice[0]?.sellGold18k
+  );
+  const buyGold14k = useSelector(
+    (state) => state.goldPrice.sellPrice[0]?.sellGold14k
+  );
+  const buyGold10k = useSelector(
+    (state) => state.goldPrice.sellPrice[0]?.sellGold10k
+  );
   const discountData = useSelector((state) => state.discount.discountData);
-  const isLoadingDiscountData = useSelector((state) => state.discount.isLoadingDiscountData);
+  const isLoadingDiscountData = useSelector(
+    (state) => state.discount.isLoadingDiscountData
+  );
   const [discountDataSelect, setDiscountDataSelect] = useState("");
   const [discountPercentage, setDiscountPercentage] = useState(0);
   const customerData = useSelector((state) => state.customer.customerData);
   const isLoading = useSelector((state) => state.customer.isLoading);
   const customerInfor = useSelector((state) => state.cart.customerInfor);
-  const [customerType, setCustomerType] = useState('newCustomer');
+  const [customerType, setCustomerType] = useState("newCustomer");
   const [searchedCustomer, setSearchedCustomer] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerGender, setCustomerGender] = useState("Nam");
   const [customerAddress, setCustomerAddress] = useState("");
-  const [isModalVisible, setIsModalVisible] = useState(false); 
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [discountPct, setDiscountPct] = useState("");
-  const[description,setDescription]=useState("")
+  const [description, setDescription] = useState("");
   const promotions = useSelector((state) => state.promotions.promotions);
   const [promotionDataSelect, setPromotionDataSelect] = useState("");
   const [promotionPercentage, setPromotionPercentage] = useState(0);
@@ -63,9 +79,28 @@ const ProductList = () => {
   });
   useEffect(() => {
     dispatch(fetchPromotions());
+    dispatch(fetchRewardAll());
   }, [dispatch]);
+  const calculateRewardLevel = (points) => {
+    if (points >= 1000) return "Vũ Trụ";
+    if (points >= 100) return "Kim Cương";
+    if (points >= 50) return "Vàng";
+    if (points >= 10) return "Bạc";
+    return "Chưa xếp hạng";
+  };
+  const customerRewards =
+    customerInfor && rewardsallData
+      ? rewardsallData.filter(
+          (reward) => reward.customerId === customerInfor.id
+        )
+      : [];
+  const hasRewards = customerRewards.length > 0;
+  console.log(customerRewards);
   useEffect(() => {
-    const cartTotalQuantity = cartItems.reduce((acc, item) => acc + item.itemQuantity, 0);
+    const cartTotalQuantity = cartItems.reduce(
+      (acc, item) => acc + item.itemQuantity,
+      0
+    );
 
     const cartTotalAmount = cartItems.reduce((acc, item) => {
       let goldType = "";
@@ -101,24 +136,34 @@ const ProductList = () => {
       return acc + itemTotalPrice;
     }, 0);
     const discountedAmount = cartTotalAmount * (1 - promotionPercentage / 100);
-    dispatch(updateTotals({ cartTotalQuantity, cartTotalAmount: discountedAmount }));
-  }, [cartItems, buyGold10k, buyGold14k, buyGold18k, buyGold24k, promotionPercentage, dispatch]);
+    dispatch(
+      updateTotals({ cartTotalQuantity, cartTotalAmount: discountedAmount })
+    );
+  }, [
+    cartItems,
+    buyGold10k,
+    buyGold14k,
+    buyGold18k,
+    buyGold24k,
+    promotionPercentage,
+    dispatch,
+  ]);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     switch (name) {
-      case 'customerName':
+      case "customerName":
         setCustomerName(value);
         break;
-      case 'address':
+      case "address":
         setCustomerAddress(value);
         break;
-      case 'gender':
+      case "gender":
         setCustomerGender(value);
         break;
-      case 'phoneNumber':
+      case "phoneNumber":
         setPhoneNumber(value);
         break;
-      case 'email':
+      case "email":
         setCustomerEmail(value);
         break;
       default:
@@ -131,7 +176,10 @@ const ProductList = () => {
       return;
     }
 
-    const foundCustomer = customerData.find(customer => customer.phoneNumber === phoneNumber && customer.status === "active");
+    const foundCustomer = customerData.find(
+      (customer) =>
+        customer.phoneNumber === phoneNumber && customer.status === "active"
+    );
     if (foundCustomer) {
       setSearchedCustomer(foundCustomer);
       dispatch(updateCustomerInfo(foundCustomer));
@@ -155,7 +203,7 @@ const ProductList = () => {
       message.success("Khách hàng đã được tạo thành công");
       dispatch(updateCustomerInfo(response));
     } catch (error) {
-      message.error(`Có lỗi xảy ra: ${error.message}`);
+      message.error(`Có lỗi xảy ra: ${error.response.data.message}`);
     }
   };
 
@@ -196,8 +244,21 @@ const ProductList = () => {
 
     const success = (result) => {
       scanner.clear();
-      setSearchQuery(result);
       setIsScanModalVisible(false);
+
+      const scannedQuery = result.replace(/\s/g, "").toLowerCase();
+      const matchedProduct = productData.find(
+        (product) =>
+          product.itemId.replace(/\s/g, "").toLowerCase() === scannedQuery ||
+          product.itemName.replace(/\s/g, "").toLowerCase() === scannedQuery
+      );
+
+      if (matchedProduct) {
+        dispatch(addItem(matchedProduct));
+        message.success("Sản phẩm đã được thêm vào giỏ hàng");
+      } else {
+        message.error("Không tìm thấy sản phẩm với mã QR này");
+      }
     };
 
     const error = (err) => {
@@ -209,17 +270,28 @@ const ProductList = () => {
     return () => {
       scanner.clear();
     };
-  }, [isScanModalVisible]);
+  }, [isScanModalVisible, productData, dispatch]);
 
   const discountOptions = promotions
-  .filter((item) => customerInfor && item.cusId === customerInfor.id && item.status==="Duyệt")
-  .map((item) => ({
-    value: item.id,
-    label: `${item.discountPct}%`,
-  }));
+    .filter(
+      (item) =>
+        customerInfor &&
+        item.cusId === customerInfor.id &&
+        item.status === "Duyệt"
+    )
+    .map((item) => ({
+      value: item.id,
+      label: `${item.discountPct}%`,
+    }));
   const handleCreateOrder = () => {
     if (cartItems.length === 0) {
-      message.error("Cart is empty. Cannot create order.");
+      message.error("Giỏ hàng trống. Không thể tạo đơn");
+    } else if (
+      !customerInfor ||
+      !customerInfor.customerName ||
+      !customerInfor.phoneNumber
+    ) {
+      message.error("Vui lòng nhập thông tin khách hàng trước khi thanh toán");
     } else {
       navigate("/sales-page/Payment");
     }
@@ -231,8 +303,14 @@ const ProductList = () => {
       const trimmedQuery = searchQuery.replace(/\s/g, "").toLowerCase();
       const matchingItems = productData.filter(
         (product) =>
-          product.itemId.replace(/\s/g, "").toLowerCase().includes(trimmedQuery) ||
-          product.itemName.replace(/\s/g, "").toLowerCase().includes(trimmedQuery)
+          product.itemId
+            .replace(/\s/g, "")
+            .toLowerCase()
+            .includes(trimmedQuery) ||
+          product.itemName
+            .replace(/\s/g, "")
+            .toLowerCase()
+            .includes(trimmedQuery)
       );
 
       setFilteredProducts(matchingItems);
@@ -249,11 +327,11 @@ const ProductList = () => {
     }
   };
   const handleOk = async () => {
-    const discountId = `DISC8`; 
+    const discountId = `DISC8`;
 
     const discountData = {
       id: discountId,
-      code: "DISCOUNT_CODE", 
+      code: "DISCOUNT_CODE",
       discountPct,
       status: "Chờ duyệt",
       description,
@@ -263,6 +341,7 @@ const ProductList = () => {
     try {
       await dispatch(requestPromotionCus(discountData)).unwrap();
       message.success("Yêu cầu giảm giá thành công!");
+      fetchPromotions()
       setIsModalVisible(false);
     } catch (error) {
       message.error(`Yêu cầu giảm giá thất bại: ${error.message}`);
@@ -271,18 +350,23 @@ const ProductList = () => {
   const showModal = () => {
     setIsModalVisible(true);
   };
- const handleModalCancel = () => {
+  const handleModalCancel = () => {
     setIsModalVisible(false);
   };
 
   const handleRemove = (itemId) => {
     dispatch(removeItem(itemId));
-    message.success("Product removed from cart.");
+    message.success("Sản phẩm đã bị xóa khỏi giỏ hàng");
   };
 
+  useEffect(() => {
+    setPromotionDataSelect('');
+    setPromotionPercentage(0);
+  }, [promotions]);
+  
   const handleChange = (value) => {
     if (value === undefined) {
-      setPromotionDataSelect("");
+      setPromotionDataSelect('');
       setPromotionPercentage(0);
     } else {
       setPromotionDataSelect(value);
@@ -314,7 +398,11 @@ const ProductList = () => {
             placeholder="Tìm kiếm cho vàng,bạc,kim cương...."
             className="search-bar"
           />
-          <Button onClick={handleSearch} loading={loading} className="search-btn">
+          <Button
+            onClick={handleSearch}
+            loading={loading}
+            className=" bg-black text-white"
+          >
             Tìm kiếm
           </Button>
           <Button
@@ -330,14 +418,19 @@ const ProductList = () => {
       </div>
       <div className="content">
         <div className="menu">
-          <div className="menu-header">
-          </div>
+          <div className="menu-header"></div>
           <div className="product-grid">
             {filteredProducts.map((product) => (
               <div key={product.itemId} className="product-card">
-                <img src={product.itemImagesId} alt={product.itemName} className="product-image" />
+                <img
+                  src={product.itemImagesId}
+                  alt={product.itemName}
+                  className="product-image"
+                />
                 <h3 className="product-name">{product.itemName}</h3>
-                <p className="product-price">{currencyFormatter.format(product.price)}</p>
+                <p className="product-price">
+                  {currencyFormatter.format(product.price)}
+                </p>
                 <Button
                   type="primary"
                   onClick={() => dispatch(addItem(product))}
@@ -347,16 +440,19 @@ const ProductList = () => {
                 </Button>
               </div>
             ))}
-            
           </div>
         </div>
         <div className="cart">
           <h2>Đơn hàng</h2>
           <div>
-          <Button type="primary" onClick={showModal}>
-            Yêu Cầu Giảm Giá
-          </Button>
-          <Select
+            <Button
+              type="primary"
+              onClick={showModal}
+              className=" bg-black text-white"
+            >
+              Yêu Cầu Giảm Giá
+            </Button>
+            <Select
               style={{ width: 200 }}
               onChange={handleChange}
               placeholder="Chọn mã giảm giá"
@@ -364,125 +460,179 @@ const ProductList = () => {
               options={discountOptions}
               allowClear
             />
-          <Modal title="Yêu Cầu Giảm Giá" visible={isModalVisible} onOk={handleOk} onCancel={handleModalCancel}>
-            <Form layout="vertical">
-              <Form.Item label="Phần Trăm Giảm Giá" required>
-                <Input value={discountPct} onChange={(e) => setDiscountPct(e.target.value)} />
-              
-              </Form.Item>
-              <Form.Item label="Nội dung" required>
-              <Input value={description} onChange={(e) => setDescription(e.target.value)} />             
-              </Form.Item>     
-            </Form>
-          </Modal>
-        </div>
+            <Modal
+              title="Yêu Cầu Giảm Giá"
+              visible={isModalVisible}
+              onOk={handleOk}
+              onCancel={handleModalCancel}
+            >
+              <Form layout="vertical">
+                <Form.Item label="Phần Trăm Giảm Giá" required>
+                  <Input
+                    value={discountPct}
+                    onChange={(e) => setDiscountPct(e.target.value)}
+                  />
+                </Form.Item>
+                <Form.Item label="Nội dung" required>
+                  <Input
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                </Form.Item>
+              </Form>
+            </Modal>
+          </div>
           <div className="customer-info bg-white p-4 rounded-lg mb-4">
-        <div className="flex items-center mb-[15px]">
-          <span className="block min-w-[150px] font-medium">Loại khách hàng</span>
-          <Select
-            value={customerType}
-            onChange={handleSelectChange}
-            className="w-[130px]"
-          >
-            <Select.Option value="newCustomer">Khách mới</Select.Option>
-            <Select.Option value="member">Thành viên</Select.Option>
-          </Select>
-        </div>
-        {customerType === "member" && (
-          <div className="member-info">
             <div className="flex items-center mb-[15px]">
-              <span className="block min-w-[150px] font-medium">Số điện thoại</span>
-              <Input
-                name="phoneNumber"
-                value={phoneNumber}
-                onChange={handleInputChange}
-                className="rounded-[5px]"
-              />
-              <Button onClick={handleSearchClick} className="ml-2">Tìm kiếm</Button>
+              <span className="block min-w-[150px] font-medium">
+                Loại khách hàng
+              </span>
+              <Select
+                value={customerType}
+                onChange={handleSelectChange}
+                className="w-[130px]"
+              >
+                <Select.Option value="newCustomer">Khách mới</Select.Option>
+                <Select.Option value="member">Thành viên</Select.Option>
+              </Select>
             </div>
-            {isLoading ? (
-              <Spin className="ml-[100px]" />
-            ) : searchedCustomer && (
-              <div className="customer-details ml-[100px]">
-                <p><strong>Tên:</strong> {searchedCustomer.customerName}</p>
-                <p><strong>Địa chỉ:</strong> {searchedCustomer.address}</p>
-                <p><strong>Giới tính:</strong> {searchedCustomer.gender}</p>
-                <p><strong>Email:</strong> {searchedCustomer.email}</p>
+            {customerType === "member" && (
+              <div className="member-info">
+                <div className="flex items-center mb-[15px]">
+                  <span className="block min-w-[150px] font-medium">
+                    Số điện thoại
+                  </span>
+                  <Input
+                    name="phoneNumber"
+                    value={phoneNumber}
+                    onChange={handleInputChange}
+                    className="rounded-[5px]"
+                  />
+                  <Button onClick={handleSearchClick} className="ml-2">
+                    Tìm kiếm
+                  </Button>
+                </div>
+                {isLoading ? (
+                  <Spin className="ml-[100px]" />
+                ) : (
+                  searchedCustomer && (
+                    <div className="customer-details ml-[100px]">
+                      <p>
+                        <strong>Tên:</strong> {searchedCustomer.customerName}
+                      </p>
+                      <p>
+                        <strong>Địa chỉ:</strong> {searchedCustomer.address}
+                      </p>
+                      <p>
+                        <strong>Giới tính:</strong> {searchedCustomer.gender}
+                      </p>
+                      <p>
+                        <strong>Email:</strong> {searchedCustomer.email}
+                      </p>
+                      {customerRewards.map((reward) => (
+                        <strong key={reward.id} className="text-xl mt-5">
+                          {console.log(reward.pointsTotal)}
+                          {customerInfor && customerInfor.customerName}:{" "}
+                          {reward.pointsTotal} điểm (
+                          {calculateRewardLevel(reward.pointsTotal)})
+                        </strong>
+                      ))}
+                    </div>
+                  )
+                )}
+              </div>
+            )}
+            {customerType === "newCustomer" && (
+              <div className="new-customer">
+                <div className="flex items-center mb-[15px]">
+                  <span className="block min-w-[150px] font-medium">
+                    Tên khách hàng
+                  </span>
+                  <Input
+                    name="customerName"
+                    value={customerName}
+                    onChange={handleInputChange}
+                    className="rounded-[5px]"
+                  />
+                </div>
+                <div className="flex items-center mb-[15px]">
+                  <span className="block min-w-[150px] font-medium">
+                    Địa chỉ
+                  </span>
+                  <Input
+                    name="address"
+                    value={customerAddress}
+                    onChange={handleInputChange}
+                    className="rounded-[5px]"
+                  />
+                </div>
+                <div className="flex items-center mb-[15px]">
+                  <span className="block min-w-[150px] font-medium">
+                    Giới tính
+                  </span>
+                  <Select
+                    name="gender"
+                    value={customerGender}
+                    onChange={(value) => setCustomerGender(value)}
+                    className="rounded-[5px]"
+                  >
+                    <Select.Option value="Nam">Nam</Select.Option>
+                    <Select.Option value="Nữ">Nữ</Select.Option>
+                    <Select.Option value="Khác">Khác</Select.Option>
+                  </Select>
+                </div>
+                <div className="flex items-center mb-[15px]">
+                  <span className="block min-w-[150px] font-medium">
+                    Số điện thoại
+                  </span>
+                  <Input
+                    name="phoneNumber"
+                    value={phoneNumber}
+                    onChange={handleInputChange}
+                    className="rounded-[5px]"
+                  />
+                </div>
+                <div className="flex items-center mb-[15px]">
+                  <span className="block min-w-[150px] font-medium">Email</span>
+                  <Input
+                    name="email"
+                    value={customerEmail}
+                    onChange={handleInputChange}
+                    className="rounded-[5px]"
+                  />
+                </div>
+                <div className="flex justify-center">
+                  <Button onClick={handleSubmit} className="mx-2">
+                    Tạo mới
+                  </Button>
+                  <Button onClick={handleCancel} className="mx-2">
+                    Hủy
+                  </Button>
+                </div>
               </div>
             )}
           </div>
-        )}
-        {customerType === "newCustomer" && (
-          <div className="new-customer">
-            <div className="flex items-center mb-[15px]">
-              <span className="block min-w-[150px] font-medium">Tên khách hàng</span>
-              <Input
-                name="customerName"
-                value={customerName}
-                onChange={handleInputChange}
-                className="rounded-[5px]"
-              />
-            </div>
-            <div className="flex items-center mb-[15px]">
-              <span className="block min-w-[150px] font-medium">Địa chỉ</span>
-              <Input
-                name="address"
-                value={customerAddress}
-                onChange={handleInputChange}
-                className="rounded-[5px]"
-              />
-            </div>
-            <div className="flex items-center mb-[15px]">
-              <span className="block min-w-[150px] font-medium">Giới tính</span>
-              <Select
-                name="gender"
-                value={customerGender}
-                onChange={value => setCustomerGender(value)}
-                className="rounded-[5px]"
-              >
-                <Select.Option value="Nam">Nam</Select.Option>
-                <Select.Option value="Nữ">Nữ</Select.Option>
-                <Select.Option value="Khác">Khác</Select.Option>
-              </Select>
-            </div>
-            <div className="flex items-center mb-[15px]">
-              <span className="block min-w-[150px] font-medium">Số điện thoại</span>
-              <Input
-                name="phoneNumber"
-                value={phoneNumber}
-                onChange={handleInputChange}
-                className="rounded-[5px]"
-              />
-            </div>
-            <div className="flex items-center mb-[15px]">
-              <span className="block min-w-[150px] font-medium">Email</span>
-              <Input
-                name="email"
-                value={customerEmail}
-                onChange={handleInputChange}
-                className="rounded-[5px]"
-              />
-            </div>
-            <div className="flex justify-center">
-              <Button onClick={handleSubmit} className="mx-2">Tạo mới</Button>
-              <Button onClick={handleCancel} className="mx-2">Hủy</Button>
-            </div>
-          </div>
-        )}
-      </div>
           {cartItems.map((item) => (
             <div key={item.itemId} className="cart-item">
               <span>{item.itemName}</span>
               <div className="quantity-controls">
-                <Button onClick={() => handleDecrement(item.itemId)} className="quantity-btn">
+                <Button
+                  onClick={() => handleDecrement(item.itemId)}
+                  className="quantity-btn"
+                >
                   <MinusOutlined />
                 </Button>
                 <span>{item.itemQuantity}</span>
-                <Button onClick={() => handleIncrement(item.itemId)} className="quantity-btn">
+                <Button
+                  onClick={() => handleIncrement(item.itemId)}
+                  className="quantity-btn"
+                >
                   <PlusOutlined />
                 </Button>
               </div>
-              <span className="item-price">{currencyFormatter.format(item.price)}</span>
+              <span className="item-price">
+                {currencyFormatter.format(item.price)}
+              </span>
               <Button
                 type="primary"
                 danger
@@ -494,8 +644,11 @@ const ProductList = () => {
             </div>
           ))}
           <div className="add-product">
-            <Input placeholder="Enter Product ID" className="add-product-input" />
-            <Button className="add-product-btn">Thêm vào giỏ hàng</Button>
+            <Input
+              placeholder="Nhập id sản phẩm"
+              className="add-product-input"
+            />
+            <Button className="  bg-black text-white">Thêm vào giỏ hàng</Button>
           </div>
           <div className="cart-summary">
             <div>
@@ -506,7 +659,11 @@ const ProductList = () => {
               <span>Tổng giá: </span>
               <span>{currencyFormatter.format(cartTotalAmount)}</span>
             </div>
-            <Button type="primary" onClick={handleCreateOrder} className="checkout-btn">
+            <Button
+              type="primary"
+              onClick={handleCreateOrder}
+              className="w-full text-center bg-black text-white"
+            >
               Thanh Toán
             </Button>
           </div>

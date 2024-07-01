@@ -1,14 +1,13 @@
-// RoleBasedRoute.jsx
 import { Navigate } from "react-router-dom";
 
-const RoleBasedRoute = ({ children, role }) => {
-    const userRole = localStorage.getItem("role");
+const RoleBasedRoute = ({ children, roles = [] }) => {
+  const userRole = localStorage.getItem("role");
 
-    if (userRole !== role) {
-        return <Navigate to="/no-access" />;
-    }
+  if (!Array.isArray(roles) || !roles.includes(userRole)) {
+    return <Navigate to="/no-access" />;
+  }
 
-    return children;
+  return children;
 };
 
 export default RoleBasedRoute;

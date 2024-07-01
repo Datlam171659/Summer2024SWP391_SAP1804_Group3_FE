@@ -11,8 +11,8 @@ const getCustomerAll = () => {
   const response= axios.get(`/api/Customer/phone/${phoneNumber}`)
 return response;
 }
-const rewardCustomer = (customerId,addPoints) => {
-  return axios.post(`/api/RewardsProgram`, {customerId,addPoints});
+const rewardCustomer = (customerId,pointsTotal) => {
+  return axios.post(`/api/RewardsProgram`, {customerId,pointsTotal});
 };
 const getRewardAll = () => {
   return axios.get(`/api/RewardsProgram`, {

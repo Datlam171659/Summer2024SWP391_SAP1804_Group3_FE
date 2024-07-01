@@ -4,6 +4,7 @@ import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import "./Login.scss";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../../Services/api/loginApi";
+import { jwtDecode } from "jwt-decode";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -15,6 +16,25 @@ const Login = () => {
       const { token } = await loginUser(values.email, values.password);
       if (token) {
         navigate("/dashboard");
+        const decodedToken = jwtDecode(token);
+        switch (decodedToken.role) {
+          case "0":
+            localStorage.setItem("role", "admin");
+            break;
+          case "1":
+            localStorage.setItem("role", "manager");
+            break;
+          case "2":
+            localStorage.setItem("role", "staff");
+            break;
+          default:
+            console.log("Role not recognized");
+        }
+
+        localStorage.setItem("nameid", decodedToken.nameid);
+        localStorage.setItem("email", decodedToken.email);
+        localStorage.setItem("UserName", decodedToken.UserName);
+        localStorage.setItem("UniqueName", decodedToken.unique_name);
       }
       else {
         message.error("Incorrect email or password. Please try again.");
@@ -28,7 +48,7 @@ const Login = () => {
   };
 
   useEffect(() => {
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem("token");
     if (token) {
       navigate(-1);
     }

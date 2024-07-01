@@ -1,20 +1,19 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Table, ConfigProvider, Spin, message, Modal, Form } from "antd";
+import { Button, Table, ConfigProvider, message, Modal } from "antd";
 import { fetchCustomerData } from "../../Features/Customer/customerSlice";
 import { resetCart, updateCustomerInfo } from "../../Features/product/cartSlice";
 import SalepageApi from "../../Features/Salepage/SalepageApi";
 import { createInvoice } from "../../Features/Invoice/InvoiceSlice";
 import { addWarranty } from "../../Features/Warranty/warrantyaddSlice";
 import { rewardCustomer } from "../../Features/Customer/rewardSlice";
-import { requestPromotionCus } from "../../Features/Promotion/promotionSlice";
 import { fetchPromotions } from "../../Features/Promotion/promotionallSlice";
+import { reduceItemQuantity } from "../../Features/product/quantitySlice"; 
 
 const PaymentPage = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
-  const isLoadingPromotion = useSelector((state) => state.promotions.isLoadingPromotion);
   const customerData = useSelector((state) => state.customer.customerData);
   const isLoading = useSelector((state) => state.customer.isLoading);
   const buyGold24k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold24k);
@@ -34,7 +33,7 @@ const PaymentPage = () => {
   const [customerGender, setCustomerGender] = useState("Nam");
   const [customerAddress, setCustomerAddress] = useState("");
   const [paymentType, setPaymentType] = useState("");
-  const [addPoints, setPaddPoints] = useState(0);
+  const [pointsTotal, setPpointsTotal] = useState(0);
   const [customerInfo, setCustomerInfo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -45,10 +44,10 @@ const PaymentPage = () => {
     TEMPLATE: "compact2"
   };
 
-  const calculatePoints = (totalAmount) => {
+  const calculatePoints = (cartTotalAmount) => {
     let points = 0;
-    if (totalAmount > 0) {
-      points = Math.floor(totalAmount / 5000000) * 5;
+    if (cartTotalAmount > 0) {
+      points = Math.floor(cartTotalAmount / 5000000) * 5;
     }
     return points;
   };
@@ -60,7 +59,7 @@ const PaymentPage = () => {
 
   useEffect(() => {
     dispatch(fetchCustomerData());
-    setPaddPoints(calculatePoints(cartTotalAmount));
+    setPpointsTotal(calculatePoints(cartTotalAmount));
   }, [dispatch, cartTotalAmount]);
 
   useEffect(() => {
@@ -195,7 +194,13 @@ const PaymentPage = () => {
     try {
       await dispatch(createInvoice(invoiceData)).unwrap();
       await dispatch(addWarranty(customerId)).unwrap();
-      await dispatch(rewardCustomer({ customerId, addPoints })).unwrap();
+      await dispatch(rewardCustomer({ customerId, pointsTotal })).unwrap();
+      
+      // Reduce item quantities
+      for (const item of cartItems) {
+        await dispatch(reduceItemQuantity({ itemId: item.itemId, quantity: item.itemQuantity })).unwrap();
+      }
+
       message.success("Tạo hóa đơn thành công!");
     } catch (error) {
       message.error(`Tạo hóa đơn thất bại: ${error.message}`);

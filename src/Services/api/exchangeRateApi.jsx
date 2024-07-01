@@ -8,7 +8,7 @@ const getVNDExchangeRate = async () => {
     const response = await axios.get(currencyURL);
     const responseData = response.data;
 
-    if (responseData) {
+    if (responseData) { 
       const VND = responseData.rates.VND;
       return VND;
     } else {
