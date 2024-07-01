@@ -1,5 +1,7 @@
 import { Table } from 'antd';
 import React from 'react';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import { useSelector } from 'react-redux';
 
 const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotalQuantity, cartTotalAmount }, ref) => {
@@ -8,6 +10,13 @@ const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotal
     const buyGold14k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold14k);
     const buyGold10k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold10k);
 
+    function getDate() {
+        const today = new Date();
+        const month = today.getMonth() + 1;
+        const year = today.getFullYear();
+        const date = today.getDate();
+        return `${date}/${month}/${year}`;
+      }
     const columns = [
         {
             title: "STT",
@@ -116,8 +125,10 @@ const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotal
             <h2 className="text-2xl font-bold text-center mb-4">HÓA ĐƠN MUA HÀNG</h2>
             <ul className="text-base mb-2">
                 <li className="text-sm font-semibold">Khách hàng: {customerInfor.customerName}</li>
+                <li className="text-sm font-semibold">Email: {customerInfor.email}</li>
                 <li className="text-sm font-semibold">Địa chỉ: {customerInfor.address}</li>
                 <li className="text-sm font-semibold">Sđt: {customerInfor.phoneNumber}</li>
+                <li className="text-sm font-semibold">Ngày: {getDate()}</li>
             </ul>
             <div className="cart-items flex flex-col items-center space-y-8 w-full ">
                 <Table
