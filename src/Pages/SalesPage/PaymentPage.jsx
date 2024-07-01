@@ -10,6 +10,9 @@ import { addWarranty } from "../../Features/Warranty/warrantyaddSlice";
 import { rewardCustomer } from "../../Features/Customer/rewardSlice";
 import { fetchPromotions } from "../../Features/Promotion/promotionallSlice";
 import { reduceItemQuantity } from "../../Features/product/quantitySlice"; 
+import emailjs from 'emailjs-com';
+
+
 
 const PaymentPage = () => {
   const dispatch = useDispatch();
@@ -51,6 +54,14 @@ const PaymentPage = () => {
     }
     return points;
   };
+
+  function getDate() {
+    const today = new Date();
+    const month = today.getMonth() + 1;
+    const year = today.getFullYear();
+    const date = today.getDate();
+    return `${date}/${month}/${year}`;
+  }
 
   useEffect(() => {
     const qrLink = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-${MY_BANK.TEMPLATE}.png?amount=${cartTotalAmount}`;
@@ -196,12 +207,28 @@ const PaymentPage = () => {
       await dispatch(addWarranty(customerId)).unwrap();
       await dispatch(rewardCustomer({ customerId, pointsTotal })).unwrap();
       
-      // Reduce item quantities
+      
       for (const item of cartItems) {
         await dispatch(reduceItemQuantity({ itemId: item.itemId, quantity: item.itemQuantity })).unwrap();
       }
 
-      message.success("Tạo hóa đơn thành công!");
+      const templateParams = {
+        to_email: customerInfor.email,
+        customerName: customerInfor.customerName, 
+        buyerAddress: customerInfor.address,
+        email: customerInfor.email,
+        phoneNumber: customerInfor.phoneNumber,
+        date: getDate(), 
+        cartTotalQuantity: cartTotalQuantity,
+        cartTotalAmount: cartTotalAmount.toLocaleString(),
+      };
+
+      emailjs.send('service_w6685q7', 'template_4ih77go', templateParams, 'aRYuyBmKOYvAYpoIL')
+      .then((response) => {
+        message.success("Tạo hóa đơn và gửi email thành công!");
+      }, (err) => {
+        message.error("Gửi email thất bại.");
+      });
     } catch (error) {
       message.error(`Tạo hóa đơn thất bại: ${error.message}`);
     }
