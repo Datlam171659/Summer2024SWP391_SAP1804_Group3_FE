@@ -87,14 +87,15 @@ const DashBoardPage = () => {
         const fetchMonthlyRevenue = async () => {
           try {
             const response = await GetMonthlyRevenue();
+            console.log(response);
             if (response) {
-              const formattedData = Object.keys(response.data).map(month => ({
-                date: month,
-                value: response.data[month]
+              const formattedData = response.data.map(item => ({
+                date: item.key,
+                value: item.value 
               }));
-              
+        
               setMonthlyRevenue(formattedData);
-              
+    
               const total = formattedData.reduce((sum, record) => sum + record.value, 0);
               setTotalRevenue(total);
             }
@@ -183,8 +184,8 @@ const DashBoardPage = () => {
             </div>
           <div className='right-content'>
               <div className="top-customers">
-                  <Card title="Top 3 khách hàng có nhiều orders Nhất:" className="card-top-customers">
-                    <Table columns={customerColumns } dataSource={topCustomers} rowKey="id" pagination={false} />
+                  <Card title="Top 3 khách hàng có nhiều đơn hàng nhất:" className="card-top-customers">
+                    <Table columns={customerColumns} dataSource={topCustomers} rowKey="id" pagination={false} />
                   </Card>
               </div>
               <div className="top-staff">
