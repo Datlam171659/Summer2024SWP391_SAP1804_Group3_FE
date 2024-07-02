@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Product.scss"
-import { Button, message, Table, Modal, Form, Input, InputNumber, Spin } from "antd";
+import { Button, message, Table, Modal, Form, Input, InputNumber, Spin, Checkbox } from "antd";
 import { fetchProductData } from "../../Features/product/productSlice";
 import { MinusCircleOutlined, EditOutlined, FileAddFilled, DeleteFilled, UploadOutlined } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
@@ -11,6 +11,7 @@ import { Link } from "react-router-dom";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { v4 } from "uuid";
 import { storage } from "../../firebase/ImageFirebase";
+import { CheckBox } from "docx";
 function Product() {
   const dispatch = useDispatch();
   const productData = useSelector((state) => state.product.productData);
@@ -20,11 +21,18 @@ function Product() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false); 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedFiles, setSelectedFiles] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [selectedTypes, setSelectedTypes] = useState([]); 
+  const [filteredData, setFilteredData] = useState(productData);
 
   const [form] = Form.useForm();
+
+  const showFilterModal = () => {
+    setIsFilterModalOpen(true);
+  };
 
   const showDeleteModal = (product) => {
     setSelectedProduct(product);
@@ -36,6 +44,8 @@ function Product() {
     form.setFieldsValue(product);
     setIsEditModalOpen(true);
   };
+
+  
 
   const validateFile = (file) => {
     const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
@@ -64,6 +74,22 @@ function Product() {
         message.error("Xóa sản phẩm thất bại");
       });
     setIsModalOpen(false);
+  };
+
+  const handleFilterOk = () => {
+    const filteredProducts = productData.filter(product =>
+      selectedTypes.some(type => product.itemName.toLowerCase().includes(type.toLowerCase()))
+    );
+    setFilteredData(filteredProducts);
+    setIsFilterModalOpen(false);
+  };
+
+  const handleFilterCancel = () => {
+    setIsFilterModalOpen(false);
+  };
+
+  const handleTypeChange = (checkedValues) => {
+    setSelectedTypes(checkedValues);
   };
 
   const handleAddOk = () => {
@@ -124,6 +150,10 @@ function Product() {
 
   const removeSelectedFile = () => {
     setSelectedFiles(null);
+  };
+
+  const handleRefresh = () => {
+    setFilteredData(productData); 
   };
 
   const handleEditOk = () => {
@@ -244,19 +274,37 @@ function Product() {
     dispatch(fetchProductData());
   }, [dispatch]);
 
+  useEffect(() => {
+    setFilteredData(productData);
+  }, [productData]);
+
   return (
     <div className="p-4 flex-col justify-center align-middle w-full mt-10 ">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold uppercase">Sản phẩm</h1>
         <div className="space-x-2">
-          <Button onClick={() => setIsAddModalOpen(true)}>Thêm Sản Phẩm</Button>
-          <Button>Lọc</Button>
-          <Button>Tải sản phẩm</Button>
+          <Button type="primary" onClick={() => setIsAddModalOpen(true)}>Thêm Sản Phẩm</Button>
+          <Button type="primary" onClick={showFilterModal}>Lọc</Button>
+          <Button type="primary" onClick={handleRefresh}>Làm mới</Button>
+          <Button>Tải sản phẩm</Button> 
         </div>
+      <Modal
+        title="Lọc sản phẩm"
+        visible={isFilterModalOpen}
+        onOk={handleFilterOk}
+        onCancel={handleFilterCancel}
+        style= {{ top: '50%', transform: 'translateY(-50%)' }}
+      >
+        <Checkbox.Group style={{ width: '100%' }} onChange={handleTypeChange}>
+          <Checkbox value="Dây chuyền">Dây chuyền</Checkbox>
+          <Checkbox value="Nhẫn">Nhẫn</Checkbox>
+          <Checkbox value="Vòng Tay">Vòng Tay</Checkbox>
+        </Checkbox.Group>
+      </Modal>
       </div>
       <div>
         <Table
-          dataSource={productData}
+          dataSource={filteredData}
           columns={columns}
           rowKey="itemId"
           pagination={{ position: ["bottomCenter"] }}
