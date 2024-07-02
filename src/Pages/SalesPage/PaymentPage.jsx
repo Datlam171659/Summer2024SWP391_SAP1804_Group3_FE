@@ -234,7 +234,7 @@ const PaymentPage = () => {
         }
       
         const totalPrice = item.weight * item.itemQuantity * kara;
-        return `${index + 1}. Serial Number: ${item.serialNumber}, Price: ${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
+        return `${index + 1}. Serial Number: ${item.serialNumber}, Giá: ${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
       }).join("\n");
       
       const templateParams = {
