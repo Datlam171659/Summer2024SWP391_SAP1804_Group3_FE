@@ -1,7 +1,5 @@
 import { Table } from 'antd';
 import React from 'react';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import { useSelector } from 'react-redux';
 
 const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotalQuantity, cartTotalAmount }, ref) => {
