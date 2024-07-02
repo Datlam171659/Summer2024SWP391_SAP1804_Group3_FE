@@ -64,12 +64,12 @@ const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotal
         },
         {
             title: "Số Lượng",
-            dataIndex: "itemQuantity",
-            key: "itemQuantity",
+            dataIndex: "quantity",
+            key: "quantity",
             width: 100,
             render: (_, record) => (
                 <div className="flex items-center">
-                    <span className="mx-2">{record.itemQuantity}</span>
+                    <span className="mx-2">{record.quantity}</span>
                 </div>
             ),
         },
@@ -114,7 +114,7 @@ const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotal
                         kara = 0;
                 }
 
-                const totalPrice = record.weight * record.itemQuantity * kara;
+                const totalPrice = record.weight * record.quantity * kara;
                 return `${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
             },
         }

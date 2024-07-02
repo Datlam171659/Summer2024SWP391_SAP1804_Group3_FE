@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Input, message, Table, Select, Space, Spin, Form, Modal } from "antd";
+import { Button, Input, message, Table, Select, Space, Spin, Form, Modal, Checkbox } from "antd";
 import { MinusCircleOutlined, MinusOutlined, PlusOutlined, ScanOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import buyBackApi from "../../Services/api/buyBackApi";
@@ -12,8 +12,11 @@ const ProductListBuyBack = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isInvoiceModalVisible, setIsInvoiceModalVisible] = useState(false);
   const [newItem, setNewItem] = useState({ itemName: "", weight: "", accessoryType: "", description: "" });
   const [isScanModalVisible, setIsScanModalVisible] = useState(false);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [invoiceItems, setInvoiceItems] = useState([]);
 
   const isButtonDisabled = !searchQuery;
   const dispatch = useDispatch();
@@ -27,7 +30,7 @@ const ProductListBuyBack = () => {
 
 
   useEffect(() => {
-    const cartTotalQuantity = cartItems.reduce((acc, item) => acc + item.itemQuantity, 0);
+    const cartTotalQuantity = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
     const cartTotalAmount = cartItems.reduce((acc, item) => {
       let goldType = "";
@@ -59,7 +62,7 @@ const ProductListBuyBack = () => {
           kara = 0;
       }
 
-      const itemTotalPrice = item.weight * item.itemQuantity * kara;
+      const itemTotalPrice = item.weight * item.quantity * kara;
       return acc + itemTotalPrice;
     }, 0);
 
@@ -80,7 +83,7 @@ const ProductListBuyBack = () => {
     const success = (result) => {
       scanner.clear();
       setSearchQuery(result);
-      
+
       setIsScanModalVisible(false);
     };
 
@@ -99,24 +102,37 @@ const ProductListBuyBack = () => {
   const handleSearch = async () => {
     setLoading(true);
     try {
-      const item = await buyBackApi.getItem(searchQuery);
-      const itemExists = cartItems.some(cartItem => cartItem.itemId === item.itemId);
-      if (itemExists) {
-        message.error("Sản phẩm đã tồn tại");
-        setSearchQuery("")
-      } else {
-        dispatch(addItem(item));
-        setSearchQuery("")
-        message.success("Sản phẩm đã được thêm vào giỏ hàng");
-      }
+      const result = await buyBackApi.getInvoice(searchQuery);
+      setInvoiceItems(result);
+      setIsInvoiceModalVisible(true);
     } catch (error) {
-      message.error("Không tìm thấy sản phẩm. Vui lòng thử lại");
-      setSearchQuery("")
-
+      message.error("Không tìm thấy hóa đơn. Vui lòng thử lại");
     } finally {
       setLoading(false);
     }
   };
+
+  const handleAddItems = () => {
+    selectedItems.forEach(item => {
+      dispatch(addItem({
+        ...item,
+        quantity: item.quantity
+      }));
+    });
+    setIsInvoiceModalVisible(false);
+    setSelectedItems([]);
+  };
+
+  const handleCheckboxChange = (selectedRowKeys) => {
+    const selectedItems = invoiceItems.filter(item => selectedRowKeys.includes(item.itemId));
+    setSelectedItems(selectedItems);
+  };
+
+  const rowSelection = {
+    selectedRowKeys: selectedItems.map(item => item.itemId),
+    onChange: handleCheckboxChange,
+  };
+
 
   const handleRemove = (itemId) => {
     dispatch(removeItem(itemId));
@@ -163,7 +179,7 @@ const ProductListBuyBack = () => {
         brands: [],
         itemImages: [],
         collections: [],
-        itemQuantity: 1
+        quantity: 1
       };
 
       dispatch(addItem(newItemWithId));
@@ -244,8 +260,8 @@ const ProductListBuyBack = () => {
     },
     {
       title: "Số Lượng",
-      dataIndex: "itemQuantity",
-      key: "itemQuantity",
+      dataIndex: "quantity",
+      key: "quantity",
       width: 100,
       render: (_, record) => (
         <div className="flex items-center">
@@ -255,7 +271,7 @@ const ProductListBuyBack = () => {
           >
             <MinusOutlined />
           </button>
-          <span className="mx-2">{record.itemQuantity}</span>
+          <span className="mx-2">{record.quantity}</span>
           <button
             onClick={() => handleIncrement(record.itemId)}
             className="h-7 w-7 flex justify-center items-center text-[8px] bg-gray-200 hover:bg-gray-300 rounded-lg transition duration-200"
@@ -306,7 +322,7 @@ const ProductListBuyBack = () => {
             kara = 0;
         }
 
-        const totalPrice = record.weight * record.itemQuantity * kara;
+        const totalPrice = record.weight * record.quantity * kara;
         return `${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
       },
     },
@@ -320,6 +336,70 @@ const ProductListBuyBack = () => {
     },
   ];
 
+  const invoiceColumns = [
+    {
+      title: "STT",
+      dataIndex: "numericalOrder",
+      key: "numericalOrder",
+      width: 75,
+      render: (_, __, index) => index + 1,
+    },
+    {
+      title: "Mã Hàng",
+      dataIndex: "serialNumber",
+      key: "serialNumber",
+      width: 120,
+    },
+    {
+      title: "Tên Hàng",
+      dataIndex: "itemName",
+      key: "itemName",
+      width: 150,
+    },
+    {
+      title: "Loại Hàng",
+      dataIndex: "accessoryType",
+      key: "accessoryType",
+      width: 100,
+    },
+    {
+      title: "Loại Vàng",
+      dataIndex: "goldType",
+      key: "goldType",
+      width: 100,
+      render: (_, record) => {
+        let goldType = "";
+        if (record.itemName.toLowerCase().includes("10k")) {
+          goldType = "10K";
+        } else if (record.itemName.toLowerCase().includes("14k")) {
+          goldType = "14K";
+        } else if (record.itemName.toLowerCase().includes("18k")) {
+          goldType = "18K";
+        } else if (record.itemName.toLowerCase().includes("24k")) {
+          goldType = "24K";
+        }
+        return goldType;
+      },
+    },
+    {
+      title: "Số Lượng",
+      dataIndex: "quantity",
+      key: "quantity",
+      width: 100,
+      render: (_, record) => (
+        <div className="flex items-center">
+          <span className="mx-2">{record.quantity}</span>
+        </div>
+      ),
+    },
+    {
+      title: "Trọng Lượng",
+      dataIndex: "weight",
+      key: "weight",
+      width: 100,
+    },
+  ];
+
   return (
     <div className="flex flex-col lg:flex-row">
       <div className="my-5 w-screen lg:w-full p-4">
@@ -327,7 +407,7 @@ const ProductListBuyBack = () => {
           <div className="flex w-full justify-between">
             <div className="w-[85%] flex">
               <Input
-                placeholder="Nhập Id sản phẩm"
+                placeholder="Nhập mã hóa đơn"
                 style={{ width: "89.7%", marginBottom: "5px" }}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -340,7 +420,7 @@ const ProductListBuyBack = () => {
                 style={{ fontWeight: "600", heigh: "30px" }}
                 onClick={handleSearch}
               >
-                Tìm sản phẩm
+                Tìm hóa đơn
               </Button>
             </div>
 
@@ -350,7 +430,7 @@ const ProductListBuyBack = () => {
               style={{ fontWeight: "600", heigh: "30px" }}
               onClick={() => setIsScanModalVisible(true)}
             >
-              <ScanOutlined className="mr-2"/>
+              <ScanOutlined className="mr-2" />
               Quét QR
             </Button>
           </div>
@@ -460,6 +540,18 @@ const ProductListBuyBack = () => {
         ]}
       >
         <div id='reader'></div>
+      </Modal>
+      <Modal title="Chọn sản phẩm từ hóa đơn" visible={isInvoiceModalVisible} onOk={handleAddItems} onCancel={() => setIsInvoiceModalVisible(false)}
+        className="flex flex-col items-center space-y-8 w-full ">
+        <Table
+          rowSelection={rowSelection}
+          dataSource={invoiceItems}
+          columns={invoiceColumns}
+          rowKey="itemId"
+          pagination={false}
+          scroll={{ y: 378 }}
+          className="w-full rounded-[5px] font-medium"
+        />
       </Modal>
 
     </div>

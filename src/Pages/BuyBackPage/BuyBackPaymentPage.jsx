@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button, Input, Table, Select, Space, ConfigProvider, Spin, Form, message } from "antd";
 import { fetchCustomerData } from "../../Features/buy-back/buyBackCustomerSlice";
 import { resetCart, updateCustomerInfo } from "../../Features/buy-back/buyBackCartSlice";
@@ -8,6 +8,7 @@ import buyBackApi from "../../Services/api/buyBackApi";
 
 const BuyBackPaymentPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const cartItems = useSelector((state) => state.buyBackCart.cartItems);
   const customerData = useSelector(state => state.buyBackCustomer.customerData);
   const isLoading = useSelector(state => state.buyBackCustomer.isLoading);
@@ -28,9 +29,16 @@ const BuyBackPaymentPage = () => {
   const [customerAddress, setCustomerAddress] = useState(null);
   const isButtonDisabled = !customerName || !customerEmail || !customerAddress || !phoneNumber;
 
+
   useEffect(() => {
     dispatch(fetchCustomerData());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (cartItems.length === 0) {
+      navigate("/buy-back-page/");
+    }
+  }, [cartItems, navigate]);
 
   const handleInputChange = (e) => {
     const name = e.target ? e.target.name : 'gender';
@@ -83,6 +91,11 @@ const BuyBackPaymentPage = () => {
   };
 
   const handleSubmit = async () => {
+    if (isButtonDisabled) {
+      message.error("Vui lòng nhập đầy đủ thông tin khách hàng trước khi xác nhận.");
+      return;
+    }
+
     const newCustomerInfo = {
       customerName: customerName,
       address: customerAddress,
@@ -97,6 +110,20 @@ const BuyBackPaymentPage = () => {
       dispatch(updateCustomerInfo(response));
     } catch (error) {
       message.error(`Có lỗi xảy ra: ${error.message}`);
+    }
+  };
+
+  // const handleConfirm = () => {
+  //   if (isButtonDisabled) {
+  //     message.error("Vui lòng nhập đầy đủ thông tin khách hàng trước khi xác nhận.");
+  //     return;
+  //   }
+  // };
+  const handleConfirm = () => {
+    if (customerInfor.length === 0) {
+      message.error("Vui lòng nhập đầy đủ thông tin khách hàng trước khi xác nhận.");
+    } else {
+      navigate("/buy-back-page/Payment");
     }
   };
 
@@ -171,12 +198,12 @@ const BuyBackPaymentPage = () => {
     },
     {
       title: "Số Lượng",
-      dataIndex: "itemQuantity",
-      key: "itemQuantity",
+      dataIndex: "quantity",
+      key: "quantity",
       width: 100,
       render: (_, record) => (
         <div className="flex items-center">
-          <span className="mx-2">{record.itemQuantity}</span>
+          <span className="mx-2">{record.quantity}</span>
         </div>
       ),
     },
@@ -221,7 +248,7 @@ const BuyBackPaymentPage = () => {
             kara = 0;
         }
 
-        const totalPrice = record.weight * record.itemQuantity * kara;
+        const totalPrice = record.weight * record.quantity * kara;
         return `${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
       },
     },
@@ -321,7 +348,13 @@ const BuyBackPaymentPage = () => {
                 <Input
                   placeholder="Nhập số điện thoại khách hàng"
                   value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setPhoneNumber(value);
+                    if (value === '') {
+                      handleCancel();
+                    }
+                  }}
                   className="mr-2 w-1/3"
                   allowClear
                 />
@@ -340,6 +373,7 @@ const BuyBackPaymentPage = () => {
                   </div>
                 )
               )}
+              <Button type="default" onClick={handleCancel}>Hủy</Button>
             </div>
           )}
 
@@ -392,11 +426,9 @@ const BuyBackPaymentPage = () => {
             </div>
             <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
             <div>
-              <Link to="/buy-back-page/Payment/PrintReceiptPage">
-                <Button className="w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500 " >
+                <Button className="w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500 " onClick={handleConfirm}>
                   Xác Nhận
                 </Button>
-              </Link>
               <Link to="/buy-back-page">
                 <Button className="w-full h-14 bg-white text-black uppercase font-bold hover:bg-gray-500 mt-4" onClick={handleCancel}>
                   Hủy
