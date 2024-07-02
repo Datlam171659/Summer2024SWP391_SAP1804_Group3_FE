@@ -211,6 +211,11 @@ function Product() {
       title: "Số lượng",
       dataIndex: "quantity",
       key: "quantity",
+      render: (quantity) => (
+        quantity === 0
+          ? <span style={{ color: 'red' }}>Hết hàng</span>
+          : <span>{quantity}</span>
+      ),
     },
     {
       title: "Action",
@@ -280,6 +285,7 @@ function Product() {
       <Modal
         title="Thêm sản phẩm mới"
         open={isAddModalOpen}
+        onCancel={handleAddCancel}
         footer={
           <div className="text-right">
             <Button onClick={handleAddCancel} className="mr-3">
@@ -362,6 +368,7 @@ function Product() {
       <Modal
         title="Chỉnh sửa sản phẩm"
         open={isEditModalOpen}
+        onCancel={handleEditCancel}
         footer={
           <div className="text-right">
             <Button onClick={handleEditCancel} className="mr-3">
