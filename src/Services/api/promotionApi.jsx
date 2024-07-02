@@ -7,6 +7,8 @@ const promotionAll = () => {
 };
 const approvePromotionCus = (id) => {
     return axios.put(`/api/CustomerPromotion/approve/${id}`);
-  };
-  
-export {requestPromotion,approvePromotionCus,promotionAll};
+};
+const deletePromotion = (id) => {
+    return axios.delete(`/api/CustomerPromotion/${id}`)
+}  
+export {requestPromotion,approvePromotionCus,promotionAll, deletePromotion};

@@ -212,6 +212,31 @@ const PaymentPage = () => {
         await dispatch(reduceItemQuantity({ itemId: item.itemId, quantity: item.itemQuantity })).unwrap();
       }
 
+      const cartItemsDetails = cartItems.map((item, index) => {
+        let goldType = "";
+        if (item.itemName.toLowerCase().includes("10k")) {
+          goldType = "10K";
+        } else if (item.itemName.toLowerCase().includes("14k")) {
+          goldType = "14K";
+        } else if (item.itemName.toLowerCase().includes("18k")) {
+          goldType = "18K";
+        } else if (item.itemName.toLowerCase().includes("24k")) {
+          goldType = "24K";
+        }
+      
+        let kara;
+        switch (goldType) {
+          case "10K": kara = buyGold10k; break;
+          case "14K": kara = buyGold14k; break;
+          case "18K": kara = buyGold18k; break;
+          case "24K": kara = buyGold24k; break;
+          default: kara = 0;
+        }
+      
+        const totalPrice = item.weight * item.itemQuantity * kara;
+        return `${index + 1}. Serial Number: ${item.serialNumber}, Price: ${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
+      }).join("\n");
+      
       const templateParams = {
         to_email: customerInfor.email,
         customerName: customerInfor.customerName, 
@@ -221,6 +246,7 @@ const PaymentPage = () => {
         date: getDate(), 
         cartTotalQuantity: cartTotalQuantity,
         cartTotalAmount: cartTotalAmount.toLocaleString(),
+        cartItemsDetails,
       };
 
       emailjs.send('service_w6685q7', 'template_4ih77go', templateParams, 'aRYuyBmKOYvAYpoIL')

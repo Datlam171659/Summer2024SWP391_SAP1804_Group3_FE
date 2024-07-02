@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchPromotions, approvePromotion } from '../../Features/Promotion/promotionallSlice';
+import { fetchPromotions, approvePromotion, removePromotion } from '../../Features/Promotion/promotionallSlice';
 import { Button, message, Table, Modal } from "antd";
+import { DeleteOutlined } from '@ant-design/icons';
 
 function Promotion() {
   const dispatch = useDispatch();
@@ -10,6 +11,8 @@ function Promotion() {
   const error = useSelector((state) => state.promotions.error);
   const [selectedPromotion, setSelectedPromotion] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedPromotionForDelete, setSelectedPromotionForDelete] = useState(null);
   const isLoadingPromotion = useSelector(
     (state) => state.promotions.isLoadingPromotion
   );
@@ -40,6 +43,23 @@ function Promotion() {
     setSelectedPromotion(null);
   };
 
+  const showDeleteModal = (id) => {
+    setSelectedPromotionForDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+  
+  const handleDeleteCancel = () => {
+    setIsDeleteModalOpen(false);
+    setSelectedPromotionForDelete(null);
+  };
+
+  const handleDelete = async (id) => {
+    if (selectedPromotionForDelete) {
+    await dispatch(removePromotion(selectedPromotionForDelete));
+    message.success('Đã xóa khuyến mãi thành công');
+    setIsDeleteModalOpen(false); 
+  }
+  };
   const columns = [
     {
       title: "id",
@@ -61,11 +81,15 @@ function Promotion() {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      render: (status) => (
-        <span style={{ color: 'red' }}>
-          {status}
-        </span>
-      ),
+      render: (status) => {
+        let color = 'red';
+        if(status === 'Duyệt') {
+            color = 'green';
+        } else if (status === 'Chờ duyệt') {
+            color = 'red';
+        }
+        return <span style={{color}}>{status}</span>;
+      },
     },
     {
       title: "Nội dung",
@@ -80,10 +104,15 @@ function Promotion() {
         <div className="flex space-x-2">
           <Button
             onClick={() => showPromotionModal(record)}
-            className="text-red-500 hover:text-red-700 transition duration-200"
+            className="text-blue-500 hover:text-red-700 transition duration-200"
+            disabled={record.status === 'Duyệt'}
           >
             Duyệt
           </Button>
+          <DeleteOutlined
+          onClick={() => showDeleteModal(record.id)}
+          style={{ color: 'red', fontSize: '17px', cursor: 'pointer', marginLeft: '15px' }}
+        />
         </div>
       ),
     },
@@ -123,6 +152,23 @@ function Promotion() {
             <p>Trạng thái: {selectedPromotion.status}</p>
           </div>
         )}
+      </Modal>
+      <Modal
+          title="Xác nhận xóa khuyến mãi"
+          visible={isDeleteModalOpen}
+          onOk={handleDelete}
+          onCancel={handleDeleteCancel}
+          style= {{ top: '50%', transform: 'translateY(-50%)' }}
+          footer={[
+            <Button key="back" onClick={handleDeleteCancel}>
+              Hủy
+            </Button>,
+            <Button key="submit" type="primary" onClick={handleDelete}>
+              Xác nhận
+            </Button>,
+          ]}
+        >
+          <p>Bạn có xác nhận xóa khuyến mãi này không?</p>
       </Modal>
     </div>
   );
