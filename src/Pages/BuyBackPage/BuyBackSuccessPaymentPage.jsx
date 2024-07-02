@@ -1,10 +1,10 @@
 // BuyBackSuccessPaymentPage.jsx
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import ReactToPrint from "react-to-print";
 import { useSelector, useDispatch } from "react-redux";
 import { Button, ConfigProvider } from "antd";
 import { CheckCircleOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { resetCart } from "../../Features/buy-back/buyBackCartSlice";
 import InvoiceComponent from "../../Components/Common/InvoiceComponent";
 
@@ -13,12 +13,19 @@ function BuyBackSuccessPaymentPage() {
   const handleReset = () => {
     dispatch(resetCart());
   };
-
+ 
+  const navigate = useNavigate();
   const cartItems = useSelector((state) => state.buyBackCart.cartItems);
   const customerInfor = useSelector((state) => state.buyBackCart.customerInfor);
   const cartTotalQuantity = useSelector((state) => state.buyBackCart.cartTotalQuantity);
   const cartTotalAmount = useSelector((state) => state.buyBackCart.cartTotalAmount);
   const invoiceComponentRef = useRef();
+
+  useEffect(() => {
+    if (cartItems.length === 0) {
+      navigate("/buy-back-page/");
+    }
+  }, [cartItems, navigate]);
 
   return (
     <ConfigProvider
@@ -56,7 +63,7 @@ function BuyBackSuccessPaymentPage() {
         />
       </div>
     </ConfigProvider>
-    
+
   );
 }
 
