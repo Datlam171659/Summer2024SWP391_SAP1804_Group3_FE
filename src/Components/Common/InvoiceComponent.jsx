@@ -8,6 +8,13 @@ const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotal
     const buyGold14k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold14k);
     const buyGold10k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold10k);
 
+    function getDate() {
+        const today = new Date();
+        const month = today.getMonth() + 1;
+        const year = today.getFullYear();
+        const date = today.getDate();
+        return `${date}/${month}/${year}`;
+      }
     const columns = [
         {
             title: "STT",
@@ -55,12 +62,12 @@ const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotal
         },
         {
             title: "Số Lượng",
-            dataIndex: "itemQuantity",
-            key: "itemQuantity",
+            dataIndex: "quantity",
+            key: "quantity",
             width: 100,
             render: (_, record) => (
                 <div className="flex items-center">
-                    <span className="mx-2">{record.itemQuantity}</span>
+                    <span className="mx-2">{record.quantity}</span>
                 </div>
             ),
         },
@@ -105,7 +112,7 @@ const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotal
                         kara = 0;
                 }
 
-                const totalPrice = record.weight * record.itemQuantity * kara;
+                const totalPrice = record.weight * record.quantity * kara;
                 return `${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
             },
         }
@@ -116,8 +123,10 @@ const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotal
             <h2 className="text-2xl font-bold text-center mb-4">HÓA ĐƠN MUA HÀNG</h2>
             <ul className="text-base mb-2">
                 <li className="text-sm font-semibold">Khách hàng: {customerInfor.customerName}</li>
+                <li className="text-sm font-semibold">Email: {customerInfor.email}</li>
                 <li className="text-sm font-semibold">Địa chỉ: {customerInfor.address}</li>
                 <li className="text-sm font-semibold">Sđt: {customerInfor.phoneNumber}</li>
+                <li className="text-sm font-semibold">Ngày: {getDate()}</li>
             </ul>
             <div className="cart-items flex flex-col items-center space-y-8 w-full ">
                 <Table

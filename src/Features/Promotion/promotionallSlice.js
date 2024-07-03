@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { promotionAll, approvePromotionCus } from '../../Services/api/promotionApi';
+import { promotionAll, approvePromotionCus, deletePromotion } from '../../Services/api/promotionApi';
+import { deleteToken } from 'firebase/messaging';
 
 export const fetchPromotions = createAsyncThunk(
   'promotions/fetchPromotions',
@@ -13,6 +14,15 @@ export const approvePromotion = createAsyncThunk(
   'promotions/approvePromotion',
   async (id, { dispatch }) => {
     await approvePromotionCus(id);
+    dispatch(fetchPromotions());
+    return id;
+  }
+);
+
+export const removePromotion = createAsyncThunk(
+  'promotions/deletePromotion',
+  async (id, { dispatch }) => {
+    await deletePromotion(id);
     dispatch(fetchPromotions());
     return id;
   }
@@ -47,6 +57,9 @@ const promotionSlice = createSlice({
         if (index !== -1) {
           state.promotions[index].status = 'approved';
         }
+      })
+        .addCase(removePromotion.fulfilled, (state, action) => {
+        state.promotions = state.promotions.filter(promo => promo.id !== action.payload); 
       });
   }
 });

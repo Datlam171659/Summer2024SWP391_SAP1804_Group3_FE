@@ -12,32 +12,34 @@ const buyBackCartSlice = createSlice({
   initialState,
   reducers: {
     addItem: (state, action) => {
-      const newItem = { ...action.payload, itemQuantity: 1 };
-      const itemExists = state.cartItems.some(item => item.itemId === newItem.itemId);
-      if (!itemExists) {
-        state.cartItems.push(newItem);
+      const newItem = action.payload;
+      const existingItem = state.cartItems.find(item => item.itemId === newItem.itemId);
+
+      if (existingItem) {
+        existingItem.quantity += newItem.quantity;
+      } else {
+        state.cartItems.push({
+          ...newItem,
+          maxQuantity: newItem.quantity, 
+        });
       }
     },
-    removeItem: (state, action) => {
-      const itemIdToRemove = action.payload;
-      state.cartItems = state.cartItems.filter(item => item.itemId !== itemIdToRemove);
-    },
     incrementQuantity: (state, action) => {
-      const itemId = action.payload;
-      const item = state.cartItems.find(item => item.itemId === itemId);
-      if (item) {
-        item.itemQuantity += 1;
+      const item = state.cartItems.find(item => item.itemId === action.payload);
+      if (item && item.quantity < item.maxQuantity) {
+        item.quantity += 1;
       }
     },
     decrementQuantity: (state, action) => {
-      const itemId = action.payload;
-      const item = state.cartItems.find(item => item.itemId === itemId);
-      if (item) {
-        item.itemQuantity -= 1;
-        if (item.itemQuantity < 1) {
-          state.cartItems = state.cartItems.filter(item => item.itemId !== itemId);
-        }
+      const item = state.cartItems.find(item => item.itemId === action.payload);
+      if (item && item.quantity > 1) {
+        item.quantity -= 1;
       }
+    },
+
+    removeItem: (state, action) => {
+      const itemIdToRemove = action.payload;
+      state.cartItems = state.cartItems.filter(item => item.itemId !== itemIdToRemove);
     },
     updateTotals: (state, action) => {
       state.cartTotalQuantity = action.payload.cartTotalQuantity;
