@@ -87,7 +87,7 @@ const DashBoardPage = () => {
         const fetchMonthlyRevenue = async () => {
           try {
             const response = await GetMonthlyRevenue();
-            console.log(response);
+            // console.log(response);
             if (response) {
               const formattedData = response.data.map(item => ({
                 date: item.key,
@@ -119,21 +119,24 @@ const DashBoardPage = () => {
         data: monthlyRevenue,
         xField: 'date',
         yField: 'value',
-        seriesField: 'series',
-        color: '#1970F1',
         width: 700,
         height: 400,
         point: {
           size: 5,
           shape: 'diamond',
         },
-        label: {
+        line: {
           style: {
-            fill: '#aaa',
+            lineWidth: 3,
+            stroke: '#FF4500',
           },
-        },
-        tooltip: {
-          showMarkers: true,
+          label: {
+            style: {
+              fill: '#000000',
+            },
+            formatter: (text) => 
+              new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(text),
+          },
         },
       };
 
@@ -167,30 +170,30 @@ const DashBoardPage = () => {
         <div className='dashboard-content'>
           <div className="overview">
             <Space direction='horizontal'>
-              <DashBoardCard icon={<UserOutlined style={{color: "red"}} />} title={"Khách Hàng"} value={customerCount}/>
-              <DashBoardCard icon={<TeamOutlined style={{color: "purple"}} />} title={"Nhân Viên"} value={userCount}/>
-              <DashBoardCard icon={<ShoppingCartOutlined style={{color: "blue"}}/>} title={"Đơn Hàng Đã Bán"} value={invoiceCount}/>
-              <DashBoardCard icon={<ShoppingOutlined style={{color: "brown"}}/>} title={"Số Mặt Hàng"} value={productCount}/>
-              <DashBoardCard icon={<DollarCircleOutlined style={{color: "green"}}/>} title={"Tổng Doanh Thu"} value={formatRevenue(totalRevenue)} />
+              <DashBoardCard icon={<UserOutlined style={{color: "red"}} />} title={"Khách Hàng"} value={customerCount} key="customers"/>
+              <DashBoardCard icon={<TeamOutlined style={{color: "purple"}} />} title={"Nhân Viên"} value={userCount} key="staff"/>
+              <DashBoardCard icon={<ShoppingCartOutlined style={{color: "blue"}}/>} title={"Đơn Hàng Đã Bán"} value={invoiceCount} key="orders"/>
+              <DashBoardCard icon={<ShoppingOutlined style={{color: "brown"}}/>} title={"Số Mặt Hàng"} value={productCount} key="products"/>
+              <DashBoardCard icon={<DollarCircleOutlined style={{color: "green"}}/>} title={"Tổng Doanh Thu"} value={formatRevenue(totalRevenue)} key="revenue"/>
             </Space>
           </div>
           <div className='main-content'>
             <div className='left-content'>
               <div className="line-chart-container">
                 <Card title="Doanh số bán hàng theo tháng" style={{width:'100%'}}>
-                <Line {...config} />
+                <Line {...config}/>
                 </Card>
               </div>
             </div>
           <div className='right-content'>
               <div className="top-customers">
                   <Card title="Top 3 khách hàng có nhiều đơn hàng nhất:" className="card-top-customers">
-                    <Table columns={customerColumns} dataSource={topCustomers} rowKey="id" pagination={false} />
+                    <Table columns={customerColumns} dataSource={topCustomers} rowKey="id" pagination={false} key="customerTable" />
                   </Card>
               </div>
               <div className="top-staff">
                   <Card title="Top 3 nhân viên bán được nhiều nhất trong tháng:" className="card-top-staff">
-                    <Table columns={staffColumns} dataSource={topStaff} rowKey="id" pagination={false} />
+                    <Table columns={staffColumns} dataSource={topStaff} rowKey="id" pagination={false} key="staffTable" />
                   </Card>
               </div>
             </div>
