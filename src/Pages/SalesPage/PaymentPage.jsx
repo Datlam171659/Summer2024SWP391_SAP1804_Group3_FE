@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Table, ConfigProvider, message, Modal } from "antd";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 import { fetchCustomerData } from "../../Features/Customer/customerSlice";
 import { resetCart, updateCustomerInfo } from "../../Features/product/cartSlice";
 import SalepageApi from "../../Features/Salepage/SalepageApi";
@@ -120,6 +121,9 @@ const PaymentPage = () => {
     }
   }, []);
 
+  const handleGoBack = () => {
+    navigate(-1);
+  };
   const showModalPay = () => {
     setIsModalOpen(true);
   };
@@ -357,7 +361,13 @@ const PaymentPage = () => {
         },
       }}
     > 
+    
     <div id="content">
+    <Button type="button" 
+            className="bg-black hover:bg-gray-900 text-white font-bold rounded ml-4 mt-4"
+            icon={<ArrowLeftOutlined />} 
+            onClick={handleGoBack} 
+            />
       <div className="payment-page w-full p-4">
         <div className="order-summary bg-gray-50 p-4 rounded-lg mb-4">
           <h2 className="text-xl font-bold mb-4">Đơn hàng</h2>
