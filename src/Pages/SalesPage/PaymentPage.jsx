@@ -12,7 +12,7 @@ import { rewardCustomer } from "../../Features/Customer/rewardSlice";
 import { fetchPromotions } from "../../Features/Promotion/promotionallSlice";
 import { reduceItemQuantity } from "../../Features/product/quantitySlice"; 
 import emailjs from 'emailjs-com';
-
+import { createInvoiceWithItems } from "../../Features/Invoice/InvoiceItemSlice"; 
 
 
 const PaymentPage = () => {
@@ -186,24 +186,29 @@ const PaymentPage = () => {
 
     const customerId = customerType === 'member' ? searchedCustomer.id : customerInfor.id;
     const staffId = localStorage.getItem("nameid");
-    const returnPolicyId = "RP01";
+    const returnPolicyId = "1";
     const companyName = "SWJ";
     const status = "Active";
     const invoiceData = {
-      staffId,
-      returnPolicyId,
-      itemId: cartItems[0].itemId,
+      staffId: staffId,
       customerId,
-      companyName,
+      companyName: companyName,
+      buyerName: customerInfor.customerName,
       buyerAddress: customerInfor.address,
       status,
       paymentType,
       quantity: cartTotalQuantity,
-      subTotal: cartTotalAmount,
+      subtotal: cartTotalAmount,
+      createdDate: "2024-07-05T13:10:28.406Z",
+      items: cartItems.map(item => ({
+        itemID: item.itemId ,
+        itemQuantity: item.itemQuantity,
+        warrantyExpiryDate: "2024-07-05T13:10:28.406Z",
+      })),
+      returnPolicyId: returnPolicyId
     };
-
     try {
-      await dispatch(createInvoice(invoiceData)).unwrap();
+      await dispatch(createInvoiceWithItems(invoiceData)).unwrap();
       await dispatch(addWarranty(customerId)).unwrap();
       await dispatch(rewardCustomer({ customerId, pointsTotal })).unwrap();
       

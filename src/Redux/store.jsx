@@ -22,6 +22,7 @@ import rewardSlice from '../Features/Customer/rewardSlice';
 import userEditReducer from '../Features/User/userEditSlice';
 import rewardallSlice from '../Features/Customer/rewardallSlice';
 import promotionReducer from '../Features/Promotion/promotionallSlice';
+import itemImageReducer from '../Features/product/itemImageSlice';
 const store = configureStore({
   reducer: {
     product: productReducer,
@@ -35,6 +36,7 @@ const store = configureStore({
     productDelete: productDeleteReducer, 
     goldPrice: goldPriceReducer,
     discount: DiscountReducer,
+    itemImages: itemImageReducer,
     warranty: warrantyReducer,
     invoice: invoiceReducer,
     customerDetail: customerDetailReducer,

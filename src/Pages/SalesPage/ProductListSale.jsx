@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Input, message, Select, Spin, Modal, Form } from "antd";
+import { Button, Input, message, Select, Spin, Modal, Form,Table } from "antd";
 import { MinusOutlined, PlusOutlined, ScanOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import {
@@ -20,10 +20,12 @@ import SalepageApi from "../../Features/Salepage/SalepageApi";
 import { requestPromotionCus } from "../../Features/Promotion/promotionSlice";
 import { fetchPromotions } from "../../Features/Promotion/promotionallSlice";
 import { fetchRewardAll } from "../../Features/Customer/rewardallSlice";
+import { fetchItemImages } from "../../Features/product/itemImageSlice";
 const ProductList = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const productData = useSelector((state) => state.product.productData);
+  const images = useSelector((state) => state.itemImages.images);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isScanModalVisible, setIsScanModalVisible] = useState(false);
@@ -70,6 +72,8 @@ const ProductList = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [discountPct, setDiscountPct] = useState("");
   const [description, setDescription] = useState("");
+  const [isDiscountModalVisible, setIsDiscountModalVisible] = useState(false);
+  const [selectedDiscount, setSelectedDiscount] = useState(null);
   const promotions = useSelector((state) => state.promotions.promotions);
   const [promotionDataSelect, setPromotionDataSelect] = useState("");
   const [promotionPercentage, setPromotionPercentage] = useState(0);
@@ -80,6 +84,7 @@ const ProductList = () => {
   useEffect(() => {
     dispatch(fetchPromotions());
     dispatch(fetchRewardAll());
+    dispatch(fetchItemImages());
   }, [dispatch]);
   const calculateRewardLevel = (points) => {
     if (points >= 1000) return "Vũ Trụ";
@@ -271,7 +276,11 @@ console.log(filteredProducts)
       scanner.clear();
     };
   }, [isScanModalVisible, productData, dispatch]);
-
+  const handleDiscountSelection = (discount) => {
+    setSelectedDiscount(discount);
+    setDiscountPercentage(discount.discountPct);
+    setIsDiscountModalVisible(false);
+  };
   const discountOptions = promotions
     .filter(
       (item) =>
@@ -296,7 +305,14 @@ console.log(filteredProducts)
       navigate("/sales-page/Payment");
     }
   };
+  const openDiscountModal = () => {
+    setIsDiscountModalVisible(true);
+    dispatch(fetchPromotions());
+  };
 
+  const closeDiscountModal = () => {
+    setIsDiscountModalVisible(false);
+  };
   const handleSearch = () => {
     setLoading(true);
     try {
@@ -419,16 +435,18 @@ console.log(filteredProducts)
       <div className="content">
         <div className="menu">
           <div className="menu-header"></div>
-          <div className="product-grid"> 
+          <div className="product-grid flex align-middle justify-center text-center"> 
             {filteredProducts.filter(
       (product) =>
         product.status === "trong kho"
     ).map((product) => (
               <div key={product.itemId} className="product-card">
-                <img
-                  src={product.itemImagesId}
+                 <img
+                  src={
+                    images.find((image) => image.itemId === product.itemId)?.imageUrl ||
+                    "default.jpg"
+                  }
                   alt={product.itemName}
-                  className="product-image"
                 />
                 <h3 className="product-name">{product.itemName}</h3>
                 <p>
@@ -466,14 +484,45 @@ console.log(filteredProducts)
             >
               Yêu Cầu Giảm Giá
             </Button>
-            <Select
-              style={{ width: 200 }}
-              onChange={handleChange}
-              placeholder="Chọn mã giảm giá"
-              loading={isLoadingPromotion}
-              options={discountOptions}
-              allowClear
-            />
+            <Modal
+        title="Danh sách giảm giá"
+        visible={isDiscountModalVisible}
+        onCancel={closeDiscountModal}
+        footer={[
+          <Button key="cancel" onClick={closeDiscountModal}>
+            Hủy
+          </Button>,
+        ]}
+      >
+        {console.log("check promo",discountOptions)}
+        <Table
+          dataSource={discountOptions}
+          loading={isLoadingPromotion}
+          columns={[
+            {
+              title: "Mã giảm giá",
+              dataIndex: "code",
+              key: "code",
+            },
+            {
+              title: "Giảm giá (%)",
+              dataIndex: "label",
+              key: "label",
+            },
+            {
+              title: "Chọn",
+              key: "action",
+              render: (text, discount) => (
+                <Button onClick={() => handleDiscountSelection(discount)}>
+                  Chọn
+                </Button>
+              ),
+            },
+          ]}
+          rowKey={(record) => record.code}
+        />
+      </Modal>
+      <Button onClick={openDiscountModal}>Chọn giảm giá</Button>
             <Modal
               title="Yêu Cầu Giảm Giá"
               visible={isModalVisible}
