@@ -1,11 +1,13 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCustomerDetail } from '../../Features/Customer/CustomerdetailSlice';
 import { fetchAllInvoice } from '../../Features/Invoice/fullinvoiceSlice';
 import { fetchRewardAll } from '../../Features/Customer/rewardallSlice';
-import { Tabs, Table } from 'antd';
-import { UserOutlined } from "@ant-design/icons";
+import { Tabs, Table, Button } from 'antd';
+import { UserOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import moment from 'moment';
+import 'moment/locale/vi';
 
 function CustomerSearchDetail() {
   const dispatch = useDispatch();
@@ -13,7 +15,7 @@ function CustomerSearchDetail() {
   const { customerDataDetail: customer, isError, loading: customerLoading } = useSelector(state => state.customerDetail);
   const { allInvoice, loading: invoicesLoading } = useSelector(state => state.invoicefull);
   const { rewardsallData, loading: rewardsLoading } = useSelector(state => state.rewardsAll);
-
+  const navigate = useNavigate();
   const onChange = (key) => {
     console.log(key);
   };
@@ -52,6 +54,12 @@ function CustomerSearchDetail() {
       title: 'Hình thức thanh toán',
       dataIndex: 'paymentType',
       key: 'paymentType',
+    },
+    {
+      title: 'Ngày tạo',
+      dataIndex: 'createdDate',
+      key: 'createdDate',
+      render: (date) => <span>{moment(date).format('DD-MM-YYYY')}</span>
     },
   ];
 
@@ -108,8 +116,16 @@ console.log(customerRewards)
     },
   ];
 
+  const handleGoBack = () => {
+    navigate(-1);
+  }
+
   return (
     <div className='m-6 flex-col justify-center align-middle mx-8'>
+      <Button 
+        className="hover:bg-gray-900 font-bold rounded ml-2 mb-2"
+        icon={<ArrowLeftOutlined />} 
+        onClick={handleGoBack} />
       <h1 className='text-4xl uppercase font-bold'>Trang thông tin khách hàng</h1>
       <div className='mt-8 flex'>
         <div className='bg-white px-32 pt-2 rounded-lg shadow-md w-full ml-1 flex justify-center'>
