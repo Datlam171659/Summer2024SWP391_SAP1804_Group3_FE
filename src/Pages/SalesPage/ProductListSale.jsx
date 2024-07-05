@@ -228,9 +228,9 @@ const ProductList = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    setFilteredProducts(productData);
+      setFilteredProducts(productData);
   }, [productData]);
-
+console.log(filteredProducts)
   useEffect(() => {
     if (!isScanModalVisible) return;
 
@@ -419,8 +419,11 @@ const ProductList = () => {
       <div className="content">
         <div className="menu">
           <div className="menu-header"></div>
-          <div className="product-grid">
-            {filteredProducts.map((product) => (
+          <div className="product-grid"> 
+            {filteredProducts.filter(
+      (product) =>
+        product.status === "trong kho"
+    ).map((product) => (
               <div key={product.itemId} className="product-card">
                 <img
                   src={product.itemImagesId}
@@ -428,9 +431,20 @@ const ProductList = () => {
                   className="product-image"
                 />
                 <h3 className="product-name">{product.itemName}</h3>
-                <p className="product-price">
-                  {currencyFormatter.format(product.price)}
-                </p>
+                <p>
+              Giá:{" "}
+              {currencyFormatter.format(
+                product.itemName.toLowerCase().includes("10k")
+                  ? product.weight * buyGold10k
+                  : product.itemName.toLowerCase().includes("14k")
+                  ? product.weight * buyGold14k
+                  : product.itemName.toLowerCase().includes("18k")
+                  ? product.weight * buyGold18k
+                  : product.itemName.toLowerCase().includes("24k")
+                  ? product.weight * buyGold24k
+                  : 0
+              )}
+            </p>
                 <Button
                   type="primary"
                   onClick={() => dispatch(addItem(product))}
@@ -631,7 +645,17 @@ const ProductList = () => {
                 </Button>
               </div>
               <span className="item-price">
-                {currencyFormatter.format(item.price)}
+              {currencyFormatter.format(
+                item.itemName.toLowerCase().includes("10k")
+                  ? item.weight * buyGold10k
+                  : item.itemName.toLowerCase().includes("14k")
+                  ? item.weight * buyGold14k
+                  : item.itemName.toLowerCase().includes("18k")
+                  ? item.weight * buyGold18k
+                  : item.itemName.toLowerCase().includes("24k")
+                  ? item.weight * buyGold24k
+                  : 0
+              )}
               </span>
               <Button
                 type="primary"

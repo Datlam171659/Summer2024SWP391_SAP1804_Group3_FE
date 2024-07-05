@@ -183,10 +183,6 @@ const PaymentPage = () => {
   };
 
   const handleConfirm = async () => {
-    if (!searchedCustomer && customerType === 'member') {
-      message.warning("Vui lòng tìm kiếm thông tin khách hàng");
-      return;
-    }
 
     const customerId = customerType === 'member' ? searchedCustomer.id : customerInfor.id;
     const staffId = localStorage.getItem("nameid");
