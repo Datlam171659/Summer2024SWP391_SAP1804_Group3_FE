@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Input, message, Select, Spin, Modal, Form } from "antd";
+import { Button, Input, message, Select, Spin, Modal, Form,Table } from "antd";
 import { MinusOutlined, PlusOutlined, ScanOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import {
@@ -20,13 +20,16 @@ import SalepageApi from "../../Features/Salepage/SalepageApi";
 import { requestPromotionCus } from "../../Features/Promotion/promotionSlice";
 import { fetchPromotions } from "../../Features/Promotion/promotionallSlice";
 import { fetchRewardAll } from "../../Features/Customer/rewardallSlice";
+import { fetchItemImages } from "../../Features/product/itemImageSlice";
 const ProductList = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const productData = useSelector((state) => state.product.productData);
+  const images = useSelector((state) => state.itemImages.images);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isScanModalVisible, setIsScanModalVisible] = useState(false);
+  const [productIdInput, setProductIdInput] = useState("");
   const isLoadingPromotion = useSelector(
     (state) => state.promotions.isLoadingPromotion
   );
@@ -70,6 +73,8 @@ const ProductList = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [discountPct, setDiscountPct] = useState("");
   const [description, setDescription] = useState("");
+  const [isDiscountModalVisible, setIsDiscountModalVisible] = useState(false);
+  const [selectedDiscount, setSelectedDiscount] = useState(null);
   const promotions = useSelector((state) => state.promotions.promotions);
   const [promotionDataSelect, setPromotionDataSelect] = useState("");
   const [promotionPercentage, setPromotionPercentage] = useState(0);
@@ -80,6 +85,7 @@ const ProductList = () => {
   useEffect(() => {
     dispatch(fetchPromotions());
     dispatch(fetchRewardAll());
+    dispatch(fetchItemImages());
   }, [dispatch]);
   const calculateRewardLevel = (points) => {
     if (points >= 1000) return "Vũ Trụ";
@@ -101,7 +107,6 @@ const ProductList = () => {
       (acc, item) => acc + item.itemQuantity,
       0
     );
-
     const cartTotalAmount = cartItems.reduce((acc, item) => {
       let goldType = "";
       if (item.itemName.toLowerCase().includes("10k")) {
@@ -148,6 +153,21 @@ const ProductList = () => {
     promotionPercentage,
     dispatch,
   ]);
+  const handleProductIdChange = (e) => {
+    setProductIdInput(e.target.value);
+  };
+  console.log(productIdInput)
+  const handleAddToCart = () => {
+    const product = productData.find(
+      (product) => product.itemId === productIdInput
+    );
+    if (product) {
+      dispatch(addItem(product));
+      message.success("Sản phẩm đã được thêm vào giỏ hàng");
+    } else {
+      message.error("Không tìm thấy sản phẩm!");
+    }
+  };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     switch (name) {
@@ -175,7 +195,13 @@ const ProductList = () => {
       message.warning("Vui lòng nhập số điện thoại");
       return;
     }
-
+    const openDiscountModal = () => {
+      setIsDiscountModalVisible(true);
+      dispatch(fetchPromotions());
+    };
+    const closeDiscountModal = () => {
+      setIsDiscountModalVisible(false);
+    };
     const foundCustomer = customerData.find(
       (customer) =>
         customer.phoneNumber === phoneNumber && customer.status === "active"
@@ -228,9 +254,9 @@ const ProductList = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    setFilteredProducts(productData);
+      setFilteredProducts(productData);
   }, [productData]);
-
+console.log(filteredProducts)
   useEffect(() => {
     if (!isScanModalVisible) return;
 
@@ -296,7 +322,14 @@ const ProductList = () => {
       navigate("/sales-page/Payment");
     }
   };
+  const openDiscountModal = () => {
+    setIsDiscountModalVisible(true);
+    dispatch(fetchPromotions());
+  };
 
+  const closeDiscountModal = () => {
+    setIsDiscountModalVisible(false);
+  };
   const handleSearch = () => {
     setLoading(true);
     try {
@@ -419,18 +452,34 @@ const ProductList = () => {
       <div className="content">
         <div className="menu">
           <div className="menu-header"></div>
-          <div className="product-grid">
-            {filteredProducts.map((product) => (
+          <div className="product-grid flex align-middle justify-center text-center"> 
+            {filteredProducts.filter(
+      (product) =>
+        product.status === "trong kho"
+    ).map((product) => (
               <div key={product.itemId} className="product-card">
-                <img
-                  src={product.itemImagesId}
+                 <img
+                  src={
+                    images.find((image) => image.itemId === product.itemId)?.imageUrl ||
+                    "default.jpg"
+                  }
                   alt={product.itemName}
-                  className="product-image"
                 />
                 <h3 className="product-name">{product.itemName}</h3>
-                <p className="product-price">
-                  {currencyFormatter.format(product.price)}
-                </p>
+                <p>
+              Giá:{" "}
+              {currencyFormatter.format(
+                product.itemName.toLowerCase().includes("10k")
+                  ? product.weight * buyGold10k
+                  : product.itemName.toLowerCase().includes("14k")
+                  ? product.weight * buyGold14k
+                  : product.itemName.toLowerCase().includes("18k")
+                  ? product.weight * buyGold18k
+                  : product.itemName.toLowerCase().includes("24k")
+                  ? product.weight * buyGold24k
+                  : 0
+              )}
+            </p>
                 <Button
                   type="primary"
                   onClick={() => dispatch(addItem(product))}
@@ -452,14 +501,9 @@ const ProductList = () => {
             >
               Yêu Cầu Giảm Giá
             </Button>
-            <Select
-              style={{ width: 200 }}
-              onChange={handleChange}
-              placeholder="Chọn mã giảm giá"
-              loading={isLoadingPromotion}
-              options={discountOptions}
-              allowClear
-            />
+            <Button onClick={openDiscountModal} disabled={customerType === "newCustomer"}>
+  Chọn giảm giá
+</Button>
             <Modal
               title="Yêu Cầu Giảm Giá"
               visible={isModalVisible}
@@ -631,7 +675,17 @@ const ProductList = () => {
                 </Button>
               </div>
               <span className="item-price">
-                {currencyFormatter.format(item.price)}
+              {currencyFormatter.format(
+                item.itemName.toLowerCase().includes("10k")
+                  ? item.weight * buyGold10k
+                  : item.itemName.toLowerCase().includes("14k")
+                  ? item.weight * buyGold14k
+                  : item.itemName.toLowerCase().includes("18k")
+                  ? item.weight * buyGold18k
+                  : item.itemName.toLowerCase().includes("24k")
+                  ? item.weight * buyGold24k
+                  : 0
+              )}
               </span>
               <Button
                 type="primary"
@@ -644,11 +698,18 @@ const ProductList = () => {
             </div>
           ))}
           <div className="add-product">
-            <Input
-              placeholder="Nhập id sản phẩm"
-              className="add-product-input"
-            />
-            <Button className="  bg-black text-white">Thêm vào giỏ hàng</Button>
+          <Input
+      value={productIdInput}
+      onChange={handleProductIdChange}
+      placeholder="Enter product ID"
+      className="w-[130px] mb-2"
+    />
+    <Button
+      className="bg-black text-white"
+      onClick={handleAddToCart}
+    >
+      Thêm vào giỏ hàng
+    </Button>
           </div>
           <div className="cart-summary">
             <div>
@@ -680,6 +741,29 @@ const ProductList = () => {
         ]}
       >
         <div id="reader"></div>
+      </Modal>
+      <Modal
+        visible={isDiscountModalVisible}
+        onCancel={() => setIsDiscountModalVisible(false)}
+        onOk={closeDiscountModal}
+      >
+        <Form>
+          <Form.Item label="Chọn mã giảm giá">
+            <Select
+              style={{ width: 200 }}
+              onChange={handleChange}
+              placeholder="Chọn mã giảm giá"
+              loading={isLoadingPromotion}
+              options={discountOptions}
+              allowClear
+              onDropdownVisibleChange={(open) => {
+                if (open) {
+                  dispatch(fetchPromotions());
+                }
+              }}
+            />
+          </Form.Item>
+        </Form>
       </Modal>
     </div>
   );

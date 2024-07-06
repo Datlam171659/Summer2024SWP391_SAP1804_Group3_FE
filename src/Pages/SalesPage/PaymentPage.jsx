@@ -12,7 +12,7 @@ import { rewardCustomer } from "../../Features/Customer/rewardSlice";
 import { fetchPromotions } from "../../Features/Promotion/promotionallSlice";
 import { reduceItemQuantity } from "../../Features/product/quantitySlice"; 
 import emailjs from 'emailjs-com';
-
+import { createInvoiceWithItems } from "../../Features/Invoice/InvoiceItemSlice"; 
 
 
 const PaymentPage = () => {
@@ -37,7 +37,7 @@ const PaymentPage = () => {
   const [customerGender, setCustomerGender] = useState("Nam");
   const [customerAddress, setCustomerAddress] = useState("");
   const [paymentType, setPaymentType] = useState("");
-  const [pointsTotal, setPpointsTotal] = useState(0);
+  const [addPoints, setPpointsTotal] = useState(0);
   const [customerInfo, setCustomerInfo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -183,33 +183,35 @@ const PaymentPage = () => {
   };
 
   const handleConfirm = async () => {
-    if (!searchedCustomer && customerType === 'member') {
-      message.warning("Vui lòng tìm kiếm thông tin khách hàng");
-      return;
-    }
-
     const customerId = customerType === 'member' ? searchedCustomer.id : customerInfor.id;
     const staffId = localStorage.getItem("nameid");
-    const returnPolicyId = "RP01";
+    const returnPolicyId = "1";
     const companyName = "SWJ";
     const status = "Active";
+    const now = new Date().toISOString(); 
+  
     const invoiceData = {
-      staffId,
-      returnPolicyId,
-      itemId: cartItems[0].itemId,
+      staffId: staffId,
       customerId,
-      companyName,
+      companyName: companyName,
+      buyerName: customerInfor.customerName,
       buyerAddress: customerInfor.address,
       status,
       paymentType,
       quantity: cartTotalQuantity,
-      subTotal: cartTotalAmount,
+      subtotal: cartTotalAmount,
+      createdDate: now,
+      items: cartItems.map(item => ({
+        itemID: item.itemId,
+        itemQuantity: item.itemQuantity,
+        warrantyExpiryDate: now,
+        returnPolicyId: returnPolicyId
+      })),
     };
-
     try {
-      await dispatch(createInvoice(invoiceData)).unwrap();
+      await dispatch(createInvoiceWithItems(invoiceData)).unwrap();
       await dispatch(addWarranty(customerId)).unwrap();
-      await dispatch(rewardCustomer({ customerId, pointsTotal })).unwrap();
+      await dispatch(rewardCustomer({ customerId, addPoints })).unwrap();
       
       
       for (const item of cartItems) {
