@@ -401,160 +401,164 @@ const ProductListBuyBack = () => {
   ];
 
   return (
-    <div className="flex flex-col lg:flex-row">
-      <div className="my-5 w-screen lg:w-full p-4">
-        <div className="h-[40%] min-h-[485px] w-full lg:w-full text-center p-3 bg-[#FFFFFF] rounded-[7px] shadow-md">
-          <div className="flex w-full justify-between">
-            <div className="w-[85%] flex">
-              <Input
-                placeholder="Nhập mã hóa đơn"
-                style={{ width: "89.7%", marginBottom: "5px" }}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+    <div>
+      <h1 className="text-2xl font-bold mb-0 ml-5 mt-4">Mua Lại Trang Sức</h1>
+      <div className="flex flex-col lg:flex-row">
+        <div className="my-1 w-screen lg:w-full p-4">
+          <div className="h-[40%] min-h-[485px] w-full lg:w-full text-center p-3 bg-[#FFFFFF] rounded-[7px] shadow-md">
+            <div className="flex w-full justify-between">
+              <div className="w-[85%] flex">
+                <Input
+                  placeholder="Nhập mã hóa đơn"
+                  style={{ width: "89.7%", marginBottom: "5px" }}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
 
-              />
+                />
+                <Button
+                  disabled={isButtonDisabled}
+                  type="primary"
+                  className="ml-2"
+                  style={{ fontWeight: "600", heigh: "30px" }}
+                  onClick={handleSearch}
+                >
+                  Tìm hóa đơn
+                </Button>
+              </div>
+
               <Button
-                disabled={isButtonDisabled}
-                type="primary"
-                className="ml-2"
+                type="default"
+                className="ml-2 flex items-center"
                 style={{ fontWeight: "600", heigh: "30px" }}
-                onClick={handleSearch}
+                onClick={() => setIsScanModalVisible(true)}
               >
-                Tìm hóa đơn
+                <ScanOutlined className="mr-2" />
+                Quét QR
               </Button>
             </div>
 
-            <Button
-              type="default"
-              className="ml-2 flex items-center"
-              style={{ fontWeight: "600", heigh: "30px" }}
-              onClick={() => setIsScanModalVisible(true)}
-            >
-              <ScanOutlined className="mr-2" />
-              Quét QR
-            </Button>
+
+            <Spin spinning={loading}>
+              <div className="cart-items flex flex-col items-center space-y-8 w-full ">
+                <Table
+                  dataSource={cartItems}
+                  columns={columns}
+                  rowKey="itemId"
+                  pagination={false}
+                  scroll={{ y: 378 }}
+                  className="w-full rounded-[5px] font-medium"
+                />
+              </div>
+            </Spin>
           </div>
-
-
-          <Spin spinning={loading}>
-            <div className="cart-items flex flex-col items-center space-y-8 w-full ">
-              <Table
-                dataSource={cartItems}
-                columns={columns}
-                rowKey="itemId"
-                pagination={false}
-                scroll={{ y: 378 }}
-                className="w-full rounded-[5px] font-medium"
+          <div className="flex w-full justify-between">
+            <div className="cart-summary mt-6 bg-white p-6 pt-2 rounded-lg shadow-md w-[49%] mr-3">
+              <div className="cart-checkout mt-6">
+                <div className="flex-row">
+                  <div className="flex justify-between mb-3 text-lg font-medium">
+                    <p>Tổng số lượng sản phẩm: </p>
+                    <p>{cartTotalQuantity}</p>
+                  </div>
+                  <div className="flex justify-between mb-3 text-lg font-medium">
+                    <p>Tạm tính</p>
+                    <p>{Number(cartTotalAmount.toFixed(0)).toLocaleString()}đ</p>
+                  </div>
+                </div>
+                <div className="mt-14 flex justify-between">
+                  <span className="text-lg font-semibold text-gray-800">
+                    Thành tiền
+                  </span>
+                  <span className="amount text-xl font-bold text-gray-800">
+                    {Number(cartTotalAmount.toFixed(0)).toLocaleString()}
+                    đ
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="cart-summary mt-6 bg-white p-6 pt-2 rounded-lg shadow-md  w-[49%]">
+              <Button
+                onClick={showAddItemModal}
+                className="w-full h-14 bg-slate-600 text-white uppercase font-bold">
+                Thêm sản phẩm khác
+              </Button>
+              <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"></hr>
+              <div>
+                <Button onClick={handleCreateOrder} className="w-full h-14 bg-black text-white uppercase font-bold">
+                  Tạo Đơn
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <Modal title="Thêm sản phẩm mới" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} okText="Thêm" cancelText="Hủy">
+          <Form layout="vertical">
+            <Form.Item label="Tên hàng" required>
+              <Input
+                name="itemName"
+                value={newItem.itemName}
+                onChange={handleInputChange}
+                placeholder="Nhập tên hàng"
               />
-            </div>
-          </Spin>
-        </div>
-        <div className="flex w-full justify-between">
-          <div className="cart-summary mt-6 bg-white p-6 pt-2 rounded-lg shadow-md w-[49%] mr-3">
-            <div className="cart-checkout mt-6">
-              <div className="flex-row">
-                <div className="flex justify-between mb-3 text-lg font-medium">
-                  <p>Tổng số lượng sản phẩm: </p>
-                  <p>{cartTotalQuantity}</p>
-                </div>
-                <div className="flex justify-between mb-3 text-lg font-medium">
-                  <p>Tạm tính</p>
-                  <p>{Number(cartTotalAmount.toFixed(0)).toLocaleString()}đ</p>
-                </div>
-              </div>
-              <div className="mt-14 flex justify-between">
-                <span className="text-lg font-semibold text-gray-800">
-                  Thành tiền
-                </span>
-                <span className="amount text-xl font-bold text-gray-800">
-                  {Number(cartTotalAmount.toFixed(0)).toLocaleString()}
-                  đ
-                </span>
-              </div>
-            </div>
-          </div>
-          <div className="cart-summary mt-6 bg-white p-6 pt-2 rounded-lg shadow-md  w-[49%]">
-            <Button
-              onClick={showAddItemModal}
-              className="w-full h-14 bg-slate-600 text-white uppercase font-bold">
-              Thêm sản phẩm khác
-            </Button>
-            <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"></hr>
-            <div>
-              <Button onClick={handleCreateOrder} className="w-full h-14 bg-black text-white uppercase font-bold">
-                Tạo Đơn
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <Modal title="Thêm sản phẩm mới" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} okText="Thêm" cancelText="Hủy">
-        <Form layout="vertical">
-          <Form.Item label="Tên hàng" required>
-            <Input
-              name="itemName"
-              value={newItem.itemName}
-              onChange={handleInputChange}
-              placeholder="Nhập tên hàng"
-            />
-          </Form.Item>
-          <Form.Item label="Trọng lượng" required>
-            <Input
-              name="weight"
-              type="number"
-              step="0.01"
-              value={newItem.weight}
-              onChange={handleInputChange}
-              placeholder="Nhập trọng lượng"
-            />
-          </Form.Item>
-          <Form.Item label="Loại trang sức" required>
-            <Select
-              value={newItem.accessoryType}
-              onChange={handleSelectChange}
-              placeholder="Chọn loại trang sức"
-            >
-              <Select.Option value="Nhẫn">Nhẫn</Select.Option>
-              <Select.Option value="Dây chuyền">Dây chuyền</Select.Option>
-              <Select.Option value="Vòng tay">Vòng tay</Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item label="Mô tả">
-            <Input.TextArea
-              name="description"
-              value={newItem.description}
-              onChange={handleInputChange}
-              placeholder="Nhập mô tả"
-            />
-          </Form.Item>
-        </Form>
-      </Modal>
-      <Modal
-        title="Quét QR"
-        visible={isScanModalVisible}
-        onCancel={() => setIsScanModalVisible(false)}
-        footer={[
-          <Button key="back" onClick={() => setIsScanModalVisible(false)}>
-            Hủy
-          </Button>,
-        ]}
-      >
-        <div id='reader'></div>
-      </Modal>
-      <Modal title="Chọn sản phẩm từ hóa đơn" visible={isInvoiceModalVisible} onOk={handleAddItems} onCancel={() => setIsInvoiceModalVisible(false)}
-        className="flex flex-col items-center space-y-8 w-full ">
-        <Table
-          rowSelection={rowSelection}
-          dataSource={invoiceItems}
-          columns={invoiceColumns}
-          rowKey="itemId"
-          pagination={false}
-          scroll={{ y: 378 }}
-          className="w-full rounded-[5px] font-medium"
-        />
-      </Modal>
+            </Form.Item>
+            <Form.Item label="Trọng lượng" required>
+              <Input
+                name="weight"
+                type="number"
+                step="0.01"
+                value={newItem.weight}
+                onChange={handleInputChange}
+                placeholder="Nhập trọng lượng"
+              />
+            </Form.Item>
+            <Form.Item label="Loại trang sức" required>
+              <Select
+                value={newItem.accessoryType}
+                onChange={handleSelectChange}
+                placeholder="Chọn loại trang sức"
+              >
+                <Select.Option value="Nhẫn">Nhẫn</Select.Option>
+                <Select.Option value="Dây chuyền">Dây chuyền</Select.Option>
+                <Select.Option value="Vòng tay">Vòng tay</Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item label="Mô tả">
+              <Input.TextArea
+                name="description"
+                value={newItem.description}
+                onChange={handleInputChange}
+                placeholder="Nhập mô tả"
+              />
+            </Form.Item>
+          </Form>
+        </Modal>
+        <Modal
+          title="Quét QR"
+          visible={isScanModalVisible}
+          onCancel={() => setIsScanModalVisible(false)}
+          footer={[
+            <Button key="back" onClick={() => setIsScanModalVisible(false)}>
+              Hủy
+            </Button>,
+          ]}
+        >
+          <div id='reader'></div>
+        </Modal>
+        <Modal title="Chọn sản phẩm từ hóa đơn" visible={isInvoiceModalVisible} onOk={handleAddItems} onCancel={() => setIsInvoiceModalVisible(false)}
+          className="flex flex-col items-center space-y-8 w-full ">
+          <Table
+            rowSelection={rowSelection}
+            dataSource={invoiceItems}
+            columns={invoiceColumns}
+            rowKey="itemId"
+            pagination={false}
+            scroll={{ y: 378 }}
+            className="w-full rounded-[5px] font-medium"
+          />
+        </Modal>
 
+      </div>
     </div>
+
   );
 };
 

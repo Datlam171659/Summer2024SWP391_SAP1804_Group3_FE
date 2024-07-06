@@ -393,7 +393,7 @@ const BuyBackPaymentPage = () => {
               </div>
               <div className="mt-14 flex justify-between">
                 <span className="text-lg font-semibold text-gray-800">
-                  Thành tiền
+                  Tổng tiền trả khách
                 </span>
                 <span className="amount text-xl font-bold text-gray-800">
                   {Number(cartTotalAmount.toFixed(0)).toLocaleString()}
@@ -413,22 +413,23 @@ const BuyBackPaymentPage = () => {
                   },
                 }}
               >
-                <div className="flex justify-between">
+                {/* <div className="flex justify-between">
                   <Button className="w-[49%] h-14 bg-lime-500 text-white uppercase font-bold hover:bg-gray-500">
                     Chuyển khoản
                   </Button>
                   <Button className="w-[49%] h-14 bg-lime-500 text-white uppercase font-bold hover:bg-gray-500">
                     Tiền mặt
                   </Button>
-                </div>
+                </div> */}
               </ConfigProvider>
 
             </div>
-            <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
             <div>
-                <Button className="w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500 " onClick={handleConfirm}>
-                  Xác Nhận
-                </Button>
+              <Button className="w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500 " onClick={handleConfirm}>
+                Xác Nhận
+              </Button>
+              <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
+
               <Link to="/buy-back-page">
                 <Button className="w-full h-14 bg-white text-black uppercase font-bold hover:bg-gray-500 mt-4" onClick={handleCancel}>
                   Hủy
