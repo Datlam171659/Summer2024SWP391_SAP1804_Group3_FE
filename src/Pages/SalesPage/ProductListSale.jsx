@@ -180,7 +180,13 @@ const ProductList = () => {
       message.warning("Vui lòng nhập số điện thoại");
       return;
     }
-
+    const openDiscountModal = () => {
+      setIsDiscountModalVisible(true);
+      dispatch(fetchPromotions());
+    };
+    const closeDiscountModal = () => {
+      setIsDiscountModalVisible(false);
+    };
     const foundCustomer = customerData.find(
       (customer) =>
         customer.phoneNumber === phoneNumber && customer.status === "active"
@@ -276,11 +282,7 @@ console.log(filteredProducts)
       scanner.clear();
     };
   }, [isScanModalVisible, productData, dispatch]);
-  const handleDiscountSelection = (discount) => {
-    setSelectedDiscount(discount);
-    setDiscountPercentage(discount.discountPct);
-    setIsDiscountModalVisible(false);
-  };
+
   const discountOptions = promotions
     .filter(
       (item) =>
@@ -484,45 +486,9 @@ console.log(filteredProducts)
             >
               Yêu Cầu Giảm Giá
             </Button>
-            <Modal
-        title="Danh sách giảm giá"
-        visible={isDiscountModalVisible}
-        onCancel={closeDiscountModal}
-        footer={[
-          <Button key="cancel" onClick={closeDiscountModal}>
-            Hủy
-          </Button>,
-        ]}
-      >
-        {console.log("check promo",discountOptions)}
-        <Table
-          dataSource={discountOptions}
-          loading={isLoadingPromotion}
-          columns={[
-            {
-              title: "Mã giảm giá",
-              dataIndex: "code",
-              key: "code",
-            },
-            {
-              title: "Giảm giá (%)",
-              dataIndex: "label",
-              key: "label",
-            },
-            {
-              title: "Chọn",
-              key: "action",
-              render: (text, discount) => (
-                <Button onClick={() => handleDiscountSelection(discount)}>
-                  Chọn
-                </Button>
-              ),
-            },
-          ]}
-          rowKey={(record) => record.code}
-        />
-      </Modal>
-      <Button onClick={openDiscountModal}>Chọn giảm giá</Button>
+            <Button onClick={openDiscountModal} disabled={customerType === "newCustomer"}>
+  Chọn giảm giá
+</Button>
             <Modal
               title="Yêu Cầu Giảm Giá"
               visible={isModalVisible}
@@ -753,6 +719,29 @@ console.log(filteredProducts)
         ]}
       >
         <div id="reader"></div>
+      </Modal>
+      <Modal
+        visible={isDiscountModalVisible}
+        onCancel={() => setIsDiscountModalVisible(false)}
+        onOk={closeDiscountModal}
+      >
+        <Form>
+          <Form.Item label="Chọn mã giảm giá">
+            <Select
+              style={{ width: 200 }}
+              onChange={handleChange}
+              placeholder="Chọn mã giảm giá"
+              loading={isLoadingPromotion}
+              options={discountOptions}
+              allowClear
+              onDropdownVisibleChange={(open) => {
+                if (open) {
+                  dispatch(fetchPromotions());
+                }
+              }}
+            />
+          </Form.Item>
+        </Form>
       </Modal>
     </div>
   );
