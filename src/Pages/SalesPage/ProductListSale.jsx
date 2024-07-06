@@ -29,6 +29,7 @@ const ProductList = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isScanModalVisible, setIsScanModalVisible] = useState(false);
+  const [productIdInput, setProductIdInput] = useState("");
   const isLoadingPromotion = useSelector(
     (state) => state.promotions.isLoadingPromotion
   );
@@ -106,7 +107,6 @@ const ProductList = () => {
       (acc, item) => acc + item.itemQuantity,
       0
     );
-
     const cartTotalAmount = cartItems.reduce((acc, item) => {
       let goldType = "";
       if (item.itemName.toLowerCase().includes("10k")) {
@@ -153,6 +153,21 @@ const ProductList = () => {
     promotionPercentage,
     dispatch,
   ]);
+  const handleProductIdChange = (e) => {
+    setProductIdInput(e.target.value);
+  };
+  console.log(productIdInput)
+  const handleAddToCart = () => {
+    const product = productData.find(
+      (product) => product.itemId === productIdInput
+    );
+    if (product) {
+      dispatch(addItem(product));
+      message.success("Product added to cart!");
+    } else {
+      message.error("Product not found!");
+    }
+  };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     switch (name) {
@@ -683,11 +698,18 @@ console.log(filteredProducts)
             </div>
           ))}
           <div className="add-product">
-            <Input
-              placeholder="Nhập id sản phẩm"
-              className="add-product-input"
-            />
-            <Button className="  bg-black text-white">Thêm vào giỏ hàng</Button>
+          <Input
+      value={productIdInput}
+      onChange={handleProductIdChange}
+      placeholder="Enter product ID"
+      className="w-[130px] mb-2"
+    />
+    <Button
+      className="bg-black text-white"
+      onClick={handleAddToCart}
+    >
+      Thêm vào giỏ hàng
+    </Button>
           </div>
           <div className="cart-summary">
             <div>
