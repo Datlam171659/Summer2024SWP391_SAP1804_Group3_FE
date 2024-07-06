@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Button, Tooltip, Spin, Modal, Input, Select, message, ConfigProvider } from 'antd';
+import { Card, Button, Tooltip, Spin, Modal, Input, Select, message, ConfigProvider, Form } from 'antd';
 import { EditOutlined, DeleteOutlined, InfoCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import staffStationkApi from '../../Services/api/staffStationApi';
 import userkApi from '../../Services/api/UserApi';
-
+import { jwtDecode } from 'jwt-decode';
 const StaffStationPage = () => {
     const [stations, setStations] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -18,11 +18,17 @@ const StaffStationPage = () => {
     const [isAddStationModalVisible, setIsAddStationModalVisible] = useState(false);
     const [newStationName, setNewStationName] = useState('');
     const [selectedStaffForNewStation, setSelectedStaffForNewStation] = useState('');
-
-    const [error, setError] = useState(null);
+    const [role, setRole] = useState(null);
     const [editLoading, setEditLoading] = useState(false);
     const [deleteLoading, setDeleteLoading] = useState(false);
     const [addLoading, setAddLoading] = useState(false);
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const decodedToken = jwtDecode(token);
+            setRole(decodedToken.role);
+        }
+    }, []);
 
     const fetchData = async () => {
         try {
@@ -131,6 +137,11 @@ const StaffStationPage = () => {
             return;
         }
 
+        if (stations.some(station => station.staionName.toLowerCase() === editStationName.toLowerCase() && station.stationId !== editingStationId)) {
+            message.error("Tên quầy đã tồn tại!");
+            return;
+        }
+
         const updatedStation = {
             staffId: editStationStaffId,
             staionName: editStationName
@@ -139,7 +150,7 @@ const StaffStationPage = () => {
         setEditLoading(true);
         try {
             await staffStationkApi.updateStation(editingStationId, updatedStation);
-            message.success("Chỉnh sửa quầy thành công!");
+
             fetchData();
             setIsEditModalVisible(false);
             setEditStationName('');
@@ -148,11 +159,15 @@ const StaffStationPage = () => {
             message.error("Có lỗi xảy ra khi chỉnh sửa quầy. Vui lòng thử lại!");
         } finally {
             setEditLoading(false);
+            message.success("Chỉnh sửa quầy thành công!");
         }
     };
 
-    if (loading) return <Spin size="large" className="flex justify-center items-center h-screen" />;
-    if (error) return <div>Error: {error.message}</div>;
+    const handleCancelEditStation = () => {
+        setEditStationName('');
+        setEditStationStaffId('');
+        setIsEditModalVisible(false);
+    };
 
     return (
         <ConfigProvider
@@ -173,33 +188,50 @@ const StaffStationPage = () => {
         >
             <div className='w-full flex justify-center'>
                 <div className="w-10/12 p-8">
-                    <div className="flex justify-end mb-6">
-                        <Button type="primary" icon={<PlusOutlined />} onClick={openAddStationModal}>Thêm quầy</Button>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {stations.map(station => (
-                            <Card
-                                key={station.stationId}
-                                className="relative bg-gray-200 text-black rounded-lg w-80 flex items-center justify-center hover:shadow-lg transition-shadow duration-200"
-                                style={{ height: '150px' }}
-                            >
-                                <div className="flex items-center justify-center h-full text-2xl font-semibold">
-                                    <span className="bg-gray-100 rounded-lg p-4">{station.staionName}</span>
-                                </div>
-                                <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200 bg-black bg-opacity-25">
-                                    <Tooltip title="Edit">
-                                        <Button icon={<EditOutlined />} shape="circle" className="mx-1" onClick={() => openEditModal(station)} loading={editLoading} />
-                                    </Tooltip>
-                                    <Tooltip title="Details">
-                                        <Button icon={<InfoCircleOutlined />} shape="circle" className="mx-1" onClick={() => handleOpenModal(station.staffId)} />
-                                    </Tooltip>
-                                    <Tooltip title="Delete">
-                                        <Button onClick={() => handleDelete(station.stationId)} icon={<DeleteOutlined />} shape="circle" className="mx-1" loading={deleteLoading} />
-                                    </Tooltip>
-                                </div>
-                            </Card>
-                        ))}
-                    </div>
+                    <Spin spinning={loading}>
+                        <div className="flex justify-between items-center mb-6">
+                            <h1 className="text-2xl font-bold text-gray-700">Quầy làm việc</h1>
+                            {(role === "0" || role === "1") && (
+                                <Button type="primary" icon={<PlusOutlined />} onClick={openAddStationModal}>Thêm quầy</Button>
+                            )}
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {stations.map(station => (
+                                <Card
+                                    key={station.stationId}
+                                    className="relative bg-gray-200 text-black rounded-lg w-80 flex items-center justify-center hover:shadow-lg transition-shadow duration-200"
+                                    style={{ height: '150px' }}
+                                >
+                                    <div className="flex items-center justify-center h-full text-2xl font-semibold">
+                                        <span className="bg-gray-100 rounded-lg p-4">{station.staionName}</span>
+                                    </div>
+                                    <div className="flex items-center justify-center mt-2 text-lg text-gray-600">
+                                        {users.find(user => user.staffId === station.staffId)?.fullName}
+                                    </div>
+
+                                    <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200 bg-black bg-opacity-25">
+                                        {(role === "0" || role === "1") && (
+                                            <Tooltip title="Sửa">
+                                                <Button icon={<EditOutlined />} shape="circle" className="mx-1" onClick={() => openEditModal(station)} loading={editLoading} />
+                                            </Tooltip>
+                                        )}
+
+                                        <Tooltip title="Chi tiết">
+                                            <Button icon={<InfoCircleOutlined />} shape="circle" className="mx-1" onClick={() => handleOpenModal(station.staffId)} />
+                                        </Tooltip>
+                                        {(role === "0" || role === "1") && (
+                                            <Tooltip title="Sửa">
+                                                <Tooltip title="Xóa">
+                                                    <Button onClick={() => handleDelete(station.stationId)} icon={<DeleteOutlined />} shape="circle" className="mx-1" loading={deleteLoading} />
+                                                </Tooltip>
+                                            </Tooltip>
+                                        )}
+
+                                    </div>
+                                </Card>
+                            ))}
+                        </div>
+                    </Spin>
                 </div>
                 <Modal
                     title="Thông tin nhân viên trực"
@@ -268,6 +300,7 @@ const StaffStationPage = () => {
                 >
                     <div className="space-y-4 p-6">
                         <Input
+                            id='input-staff'
                             placeholder="Tên quầy"
                             value={editStationName}
                             onChange={(e) => setEditStationName(e.target.value)}
