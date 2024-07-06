@@ -15,6 +15,9 @@ const removeItem = (itemId) => {
 const addItem = (productDetails) => {
   return axios.post(`/api/Item`, productDetails);
 };
+const UploadImageItem = (File,itemId) => {
+  return axios.post(`/api/ItemImage/upload`, File,itemId);
+};
 const edititem = async (itemId, productDetails) => {
   return axios.put(`/api/Item/update/${itemId}`, productDetails, {
     headers: {
@@ -25,4 +28,4 @@ const edititem = async (itemId, productDetails) => {
 const reduceitem = async (itemId, quantity) => {
   return axios.put(`/api/Item/updateQuantity/${itemId}?quantity=${quantity}`);
 };
-export { getProductAll, getProductById, removeItem, addItem,edititem,reduceitem,getItemImage };
+export { getProductAll, getProductById, removeItem, addItem,edititem,reduceitem,getItemImage,UploadImageItem };

@@ -36,8 +36,7 @@ const createInvoice = (
   quantity,
   subtotal,
   createdDate,
-  items,
-  returnPolicyId 
+  items
 ) => {
   return axios.post('/api/Sales/CreateInvoiceWithItems', {
     invoiceDTO: {
@@ -56,8 +55,8 @@ const createInvoice = (
       itemID: item.itemID,
       itemQuantity: item.itemQuantity,
       warrantyExpiryDate: item.warrantyExpiryDate,
+      returnPolicyId :item.returnPolicyId,
     })),
-    returnPolicyId 
   }, {
     headers: {
       'Content-Type': 'application/json'

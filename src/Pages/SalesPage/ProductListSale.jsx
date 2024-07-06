@@ -163,9 +163,9 @@ const ProductList = () => {
     );
     if (product) {
       dispatch(addItem(product));
-      message.success("Product added to cart!");
+      message.success("Sản phẩm đã được thêm vào giỏ hàng");
     } else {
-      message.error("Product not found!");
+      message.error("Không tìm thấy sản phẩm!");
     }
   };
   const handleInputChange = (e) => {

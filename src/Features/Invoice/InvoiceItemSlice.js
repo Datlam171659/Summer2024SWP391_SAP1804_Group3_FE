@@ -16,8 +16,7 @@ export const createInvoiceWithItems = createAsyncThunk(
         invoiceData.quantity,
         invoiceData.subtotal,
         invoiceData.createdDate,
-        invoiceData.items,
-        invoiceData.returnPolicyId 
+        invoiceData.items
       )
    
       return response.data;

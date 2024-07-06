@@ -37,7 +37,7 @@ const PaymentPage = () => {
   const [customerGender, setCustomerGender] = useState("Nam");
   const [customerAddress, setCustomerAddress] = useState("");
   const [paymentType, setPaymentType] = useState("");
-  const [pointsTotal, setPpointsTotal] = useState(0);
+  const [addPoints, setPpointsTotal] = useState(0);
   const [customerInfo, setCustomerInfo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -183,12 +183,13 @@ const PaymentPage = () => {
   };
 
   const handleConfirm = async () => {
-
     const customerId = customerType === 'member' ? searchedCustomer.id : customerInfor.id;
     const staffId = localStorage.getItem("nameid");
     const returnPolicyId = "1";
     const companyName = "SWJ";
     const status = "Active";
+    const now = new Date().toISOString(); 
+  
     const invoiceData = {
       staffId: staffId,
       customerId,
@@ -199,18 +200,18 @@ const PaymentPage = () => {
       paymentType,
       quantity: cartTotalQuantity,
       subtotal: cartTotalAmount,
-      createdDate: "2024-07-05T13:10:28.406Z",
+      createdDate: now,
       items: cartItems.map(item => ({
-        itemID: item.itemId ,
+        itemID: item.itemId,
         itemQuantity: item.itemQuantity,
-        warrantyExpiryDate: "2024-07-05T13:10:28.406Z",
+        warrantyExpiryDate: now,
+        returnPolicyId: returnPolicyId
       })),
-      returnPolicyId: returnPolicyId
     };
     try {
       await dispatch(createInvoiceWithItems(invoiceData)).unwrap();
       await dispatch(addWarranty(customerId)).unwrap();
-      await dispatch(rewardCustomer({ customerId, pointsTotal })).unwrap();
+      await dispatch(rewardCustomer({ customerId, addPoints })).unwrap();
       
       
       for (const item of cartItems) {
