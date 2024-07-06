@@ -286,8 +286,9 @@ function Product() {
   }, [productData]);
 
   return (
-    <div className="Product">
-      <Button type="primary" className="filter-button" onClick={showFilterModal}>
+    <div className="Product w-full mt-4">
+      <div className="flex ml-[1350px]">
+      <Button type="primary" className="filter-button mr-4" onClick={showFilterModal}>
         Lọc sản phẩm
       </Button>
       <Button
@@ -305,6 +306,7 @@ function Product() {
       >
         Refresh
       </Button>
+      </div>
       <Table
         dataSource={filteredData}
         columns={columns}
@@ -340,6 +342,9 @@ function Product() {
             name="description"
             rules={[{ required: true, message: "Vui lòng nhập mô tả sản phẩm!" }]}
           >
+            <Input />
+          </Form.Item>
+          <Form.Item name="weight" label="Trọng Lượng" rules={[{ required: true, message: 'Vui lòng nhập trọng lượng' }]}>
             <Input />
           </Form.Item>
           <Form.Item
