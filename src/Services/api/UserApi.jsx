@@ -16,6 +16,16 @@ const userkApi = {
         throw error;
       });
   },
+  getUserInfor: (id) => {
+    return axiosClient.get(`/api/Employee/Staff/${id}`)
+      .then(response => {
+        return response.data;
+      })
+      .catch(error => {
+        console.error("There was an error fetching the user!", error);
+        throw error;
+      });
+  },
   createUser: (userInfo) => {
     return axiosClient.post('/api/Employee/Register', userInfo)
       .then(response => {
