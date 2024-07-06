@@ -21,6 +21,7 @@ import CustomerSearchDetail from "../Pages/CustomerSearchPage/CustomerSearchDeta
 import Promotion from "../Pages/Promotion/Promotion";
 import RoleBasedRoute from "../Components/Common/RoleBasedRoute";
 import NoAccess from "../Pages/Authen/NoAccess";
+import StaffStationPage from "../Pages/StaffStationPage/StaffStationPage";
 
 const router = createBrowserRouter([
   {
@@ -75,22 +76,26 @@ const router = createBrowserRouter([
         element: <ExchangeRatePage />,
       },
       {
+        path: "station",
+        element: <StaffStationPage />,
+      },
+      {
         path: "no-access",
-        element: 
-       <NoAccess />,
+        element:
+          <NoAccess />,
       },
       {
         path: "user",
         element: (
           <RoleBasedRoute roles={['admin']}>
-          <UserManagePage />
-        </RoleBasedRoute>
+            <UserManagePage />
+          </RoleBasedRoute>
         ),
       },
       {
         path: "user/user-add",
         element: (
-            <RoleBasedRoute roles={['admin']}>
+          <RoleBasedRoute roles={['admin']}>
             <AddUserPage />
           </RoleBasedRoute>
         ),
@@ -149,7 +154,7 @@ const router = createBrowserRouter([
       </RootLayoput>
     ),
   },
-  
+
 
 ]);
 

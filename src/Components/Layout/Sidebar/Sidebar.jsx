@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { decrypt } from '../../../Utils/crypto';
 import "./Sidebar.scss"
 import NavItem from './NavItem/NavItem';
-import { CloseOutlined, MenuOutlined, SearchOutlined, DollarOutlined, AppstoreOutlined, InboxOutlined, LineChartOutlined, SettingOutlined, UserOutlined, PercentageOutlined, LogoutOutlined } from '@ant-design/icons';
+import { CloseOutlined, MenuOutlined, SearchOutlined, DollarOutlined, AppstoreOutlined, InboxOutlined, LineChartOutlined, SettingOutlined, UserOutlined, PercentageOutlined, LogoutOutlined, ScheduleOutlined } from '@ant-design/icons';
 import Search from 'antd/es/transfer/search';
 import { strings_vi } from '../../../Services/languages/displaystrings';
 import { useNavigate } from 'react-router-dom';
@@ -93,6 +93,12 @@ function Sidebar() {
       {
         display: "hidden"
       },
+    {
+      icon: <ScheduleOutlined style={{ fontSize: "16px" }} />,
+      title: 'Quầy',
+      to: "/station",
+
+    },
     {
       icon: <SettingOutlined style={{ fontSize: "16px" }} />,
       title: strSidebar.Setting,
