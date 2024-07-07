@@ -24,6 +24,8 @@ import rewardallSlice from '../Features/Customer/rewardallSlice';
 import promotionReducer from '../Features/Promotion/promotionallSlice';
 import itemImageReducer from '../Features/product/itemImageSlice';
 import imageUploadReducer from '../Features/product/imageUploadSlice';
+import itemImageDetailReducer from '../Features/product/itemImageDetailSlice';
+import rewardDetailReducer from '../Features/Customer/rewardDetailSlice';
 const store = configureStore({
   reducer: {
     product: productReducer,
@@ -50,6 +52,8 @@ const store = configureStore({
     userEdit: userEditReducer,
     promotions: promotionReducer,
     imageUpload: imageUploadReducer,
+    itemImageDetail: itemImageDetailReducer,
+    rewards: rewardDetailReducer
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });
