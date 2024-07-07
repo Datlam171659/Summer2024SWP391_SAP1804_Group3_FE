@@ -3,11 +3,18 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotalQuantity, cartTotalAmount }, ref) => {
-    const buyGold24k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold24k);
-    const buyGold18k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold18k);
-    const buyGold14k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold14k);
-    const buyGold10k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold10k);
-
+    const buyGold24k = useSelector(
+        (state) => state.goldPrice.sellPrice[0]?.sellGold24k
+      );
+      const buyGold18k = useSelector(
+        (state) => state.goldPrice.sellPrice[0]?.sellGold18k
+      );
+      const buyGold14k = useSelector(
+        (state) => state.goldPrice.sellPrice[0]?.sellGold14k
+      );
+      const buyGold10k = useSelector(
+        (state) => state.goldPrice.sellPrice[0]?.sellGold10k
+      );
     function getDate() {
         const today = new Date();
         const month = today.getMonth() + 1;
@@ -67,7 +74,7 @@ const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotal
             width: 100,
             render: (_, record) => (
                 <div className="flex items-center">
-                    <span className="mx-2">{record.quantity}</span>
+                    <span className="mx-2">{record.itemQuantity}</span>
                 </div>
             ),
         },
@@ -112,7 +119,7 @@ const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotal
                         kara = 0;
                 }
 
-                const totalPrice = record.weight * record.quantity * kara;
+                const totalPrice = record.weight * record.itemQuantity * kara;
                 return `${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
             },
         }

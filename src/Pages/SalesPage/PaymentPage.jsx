@@ -20,10 +20,18 @@ const PaymentPage = () => {
   const cartItems = useSelector((state) => state.cart.cartItems);
   const customerData = useSelector((state) => state.customer.customerData);
   const isLoading = useSelector((state) => state.customer.isLoading);
-  const buyGold24k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold24k);
-  const buyGold18k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold18k);
-  const buyGold14k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold14k);
-  const buyGold10k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold10k);
+  const buyGold24k = useSelector(
+    (state) => state.goldPrice.sellPrice[0]?.sellGold24k
+  );
+  const buyGold18k = useSelector(
+    (state) => state.goldPrice.sellPrice[0]?.sellGold18k
+  );
+  const buyGold14k = useSelector(
+    (state) => state.goldPrice.sellPrice[0]?.sellGold14k
+  );
+  const buyGold10k = useSelector(
+    (state) => state.goldPrice.sellPrice[0]?.sellGold10k
+  );
   const cartTotalAmount = useSelector((state) => state.cart.cartTotalAmount);
   const cartTotalQuantity = useSelector((state) => state.cart.cartTotalQuantity);
   const customerInfor = useSelector((state) => state.cart.customerInfor);
@@ -68,7 +76,7 @@ const PaymentPage = () => {
     const qrLink = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-${MY_BANK.TEMPLATE}.png?amount=${cartTotalAmount}`;
     setQrCode(qrLink);
   }, [cartTotalAmount]);
-
+  console.log("check cart item",cartItems)
   useEffect(() => {
     dispatch(fetchCustomerData());
     setPpointsTotal(calculatePoints(cartTotalAmount));
