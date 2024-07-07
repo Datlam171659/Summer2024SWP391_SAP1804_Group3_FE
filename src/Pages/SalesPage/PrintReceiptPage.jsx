@@ -65,6 +65,7 @@ function PrintReceiptPage() {
           cartItems={cartItems}
         />
       </div>
+      {console.log("Check cart",cartItems)}
     </ConfigProvider>
   );
 }
