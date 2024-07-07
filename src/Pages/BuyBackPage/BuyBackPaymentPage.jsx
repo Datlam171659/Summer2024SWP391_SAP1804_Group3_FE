@@ -123,7 +123,7 @@ const BuyBackPaymentPage = () => {
     if (customerInfor.length === 0) {
       message.error("Vui lòng nhập đầy đủ thông tin khách hàng trước khi xác nhận.");
     } else {
-      navigate("/buy-back-page/Payment");
+      navigate("/buy-back-page/Payment/PrintReceiptPage");
     }
   };
 
