@@ -21,6 +21,7 @@ import { requestPromotionCus } from "../../Features/Promotion/promotionSlice";
 import { fetchPromotions } from "../../Features/Promotion/promotionallSlice";
 import { fetchRewardAll } from "../../Features/Customer/rewardallSlice";
 import { fetchItemImages } from "../../Features/product/itemImageSlice";
+import { fetchRewardDetail } from '../../Features/Customer/rewardDetailSlice';
 const ProductList = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -78,13 +79,13 @@ const ProductList = () => {
   const promotions = useSelector((state) => state.promotions.promotions);
   const [promotionDataSelect, setPromotionDataSelect] = useState("");
   const [promotionPercentage, setPromotionPercentage] = useState(0);
+  const { rewardDetail: rewards, isrewardetailError, loading: isrewardLoading } = useSelector(state => state.rewards);
   const currencyFormatter = new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
   });
   useEffect(() => {
     dispatch(fetchPromotions());
-    dispatch(fetchRewardAll());
     dispatch(fetchItemImages());
   }, [dispatch]);
   const calculateRewardLevel = (points) => {
@@ -209,6 +210,7 @@ const ProductList = () => {
     if (foundCustomer) {
       setSearchedCustomer(foundCustomer);
       dispatch(updateCustomerInfo(foundCustomer));
+      dispatch(fetchRewardDetail(foundCustomer.id));
     } else {
       message.warning("Không tìm thấy khách hàng với số điện thoại này");
     }
@@ -560,27 +562,21 @@ console.log(filteredProducts)
                   <Spin className="ml-[100px]" />
                 ) : (
                   searchedCustomer && (
-                    <div className="customer-details ml-[100px]">
-                      <p>
+                    <div className="customer-details ml-[0]">
+                      <p className='my-3 text-xl'>
                         <strong>Tên:</strong> {searchedCustomer.customerName}
                       </p>
-                      <p>
+                      <p className='my-3 text-xl'>
                         <strong>Địa chỉ:</strong> {searchedCustomer.address}
                       </p>
-                      <p>
+                      <p className='my-3 text-xl'>
                         <strong>Giới tính:</strong> {searchedCustomer.gender}
                       </p>
-                      <p>
+                      <p className='my-3 text-xl'>
                         <strong>Email:</strong> {searchedCustomer.email}
                       </p>
-                      {customerRewards.map((reward) => (
-                        <strong key={reward.id} className="text-xl mt-5">
-                          {console.log(reward.pointsTotal)}
-                          {customerInfor && customerInfor.customerName}:{" "}
-                          {reward.pointsTotal} điểm (
-                          {calculateRewardLevel(reward.pointsTotal)})
-                        </strong>
-                      ))}
+                      <p className='my-3 text-xl'> <strong>Điểm :</strong> {rewards.pointsTotal}</p>
+                      <p className='my-3 text-xl'><strong>Hạng của khách hàng là:</strong>{calculateRewardLevel(rewards.pointsTotal)}</p>
                     </div>
                   )
                 )}

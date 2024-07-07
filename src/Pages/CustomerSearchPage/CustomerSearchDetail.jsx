@@ -5,6 +5,7 @@ import { fetchCustomerDetail } from '../../Features/Customer/CustomerdetailSlice
 import { fetchAllInvoice } from '../../Features/Invoice/fullinvoiceSlice';
 import { fetchRewardAll } from '../../Features/Customer/rewardallSlice';
 import { Tabs, Table, Button } from 'antd';
+import { fetchRewardDetail } from '../../Features/Customer/rewardDetailSlice';
 import { UserOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import moment from 'moment';
 import 'moment/locale/vi';
@@ -13,6 +14,7 @@ function CustomerSearchDetail() {
   const dispatch = useDispatch();
   const { id } = useParams();
   const { customerDataDetail: customer, isError, loading: customerLoading } = useSelector(state => state.customerDetail);
+  const { rewardDetail: rewards, isrewardetailError, loading: isrewardLoading } = useSelector(state => state.rewards);
   const { allInvoice, loading: invoicesLoading } = useSelector(state => state.invoicefull);
   const { rewardsallData, loading: rewardsLoading } = useSelector(state => state.rewardsAll);
   const navigate = useNavigate();
@@ -23,6 +25,7 @@ function CustomerSearchDetail() {
   useEffect(() => {
     if (id) {
       dispatch(fetchCustomerDetail(id));
+      dispatch(fetchRewardDetail(id));
     }
   }, [dispatch, id]);
 
@@ -97,16 +100,8 @@ console.log(customerRewards)
           ) : hasRewards ? (
             <div>
               <h2 className='text-2xl font-bold'>Điểm của khách hàng</h2>
-              <ul>
-                {customerRewards.map((reward) => (
-                  <li key={reward.id} className='text-xl mt-5'>
-
-{console.log(reward.pointsTotal)}
-                    {customer && customer.customerName}: {reward.pointsTotal} điểm ({calculateRewardLevel(reward.pointsTotal)})
-                  </li>
-                
-                ))}
-              </ul>
+             <p className='my-3 text-xl'> Điểm :{rewards.pointsTotal}</p>
+             <p className='my-3 text-xl'>Hạng của khách hàng là:{calculateRewardLevel(rewards.pointsTotal)}</p>
             </div>
           ) : (
             <p>Bạn chưa có điểm. Hãy mua hàng để tích điểm!</p>

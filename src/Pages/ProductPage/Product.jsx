@@ -338,6 +338,20 @@ function Product() {
             <Input />
           </Form.Item>
           <Form.Item
+            name="itemId"
+            label="Mã sản phẩm"
+            rules={[{ required: true, message: "Vui lòng nhập mã sản phẩm" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="accessoryType"
+            label="Loại hàng"
+            rules={[{ required: true, message: "Vui lòng nhập loại hàng" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
             label="Mô tả"
             name="description"
             rules={[{ required: true, message: "Vui lòng nhập mô tả sản phẩm!" }]}
@@ -388,6 +402,13 @@ function Product() {
             name="itemId"
             label="Mã sản phẩm"
             rules={[{ required: true, message: "Vui lòng nhập mã sản phẩm" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="accessoryType"
+            label="Loại hàng"
+            rules={[{ required: true, message: "Vui lòng nhập loại hàng" }]}
           >
             <Input />
           </Form.Item>
