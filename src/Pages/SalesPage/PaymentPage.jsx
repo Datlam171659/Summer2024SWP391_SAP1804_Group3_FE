@@ -232,11 +232,6 @@ const PaymentPage = () => {
       await dispatch(createInvoiceWithItems(invoiceData)).unwrap();
       await dispatch(addWarranty(customerId)).unwrap();
       await dispatch(rewardCustomer({ customerId, addPoints })).unwrap();
-      
-      for (const item of cartItems) {
-        await dispatch(reduceItemQuantity({ itemId: item.itemId, quantity: item.itemQuantity })).unwrap();
-      }
-  
       const cartItemsDetails = cartItems.map((item, index) => {
         let goldType = "";
         if (item.itemName.toLowerCase().includes("10k")) {
