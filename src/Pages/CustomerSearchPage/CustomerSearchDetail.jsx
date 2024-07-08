@@ -102,26 +102,6 @@ function CustomerSearchDetail() {
       dataIndex: 'accessoryType',
       key: 'accessoryType',
     },
-    {
-      title: 'Số lượng',
-      dataIndex: 'quantity',
-      key: 'quantity',
-    },
-    {
-      title: 'Trọng lượng',
-      dataIndex: 'weight',
-      key: 'weight',
-    },
-    {
-      title: 'Mô tả',
-      dataIndex: 'description',
-      key: 'description',
-    },
-    {
-      title: 'Trạng thái',
-      dataIndex: 'status',
-      key: 'status',
-    },
   ];
 
   const calculateRewardLevel = (points) => {
