@@ -80,7 +80,9 @@ function CustomerSearchDetail() {
       title: 'Ngày tạo',
       dataIndex: 'createdDate',
       key: 'createdDate',
-      render: (date) => <span>{moment(date).format('DD-MM-YYYY')}</span>
+      render: (date) => <span>{moment(date).format('DD-MM-YYYY')}</span>,
+      sorter: (a, b) => moment(a.createdDate).unix() - moment(b.createdDate).unix(),
+      defaultSortOrder: 'descend',
     },
   ];
 
@@ -231,7 +233,7 @@ function CustomerSearchDetail() {
         </div>
       </div>
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
-      <Modal title="Chi tiết hóa đơn" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} className='w-[1000px] ml-[500px]'>
+      <Modal title="Chi tiết hóa đơn" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} className='w-[1500px] ml-[500px]'>
         {loading ? (
           <p>Loading...</p>
         ) : invoiceIdDetail && invoiceIdDetail.data ? (
