@@ -115,7 +115,7 @@ export default function UserManagePage() {
       .then((values) => {
         const newUser = {
           roleId: values.role,
-          stationId: null,
+          stationId: "01",
           fullName: values.fullName,
           userName: values.email,
           passwordHash: values.passwordHash,
