@@ -94,16 +94,15 @@ function CustomerSearchDetail() {
     },
     {
       title: 'Tên sản phẩm',
-      dataIndex: 'itemName',
+      dataIndex: ['item', 'itemName'],
       key: 'itemName',
     },
     {
       title: 'Loại phụ kiện',
-      dataIndex: 'accessoryType',
+      dataIndex: ['item', 'accessoryType'],
       key: 'accessoryType',
     },
   ];
-
   const calculateRewardLevel = (points) => {
     if (points >= 1000) return 'Vũ Trụ';
     if (points >= 100) return 'Kim Cương';
