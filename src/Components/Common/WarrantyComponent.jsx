@@ -79,11 +79,14 @@ const WarrantyComponent = React.forwardRef(({cartItems, customerInfor }, ref) =>
                 const itemName = record.itemName ? record.itemName : '';
                 let warrantyMessage = 'Không bảo hành';
          
-                if (itemName.includes('Vàng')) {
+                if (itemName.includes('14k')||itemName.includes('14K')) {
                     warrantyMessage = 'Bảo hành 10 tháng';
-                } else if (itemName.includes('kim cương')) {
+                } else if (itemName.includes('18k')||itemName.includes('18K')) {
                     warrantyMessage = 'Bảo hành 1 năm';
                 }
+                 else if (itemName.includes('24k')||itemName.includes('24K')) {
+                warrantyMessage = 'Bảo hành 2 năm';
+            }
         
                 return (
                     <div className="flex items-center">

@@ -729,7 +729,7 @@ console.log(filteredProducts)
           <Input
       value={productIdInput}
       onChange={handleProductIdChange}
-      placeholder="Enter product ID"
+      placeholder="Nhập mã sản phẩm"
       className="w-[130px] mb-2"
     />
     <Button

@@ -13,7 +13,7 @@ function PrintReceiptPage() {
   const handleReset = () => {
     setTimeout(() => {
       dispatch(resetCart());
-    }, 3000); 
+    }, ); 
   };
 
   const cartItems = useSelector((state) => state.cart.cartItems);
