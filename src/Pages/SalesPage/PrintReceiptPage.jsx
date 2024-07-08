@@ -11,7 +11,9 @@ import { useLocation } from "react-router-dom";
 function PrintReceiptPage() {
   const dispatch = useDispatch();
   const handleReset = () => {
-    dispatch(resetCart());
+    setTimeout(() => {
+      dispatch(resetCart());
+    }, 3000); 
   };
 
   const cartItems = useSelector((state) => state.cart.cartItems);
