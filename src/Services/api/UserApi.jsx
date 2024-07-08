@@ -40,6 +40,20 @@ const userkApi = {
         throw error;
       });
   },
+  hashPassword: (password) => {
+    return axiosClient.post(`/api/Employee/HashPassword?password=${password}`)
+      .then(response => {
+        if (response.data.success) {
+          return response.data.data;
+        } else {
+          throw new Error(response.data.message);
+        }
+      })
+      .catch(error => {
+        console.error("There was an error hashing the password!", error);
+        throw error;
+      });
+  },
 };
 
 

@@ -32,8 +32,8 @@ const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotal
         },
         {
             title: "Mã Hàng",
-            dataIndex: "serialNumber",
-            key: "serialNumber",
+            dataIndex: "itemId",
+            key: "itemId",
             width: 120,
         },
         {

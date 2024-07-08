@@ -223,8 +223,8 @@ const ProductListBuyBack = () => {
     },
     {
       title: "Mã Hàng",
-      dataIndex: "serialNumber",
-      key: "serialNumber",
+      dataIndex: "itemId",
+      key: "itemId",
       width: 120,
     },
     {
@@ -346,8 +346,8 @@ const ProductListBuyBack = () => {
     },
     {
       title: "Mã Hàng",
-      dataIndex: "serialNumber",
-      key: "serialNumber",
+      dataIndex: "itemId",
+      key: "itemId",
       width: 120,
     },
     {
