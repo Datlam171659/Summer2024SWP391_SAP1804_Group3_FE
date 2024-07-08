@@ -369,17 +369,10 @@ function Product() {
             <InputNumber min={1} />
           </Form.Item>
           <Form.Item
-            label="Upload ảnh"
+            label="Upload ảnh mới"
             name="imageUpload"
-            rules={[{ required: true, message: "Vui lòng upload ảnh sản phẩm!" }]}
           >
             <Input type="file" accept="image/*" onChange={handleFileChange} />
-            {selectedFiles && (
-              <div>
-                <p>{selectedFiles.name}</p>
-                <button onClick={removeSelectedFile}>Remove</button>
-              </div>
-            )}
           </Form.Item>
         </Form>
       </Modal>
