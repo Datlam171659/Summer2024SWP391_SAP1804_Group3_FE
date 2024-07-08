@@ -278,9 +278,11 @@ function Product() {
   useEffect(() => {
     dispatch(fetchProductData());
   }, [dispatch]);
-
   useEffect(() => {
-    setFilteredData(productData);
+    if (productData) {
+      const filteredProducts = productData.filter(product => !product.isBuyBack);
+      setFilteredData(filteredProducts);
+    }
   }, [productData]);
 
   return (
