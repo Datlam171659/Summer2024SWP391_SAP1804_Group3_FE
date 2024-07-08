@@ -133,6 +133,7 @@ const BuyBackPaymentPage = () => {
     setCustomerGender("");
     setPhoneNumber("");
     setCustomerEmail("");
+    setSearchedCustomer(null)
     dispatch(updateCustomerInfo([]));
   };
 
@@ -161,8 +162,8 @@ const BuyBackPaymentPage = () => {
     },
     {
       title: "Mã Hàng",
-      dataIndex: "serialNumber",
-      key: "serialNumber",
+      dataIndex: "itemId",
+      key: "itemId",
       width: 120,
     },
     {

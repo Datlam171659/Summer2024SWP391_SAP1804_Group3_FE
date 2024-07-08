@@ -42,9 +42,9 @@ const buyBackApi = {
       });
   },
   getInvoice: (id) => {
-    return axiosClient.get(`/api/Sales/InvoiceItems?invoiceID=${id}`)
+    return axiosClient.get(`/api/Sales/InvoiceItems/${id}`)
       .then(response => {
-        return response.data;
+        return response.data.data;
       })
       .catch(error => {
         console.error("There was an error fetching the invoice!", error);
