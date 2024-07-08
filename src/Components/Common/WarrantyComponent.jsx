@@ -88,6 +88,10 @@ const WarrantyComponent = React.forwardRef(({cartItems, customerInfor }, ref) =>
                 warrantyMessage = 'Bảo hành 2 năm';
             }
         
+                 else if (itemName.includes('10k')||itemName.includes('10K')) {
+                warrantyMessage = 'Bảo hành 6 tháng';
+            }
+        
                 return (
                     <div className="flex items-center">
                         {warrantyMessage}

@@ -207,7 +207,6 @@ const PaymentPage = () => {
     const companyName = "SWJ";
     const status = "Active";
     const now = new Date().toISOString(); 
-  
     const invoiceData = {
       staffId: staffId,
       customerId,
@@ -220,13 +219,49 @@ const PaymentPage = () => {
       quantity: cartTotalQuantity,
       subtotal: cartTotalAmount,
       createdDate: now,
-      items: cartItems.map(item => ({
-        itemID: item.itemId,
-        itemQuantity: item.itemQuantity,
-        warrantyExpiryDate: now,
-        returnPolicyId: returnPolicyId
-      })),
+      items: cartItems.map(item => {
+        let goldType = "";
+        if (item.itemName.toLowerCase().includes("10k")) {
+          goldType = "10K";
+        } else if (item.itemName.toLowerCase().includes("14k")) {
+          goldType = "14K";
+        } else if (item.itemName.toLowerCase().includes("18k")) {
+          goldType = "18K";
+        } else if (item.itemName.toLowerCase().includes("24k")) {
+          goldType = "24K";
+        }
+    
+        let warrantyExpiryDate;
+        switch (goldType) {
+          case "10K":
+            warrantyExpiryDate = new Date(now);
+            warrantyExpiryDate.setMonth(warrantyExpiryDate.getMonth() + 6); // 6 months for 10K
+            break;
+          case "14K":
+            warrantyExpiryDate = new Date(now);
+            warrantyExpiryDate.setMonth(warrantyExpiryDate.getMonth() + 10); // 10 months for 14K
+            break;
+          case "18K":
+            warrantyExpiryDate = new Date(now);
+            warrantyExpiryDate.setFullYear(warrantyExpiryDate.getFullYear() + 1); // 1 year for 18K
+            break;
+          case "24K":
+            warrantyExpiryDate = new Date(now);
+            warrantyExpiryDate.setFullYear(warrantyExpiryDate.getFullYear() + 2); // 2 years for 24K
+            break;
+          default:
+            warrantyExpiryDate = new Date(now); // Default to current date if no match
+        }
+    
+        return {
+          itemID: item.itemId,
+          itemQuantity: item.itemQuantity,
+          warrantyExpiryDate: warrantyExpiryDate,
+          returnPolicyId: returnPolicyId
+        };
+      }),
     };
+    
     
     try {
       await dispatch(createInvoiceWithItems(invoiceData)).unwrap();
