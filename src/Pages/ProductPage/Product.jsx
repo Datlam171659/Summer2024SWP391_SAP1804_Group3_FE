@@ -98,7 +98,7 @@ function Product() {
       .then((values) => {
         const productData = {
           ...values,
-          isBuyBack:"0",
+          isBuyBack:false,
           itemImagesId: imageUrl, // Use the uploaded image URL
         };
         dispatch(addProduct(productData))
