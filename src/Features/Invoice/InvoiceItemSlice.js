@@ -8,6 +8,7 @@ export const createInvoiceWithItems = createAsyncThunk(
       const response = await createInvoice(
         invoiceData.staffId,
         invoiceData.customerId,
+        invoiceData.invoiceNumber,
         invoiceData.companyName,
         invoiceData.buyerName,
         invoiceData.buyerAddress,

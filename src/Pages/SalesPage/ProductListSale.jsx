@@ -457,7 +457,7 @@ console.log(filteredProducts)
           <div className="product-grid flex align-middle justify-center text-center"> 
             {filteredProducts.filter(
       (product) =>
-        product.status === "trong kho"
+        product.quantity >0
     ).map((product) => (
               <div key={product.itemId} className="product-card">
                  <img
@@ -468,6 +468,7 @@ console.log(filteredProducts)
                   alt={product.itemName}
                 />
                 <h3 className="product-name">{product.itemName}</h3>
+                <p>Số lượng: {product.quantity}</p>
                 <p>
               Giá:{" "}
               {currencyFormatter.format(
@@ -577,7 +578,7 @@ console.log(filteredProducts)
                       </p>
                       <p className='my-3 text-xl'> <strong>Điểm :</strong> {rewards.pointsTotal}</p>
                       <p className='my-3 text-xl'><strong>Hạng của khách hàng là:</strong>{calculateRewardLevel(rewards.pointsTotal)}</p>
-                    </div>
+                     </div>
                   )
                 )}
               </div>
