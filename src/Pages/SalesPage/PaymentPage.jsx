@@ -179,7 +179,16 @@ const PaymentPage = () => {
       message.error(`Có lỗi xảy ra: ${error.message}`);
     }
   };
-
+  const generateInvoiceNumber = () => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let invoiceNumber = '';
+    for (let i = 0; i < 8; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      invoiceNumber += characters[randomIndex];
+    }
+    return invoiceNumber;
+  };
+  
   const handleCancel = () => {
     setCustomerName("");
     setCustomerAddress("");
@@ -192,6 +201,7 @@ const PaymentPage = () => {
 
   const handleConfirm = async () => {
     const customerId = customerType === 'member' ? searchedCustomer.id : customerInfor.id;
+    const invoiceNumber = generateInvoiceNumber();
     const staffId = localStorage.getItem("nameid");
     const returnPolicyId = "1";
     const companyName = "SWJ";
@@ -201,6 +211,7 @@ const PaymentPage = () => {
     const invoiceData = {
       staffId: staffId,
       customerId,
+      invoiceNumber,
       companyName: companyName,
       buyerName: customerInfor.customerName,
       buyerAddress: customerInfor.address,
@@ -216,16 +227,16 @@ const PaymentPage = () => {
         returnPolicyId: returnPolicyId
       })),
     };
+    
     try {
       await dispatch(createInvoiceWithItems(invoiceData)).unwrap();
       await dispatch(addWarranty(customerId)).unwrap();
       await dispatch(rewardCustomer({ customerId, addPoints })).unwrap();
       
-      
       for (const item of cartItems) {
         await dispatch(reduceItemQuantity({ itemId: item.itemId, quantity: item.itemQuantity })).unwrap();
       }
-
+  
       const cartItemsDetails = cartItems.map((item, index) => {
         let goldType = "";
         if (item.itemName.toLowerCase().includes("10k")) {
@@ -237,7 +248,7 @@ const PaymentPage = () => {
         } else if (item.itemName.toLowerCase().includes("24k")) {
           goldType = "24K";
         }
-      
+  
         let kara;
         switch (goldType) {
           case "10K": kara = buyGold10k; break;
@@ -246,14 +257,15 @@ const PaymentPage = () => {
           case "24K": kara = buyGold24k; break;
           default: kara = 0;
         }
-      
+  
         const totalPrice = item.weight * item.itemQuantity * kara;
         return `${index + 1}. Serial Number: ${item.serialNumber}, Giá: ${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
       }).join("\n");
-      
+  
       const templateParams = {
         to_email: customerInfor.email,
         customerName: customerInfor.customerName, 
+        invoiceNumber,
         buyerAddress: customerInfor.address,
         email: customerInfor.email,
         phoneNumber: customerInfor.phoneNumber,
@@ -262,13 +274,16 @@ const PaymentPage = () => {
         cartTotalAmount: cartTotalAmount.toLocaleString(),
         cartItemsDetails,
       };
-
+  
       emailjs.send('service_w6685q7', 'template_4ih77go', templateParams, 'aRYuyBmKOYvAYpoIL')
       .then((response) => {
         message.success("Tạo hóa đơn và gửi email thành công!");
       }, (err) => {
         message.error("Gửi email thất bại.");
       });
+  
+      navigate('/sales-page/Payment/PrintReceiptPage', { state: { invoiceNumber } });
+  
     } catch (error) {
       message.error(`Tạo hóa đơn thất bại: ${error.message}`);
     }

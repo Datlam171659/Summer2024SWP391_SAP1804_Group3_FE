@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import { resetCart } from "../../Features/product/cartSlice";
 import InvoiceComponent from "../../Components/Common/InvoiceComponent";
 import WarrantyComponent from "../../Components/Common/WarrantyComponent";
-
+import { useLocation } from "react-router-dom";
 function PrintReceiptPage() {
   const dispatch = useDispatch();
   const handleReset = () => {
@@ -20,7 +20,8 @@ function PrintReceiptPage() {
   const cartTotalAmount = useSelector((state) => state.cart.cartTotalAmount);
   const invoiceComponentRef = useRef();
   const warrantyComponentRef = useRef();
-
+  const location = useLocation();
+  const invoiceNumber = location.state?.invoiceNumber || '';
   return (
     <ConfigProvider
       theme={{
@@ -52,13 +53,14 @@ function PrintReceiptPage() {
         </div>
       </div>
       <div className="hidden">
-        <InvoiceComponent
-          ref={invoiceComponentRef}
-          cartItems={cartItems}
-          customerInfor={customerInfor}
-          cartTotalQuantity={cartTotalQuantity}
-          cartTotalAmount={cartTotalAmount}
-        />
+      <InvoiceComponent
+  ref={invoiceComponentRef}
+  cartItems={cartItems}
+  customerInfor={customerInfor}
+  cartTotalQuantity={cartTotalQuantity}
+  cartTotalAmount={cartTotalAmount}
+  invoiceNumber={invoiceNumber} 
+/>
         <WarrantyComponent
           ref={warrantyComponentRef}
           customerInfor={customerInfor}

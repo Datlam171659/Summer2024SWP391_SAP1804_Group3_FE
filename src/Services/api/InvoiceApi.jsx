@@ -28,6 +28,7 @@ const addinvoice = (
 const createInvoice = (
   staffId,
   customerId,
+  invoiceNumber,
   companyName,
   buyerName,
   buyerAddress,
@@ -42,6 +43,7 @@ const createInvoice = (
     invoiceDTO: {
       staffId,
       customerId,
+      invoiceNumber,
       companyName,
       buyerName,
       buyerAddress,

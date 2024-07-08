@@ -2,7 +2,7 @@ import { Table } from 'antd';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotalQuantity, cartTotalAmount }, ref) => {
+const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotalQuantity, cartTotalAmount,invoiceNumber }, ref) => {
     const buyGold24k = useSelector(
         (state) => state.goldPrice.sellPrice[0]?.sellGold24k
       );
@@ -124,10 +124,10 @@ const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotal
             },
         }
     ];
-
     return (
         <div ref={ref} className="p-8">
             <h2 className="text-2xl font-bold text-center mb-4">HÓA ĐƠN MUA HÀNG</h2>
+            <p className="text-sm font-semibold">Mã hóa đơn :{invoiceNumber}</p>
             <ul className="text-base mb-2">
                 <li className="text-sm font-semibold">Khách hàng: {customerInfor.customerName}</li>
                 <li className="text-sm font-semibold">Email: {customerInfor.email}</li>
