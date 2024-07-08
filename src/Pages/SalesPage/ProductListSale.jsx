@@ -22,6 +22,7 @@ import { fetchPromotions } from "../../Features/Promotion/promotionallSlice";
 import { fetchRewardAll } from "../../Features/Customer/rewardallSlice";
 import { fetchItemImages } from "../../Features/product/itemImageSlice";
 import { fetchRewardDetail } from '../../Features/Customer/rewardDetailSlice';
+
 const ProductList = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -84,6 +85,8 @@ const ProductList = () => {
     style: "currency",
     currency: "VND",
   });
+  const messageTimeout = 3000;
+  let lastMessageTime = null;
   useEffect(() => {
     dispatch(fetchPromotions());
     dispatch(fetchItemImages());
@@ -103,6 +106,7 @@ const ProductList = () => {
       : [];
   const hasRewards = customerRewards.length > 0;
   console.log(customerRewards);
+
   useEffect(() => {
     const cartTotalQuantity = cartItems.reduce(
       (acc, item) => acc + item.itemQuantity,
@@ -158,17 +162,26 @@ const ProductList = () => {
     setProductIdInput(e.target.value);
   };
   console.log(productIdInput)
-  const handleAddToCart = () => {
-    const product = productData.find(
-      (product) => product.itemId === productIdInput
-    );
-    if (product) {
-      dispatch(addItem(product));
-      message.success("Sản phẩm đã được thêm vào giỏ hàng");
-    } else {
-      message.error("Không tìm thấy sản phẩm!");
+
+  const showMessageError = (messageText) => {
+    const now = Date.now();
+    if (!lastMessageTime || now - lastMessageTime > messageTimeout) {
+      message.error(messageText);
+      lastMessageTime = now;
     }
   };
+
+  const handleAddToCart = (product) => {
+    const existingItem = cartItems.find((item) => item.itemId === product.itemId);
+    if (existingItem && existingItem.itemQuantity >= product.quantity) {
+      showMessageError(`Bạn đã đạt số lượng tối đa cho sản phẩm ${product.itemName}`);
+      return;
+    }
+    dispatch(addItem(product));
+    message.success("Sản phẩm đã được thêm vào giỏ hàng");
+  };
+  
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     switch (name) {
@@ -415,10 +428,26 @@ console.log(filteredProducts)
   };
 
   const handleIncrement = (itemId) => {
+    const item = cartItems.find((item) => item.itemId === itemId);
+    if (!item) {
+      return; 
+    }
+    if (item.itemQuantity >= item.quantity) {
+      showMessageError(`Bạn đã đạt số lượng tối đa cho sản phẩm ${item.itemName}`);
+      return;
+    }
     dispatch(incrementQuantity(itemId));
   };
-
+  
   const handleDecrement = (itemId) => {
+    const item = cartItems.find((item) => item.itemId === itemId);
+    if (!item) {
+      return;
+    }
+    if (item.itemQuantity <= 1) {
+      showMessageError(`Số lượng không thể nhỏ hơn 1 cho sản phẩm ${item.itemName}`);
+      return;
+    }
     dispatch(decrementQuantity(itemId));
   };
 
@@ -485,7 +514,7 @@ console.log(filteredProducts)
             </p>
                 <Button
                   type="primary"
-                  onClick={() => dispatch(addItem(product))}
+                  onClick={() => handleAddToCart(product)}
                   className="add-to-cart-btn"
                 >
                   Thêm vào giỏ hàng
@@ -576,9 +605,11 @@ console.log(filteredProducts)
                       <p className='my-3 text-xl'>
                         <strong>Email:</strong> {searchedCustomer.email}
                       </p>
-                      <p className='my-3 text-xl'> <strong>Điểm :</strong> {rewards.pointsTotal}</p>
-                      <p className='my-3 text-xl'><strong>Hạng của khách hàng là:</strong>{calculateRewardLevel(rewards.pointsTotal)}</p>
-                     </div>
+                        <strong>Điểm :</strong> {rewards ? rewards.pointsTotal : 'N/A'}
+                      <p className='my-3 text-xl'>
+                        <strong>Hạng của khách hàng là:</strong> {rewards ? calculateRewardLevel(rewards.pointsTotal) : 'N/A'}
+                      </p>
+                    </div>
                   )
                 )}
               </div>

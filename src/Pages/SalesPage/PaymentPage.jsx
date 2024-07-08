@@ -44,7 +44,7 @@ const PaymentPage = () => {
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerGender, setCustomerGender] = useState("Nam");
   const [customerAddress, setCustomerAddress] = useState("");
-  const [paymentType, setPaymentType] = useState("");
+  const [paymentType, setPaymentType] = useState("Tiền mặt");
   const [addPoints, setPpointsTotal] = useState(0);
   const [customerInfo, setCustomerInfo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -252,9 +252,10 @@ const PaymentPage = () => {
           case "24K": kara = buyGold24k; break;
           default: kara = 0;
         }
-  
+
+        const itemPrice = item.weight * kara;
         const totalPrice = item.weight * item.itemQuantity * kara;
-        return `${index + 1}. Serial Number: ${item.serialNumber}, Giá: ${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
+        return `${index + 1}. Tên sản phẩm: ${item.itemName},Serial Number: ${item.serialNumber}, Giá: ${Number(itemPrice.toFixed(0)).toLocaleString()}đ, Số Lượng: ${item.itemQuantity}, Tổng: ${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
       }).join("\n");
   
       const templateParams = {
@@ -269,7 +270,7 @@ const PaymentPage = () => {
         cartTotalAmount: cartTotalAmount.toLocaleString(),
         cartItemsDetails,
       };
-  
+
       emailjs.send('service_w6685q7', 'template_4ih77go', templateParams, 'aRYuyBmKOYvAYpoIL')
       .then((response) => {
         message.success("Tạo hóa đơn và gửi email thành công!");
@@ -278,7 +279,6 @@ const PaymentPage = () => {
       });
   
       navigate('/sales-page/Payment/PrintReceiptPage', { state: { invoiceNumber } });
-  
     } catch (error) {
       message.error(`Tạo hóa đơn thất bại: ${error.message}`);
     }
@@ -474,8 +474,11 @@ const PaymentPage = () => {
             </div>
           </div>
         </div>
-        <Modal open={isModalOpen} onOk={handleOkPay} onCancel={handleCancelPay}>
-          <img src={qrCode} alt="QR Code"/>
+          <Modal title="Thanh toán chuyển khoản" 
+              visible={isModalOpen} 
+              onOk={handleOkPay} 
+              onCancel={handleCancelPay}>
+              <img src={qrCode} alt="QR Code" />
         </Modal>
       </div>
     </div>
