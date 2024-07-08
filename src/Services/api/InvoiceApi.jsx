@@ -74,4 +74,10 @@ const getinvoiceAll = () => {
 const GetMonthlyRevenue = () => {
   return axios.get(`/api/Sales/MonthlyRevenue`, {});
 }
-export { addinvoice,getinvoiceAll, GetMonthlyRevenue,createInvoice };
+const GetInvoicewithId = (id) => {
+  return axios.get(`/api/Sales/InvoiceItems/${id}`, {});
+}
+const GetinvoiceWithserailnumber = (invoiceNumber) => {
+  return axios.get(`/api/Sales/Invoice/ByNumber/${invoiceNumber}`, {});
+}
+export { addinvoice,getinvoiceAll, GetMonthlyRevenue,createInvoice,GetinvoiceWithserailnumber ,GetInvoicewithId };

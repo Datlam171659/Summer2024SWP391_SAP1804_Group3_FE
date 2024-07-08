@@ -26,6 +26,8 @@ import itemImageReducer from '../Features/product/itemImageSlice';
 import imageUploadReducer from '../Features/product/imageUploadSlice';
 import itemImageDetailReducer from '../Features/product/itemImageDetailSlice';
 import rewardDetailReducer from '../Features/Customer/rewardDetailSlice';
+import invoiceByIdReducer from '../Features/Invoice/invoiceByIdSlice';
+import invoiceByNumberReducer from '../Features/Invoice/invoiceByNumberSlice';
 const store = configureStore({
   reducer: {
     product: productReducer,
@@ -53,7 +55,9 @@ const store = configureStore({
     promotions: promotionReducer,
     imageUpload: imageUploadReducer,
     itemImageDetail: itemImageDetailReducer,
-    rewards: rewardDetailReducer
+    rewards: rewardDetailReducer,
+    invoiceById: invoiceByIdReducer,
+    invoiceByNumber: invoiceByNumberReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 });

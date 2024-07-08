@@ -235,11 +235,11 @@ const PaymentPage = () => {
         switch (goldType) {
           case "10K":
             warrantyExpiryDate = new Date(now);
-            warrantyExpiryDate.setMonth(warrantyExpiryDate.getMonth() + 6); // 6 months for 10K
+            warrantyExpiryDate.setMonth(warrantyExpiryDate.getMonth() + 6); 
             break;
           case "14K":
             warrantyExpiryDate = new Date(now);
-            warrantyExpiryDate.setMonth(warrantyExpiryDate.getMonth() + 10); // 10 months for 14K
+            warrantyExpiryDate.setMonth(warrantyExpiryDate.getMonth() + 10); 
             break;
           case "18K":
             warrantyExpiryDate = new Date(now);

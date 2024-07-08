@@ -91,16 +91,14 @@ function Product() {
   };
 
   const handleAddOk = () => {
-    if (!selectedFiles) {
-      message.error("Vui lòng upload ảnh trước khi thêm sản phẩm!");
-      return;
-    }
+ 
 
     form
       .validateFields()
       .then((values) => {
         const productData = {
           ...values,
+          isBuyBack:"0",
           itemImagesId: imageUrl, // Use the uploaded image URL
         };
         dispatch(addProduct(productData))
@@ -109,7 +107,7 @@ function Product() {
             dispatch(fetchProductData());
             form.resetFields();
             setSelectedFiles(null);
-            setImageUrl(""); // Reset imageUrl state
+            setImageUrl(""); 
           })
           .catch((error) => {
             message.error("Thêm sản phẩm thất bại");
