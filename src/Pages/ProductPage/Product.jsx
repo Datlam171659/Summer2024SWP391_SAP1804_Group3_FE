@@ -280,7 +280,7 @@ function Product() {
   }, [dispatch]);
   useEffect(() => {
     if (productData) {
-      const filteredProducts = productData.filter(product => !product.isBuyBack);
+      const filteredProducts = productData.filter(product => !product.isBuyBack && product.status !=="Deleted");
       setFilteredData(filteredProducts);
     }
   }, [productData]);
