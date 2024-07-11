@@ -10,12 +10,11 @@ export const createInvoiceWithItems = createAsyncThunk(
         invoiceData.customerId,
         invoiceData.invoiceNumber,
         invoiceData.companyName,
-        invoiceData.buyerName,
         invoiceData.buyerAddress,
         invoiceData.status,
         invoiceData.paymentType,
         invoiceData.quantity,
-        invoiceData.subtotal,
+        invoiceData.subTotal,
         invoiceData.createdDate,
         invoiceData.items
       )

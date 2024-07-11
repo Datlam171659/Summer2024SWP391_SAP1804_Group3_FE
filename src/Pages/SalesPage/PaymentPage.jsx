@@ -212,12 +212,11 @@ const PaymentPage = () => {
       customerId,
       invoiceNumber,
       companyName: companyName,
-      buyerName: customerInfor.customerName,
       buyerAddress: customerInfor.address,
       status,
       paymentType,
       quantity: cartTotalQuantity,
-      subtotal: cartTotalAmount,
+      subTotal: cartTotalAmount,
       createdDate: now,
       items: cartItems.map(item => {
         let goldType = "";
@@ -252,12 +251,22 @@ const PaymentPage = () => {
           default:
             warrantyExpiryDate = new Date(now); // Default to current date if no match
         }
-    
+        let kara;
+        switch (goldType) {
+          case "10K": kara = buyGold10k; break;
+          case "14K": kara = buyGold14k; break;
+          case "18K": kara = buyGold18k; break;
+          case "24K": kara = buyGold24k; break;
+          default: kara = 0;
+        }
+        const totalPrice = item.weight * item.itemQuantity * kara;
         return {
           itemID: item.itemId,
+          returnPolicyId: returnPolicyId,
           itemQuantity: item.itemQuantity,
           warrantyExpiryDate: warrantyExpiryDate,
-          returnPolicyId: returnPolicyId
+          price:totalPrice,
+          total:totalPrice,
         };
       }),
     };

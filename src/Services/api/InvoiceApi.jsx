@@ -30,34 +30,34 @@ const createInvoice = (
   customerId,
   invoiceNumber,
   companyName,
-  buyerName,
   buyerAddress,
   status,
   paymentType,
   quantity,
-  subtotal,
+  subTotal,
   createdDate,
   items
 ) => {
   return axios.post('/api/Sales/CreateInvoiceWithItems', {
-    invoiceDTO: {
+    invoice: {
       staffId,
       customerId,
       invoiceNumber,
       companyName,
-      buyerName,
       buyerAddress,
       status,
       paymentType,
       quantity,
-      subtotal,
+      subTotal,
       createdDate,
     },
     items: items.map(item => ({
       itemID: item.itemID,
+      returnPolicyId :item.returnPolicyId,
       itemQuantity: item.itemQuantity,
       warrantyExpiryDate: item.warrantyExpiryDate,
-      returnPolicyId :item.returnPolicyId,
+      price:item.price,
+      total:item.total,
     })),
   }, {
     headers: {

@@ -56,12 +56,6 @@ const ProductList = () => {
   const buyGold10k = useSelector(
     (state) => state.goldPrice.sellPrice[0]?.sellGold10k
   );
-  const discountData = useSelector((state) => state.discount.discountData);
-  const isLoadingDiscountData = useSelector(
-    (state) => state.discount.isLoadingDiscountData
-  );
-  const [discountDataSelect, setDiscountDataSelect] = useState("");
-  const [discountPercentage, setDiscountPercentage] = useState(0);
   const customerData = useSelector((state) => state.customer.customerData);
   const isLoading = useSelector((state) => state.customer.isLoading);
   const customerInfor = useSelector((state) => state.cart.customerInfor);
@@ -76,7 +70,6 @@ const ProductList = () => {
   const [discountPct, setDiscountPct] = useState("");
   const [description, setDescription] = useState("");
   const [isDiscountModalVisible, setIsDiscountModalVisible] = useState(false);
-  const [selectedDiscount, setSelectedDiscount] = useState(null);
   const promotions = useSelector((state) => state.promotions.promotions);
   const [promotionDataSelect, setPromotionDataSelect] = useState("");
   const [promotionPercentage, setPromotionPercentage] = useState(0);
