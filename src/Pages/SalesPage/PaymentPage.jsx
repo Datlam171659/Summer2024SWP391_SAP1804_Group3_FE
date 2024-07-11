@@ -207,26 +207,70 @@ const PaymentPage = () => {
     const companyName = "SWJ";
     const status = "Active";
     const now = new Date().toISOString(); 
-  
     const invoiceData = {
       staffId: staffId,
       customerId,
       invoiceNumber,
       companyName: companyName,
-      buyerName: customerInfor.customerName,
       buyerAddress: customerInfor.address,
       status,
       paymentType,
       quantity: cartTotalQuantity,
-      subtotal: cartTotalAmount,
+      subTotal: cartTotalAmount,
       createdDate: now,
-      items: cartItems.map(item => ({
-        itemID: item.itemId,
-        itemQuantity: item.itemQuantity,
-        warrantyExpiryDate: now,
-        returnPolicyId: returnPolicyId
-      })),
+      items: cartItems.map(item => {
+        let goldType = "";
+        if (item.itemName.toLowerCase().includes("10k")) {
+          goldType = "10K";
+        } else if (item.itemName.toLowerCase().includes("14k")) {
+          goldType = "14K";
+        } else if (item.itemName.toLowerCase().includes("18k")) {
+          goldType = "18K";
+        } else if (item.itemName.toLowerCase().includes("24k")) {
+          goldType = "24K";
+        }
+    
+        let warrantyExpiryDate;
+        switch (goldType) {
+          case "10K":
+            warrantyExpiryDate = new Date(now);
+            warrantyExpiryDate.setMonth(warrantyExpiryDate.getMonth() + 6); 
+            break;
+          case "14K":
+            warrantyExpiryDate = new Date(now);
+            warrantyExpiryDate.setMonth(warrantyExpiryDate.getMonth() + 10); 
+            break;
+          case "18K":
+            warrantyExpiryDate = new Date(now);
+            warrantyExpiryDate.setFullYear(warrantyExpiryDate.getFullYear() + 1); // 1 year for 18K
+            break;
+          case "24K":
+            warrantyExpiryDate = new Date(now);
+            warrantyExpiryDate.setFullYear(warrantyExpiryDate.getFullYear() + 2); // 2 years for 24K
+            break;
+          default:
+            warrantyExpiryDate = new Date(now); // Default to current date if no match
+        }
+        let kara;
+        switch (goldType) {
+          case "10K": kara = buyGold10k; break;
+          case "14K": kara = buyGold14k; break;
+          case "18K": kara = buyGold18k; break;
+          case "24K": kara = buyGold24k; break;
+          default: kara = 0;
+        }
+        const totalPrice = item.weight * item.itemQuantity * kara;
+        return {
+          itemID: item.itemId,
+          returnPolicyId: returnPolicyId,
+          itemQuantity: item.itemQuantity,
+          warrantyExpiryDate: warrantyExpiryDate,
+          price:totalPrice,
+          total:totalPrice,
+        };
+      }),
     };
+    
     
     try {
       await dispatch(createInvoiceWithItems(invoiceData)).unwrap();
@@ -303,8 +347,8 @@ const PaymentPage = () => {
     },
     {
       title: "Mã Hàng",
-      dataIndex: "serialNumber",
-      key: "serialNumber",
+      dataIndex: "itemId",
+      key: "itemId",
       width: 120,
     },
     {

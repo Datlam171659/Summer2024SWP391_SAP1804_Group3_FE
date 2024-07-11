@@ -30,34 +30,34 @@ const createInvoice = (
   customerId,
   invoiceNumber,
   companyName,
-  buyerName,
   buyerAddress,
   status,
   paymentType,
   quantity,
-  subtotal,
+  subTotal,
   createdDate,
   items
 ) => {
   return axios.post('/api/Sales/CreateInvoiceWithItems', {
-    invoiceDTO: {
+    invoice: {
       staffId,
       customerId,
       invoiceNumber,
       companyName,
-      buyerName,
       buyerAddress,
       status,
       paymentType,
       quantity,
-      subtotal,
+      subTotal,
       createdDate,
     },
     items: items.map(item => ({
       itemID: item.itemID,
+      returnPolicyId :item.returnPolicyId,
       itemQuantity: item.itemQuantity,
       warrantyExpiryDate: item.warrantyExpiryDate,
-      returnPolicyId :item.returnPolicyId,
+      price:item.price,
+      total:item.total,
     })),
   }, {
     headers: {
@@ -74,4 +74,10 @@ const getinvoiceAll = () => {
 const GetMonthlyRevenue = () => {
   return axios.get(`/api/Sales/MonthlyRevenue`, {});
 }
-export { addinvoice,getinvoiceAll, GetMonthlyRevenue,createInvoice };
+const GetInvoicewithId = (id) => {
+  return axios.get(`/api/Sales/InvoiceItems/${id}`, {});
+}
+const GetinvoiceWithserailnumber = (invoiceNumber) => {
+  return axios.get(`/api/Sales/Invoice/ByNumber/${invoiceNumber}`, {});
+}
+export { addinvoice,getinvoiceAll, GetMonthlyRevenue,createInvoice,GetinvoiceWithserailnumber ,GetInvoicewithId };
