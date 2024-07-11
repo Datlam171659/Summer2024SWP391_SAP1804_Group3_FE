@@ -1,10 +1,11 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useParams, useNavigate } from 'react-router-dom';
 import { fetchCustomerDetail } from '../../Features/Customer/CustomerdetailSlice';
 import { fetchAllInvoice } from '../../Features/Invoice/fullinvoiceSlice';
+import { fetchInvoiceById } from '../../Features/Invoice/invoiceByIdSlice';
 import { fetchRewardAll } from '../../Features/Customer/rewardallSlice';
-import { Tabs, Table, Button } from 'antd';
+import { Tabs, Table, Button, Modal } from 'antd';
 import { fetchRewardDetail } from '../../Features/Customer/rewardDetailSlice';
 import { UserOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import moment from 'moment';
@@ -16,8 +17,11 @@ function CustomerSearchDetail() {
   const { customerDataDetail: customer, isError, loading: customerLoading } = useSelector(state => state.customerDetail);
   const { rewardDetail: rewards, isrewardetailError, loading: isrewardLoading } = useSelector(state => state.rewards);
   const { allInvoice, loading: invoicesLoading } = useSelector(state => state.invoicefull);
+  const { invoiceIdDetail, loading, error } = useSelector(state => state.invoiceById);
   const { rewardsallData, loading: rewardsLoading } = useSelector(state => state.rewardsAll);
   const navigate = useNavigate();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
   const onChange = (key) => {
     console.log(key);
   };
@@ -37,11 +41,25 @@ function CustomerSearchDetail() {
   const customerInvoices = allInvoice ? allInvoice.filter(invoice => invoice.customerId === id) : [];
   const totalInvoices = customerInvoices.length;
 
+  const showModal = async (id) => {
+    await dispatch(fetchInvoiceById(id));
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
   const columns = [
     {
       title: 'Mã hóa đơn',
       dataIndex: 'id',
       key: 'id',
+      render: (text) => <a onClick={() => showModal(text)}>{text}</a>,
     },
     {
       title: 'Tên công ty',
@@ -62,10 +80,29 @@ function CustomerSearchDetail() {
       title: 'Ngày tạo',
       dataIndex: 'createdDate',
       key: 'createdDate',
-      render: (date) => <span>{moment(date).format('DD-MM-YYYY')}</span>
+      render: (date) => <span>{moment(date).format('DD-MM-YYYY')}</span>,
+      sorter: (a, b) => moment(a.createdDate).unix() - moment(b.createdDate).unix(),
+      defaultSortOrder: 'descend',
     },
   ];
 
+  const columnsmodal = [
+    {
+      title: 'Mã sản phẩm',
+      dataIndex: 'itemId',
+      key: 'itemId',
+    },
+    {
+      title: 'Tên sản phẩm',
+      dataIndex: ['item', 'itemName'],
+      key: 'itemName',
+    },
+    {
+      title: 'Loại phụ kiện',
+      dataIndex: ['item', 'accessoryType'],
+      key: 'accessoryType',
+    },
+  ];
   const calculateRewardLevel = (points) => {
     if (points >= 1000) return 'Vũ Trụ';
     if (points >= 100) return 'Kim Cương';
@@ -76,7 +113,7 @@ function CustomerSearchDetail() {
 
   const customerRewards = rewardsallData ? rewardsallData.filter(reward => reward.customerId === id) : [];
   const hasRewards = customerRewards.length > 0;
-console.log(customerRewards)
+
   const items = [
     {
       key: '1',
@@ -100,8 +137,8 @@ console.log(customerRewards)
           ) : hasRewards ? (
             <div>
               <h2 className='text-2xl font-bold'>Điểm của khách hàng</h2>
-             <p className='my-3 text-xl'> Điểm :{rewards.pointsTotal}</p>
-             <p className='my-3 text-xl'>Hạng của khách hàng là:{calculateRewardLevel(rewards.pointsTotal)}</p>
+             <p className='my-3 text-xl'> Điểm :{rewards?.pointsTotal}</p>
+             <p className='my-3 text-xl'>Hạng của khách hàng là:{calculateRewardLevel(rewards?.pointsTotal)}</p>
             </div>
           ) : (
             <p>Bạn chưa có điểm. Hãy mua hàng để tích điểm!</p>
@@ -175,6 +212,22 @@ console.log(customerRewards)
         </div>
       </div>
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+      <Modal title="Chi tiết hóa đơn" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} className='w-[1500px] ml-[500px]'>
+        {loading ? (
+          <p>Loading...</p>
+        ) : invoiceIdDetail && invoiceIdDetail.data ? (
+          <Table 
+            columns={columnsmodal} 
+            dataSource={invoiceIdDetail.data} 
+            rowKey="itemId" 
+            pagination={false} 
+            className='w-full'
+          />      
+        ) : (
+          <p>Không có dữ liệu hóa đơn.</p>
+        )}
+      </Modal>
+      {console.log(invoiceIdDetail)}
     </div>
   );
 }

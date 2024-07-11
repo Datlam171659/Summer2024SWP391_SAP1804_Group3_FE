@@ -91,16 +91,14 @@ function Product() {
   };
 
   const handleAddOk = () => {
-    if (!selectedFiles) {
-      message.error("Vui lòng upload ảnh trước khi thêm sản phẩm!");
-      return;
-    }
+ 
 
     form
       .validateFields()
       .then((values) => {
         const productData = {
           ...values,
+          isBuyBack:false,
           itemImagesId: imageUrl, // Use the uploaded image URL
         };
         dispatch(addProduct(productData))
@@ -109,7 +107,7 @@ function Product() {
             dispatch(fetchProductData());
             form.resetFields();
             setSelectedFiles(null);
-            setImageUrl(""); // Reset imageUrl state
+            setImageUrl(""); 
           })
           .catch((error) => {
             message.error("Thêm sản phẩm thất bại");
@@ -280,9 +278,11 @@ function Product() {
   useEffect(() => {
     dispatch(fetchProductData());
   }, [dispatch]);
-
   useEffect(() => {
-    setFilteredData(productData);
+    if (productData) {
+      const filteredProducts = productData.filter(product => !product.isBuyBack && product.status !=="Deleted");
+      setFilteredData(filteredProducts);
+    }
   }, [productData]);
 
   return (
@@ -369,17 +369,10 @@ function Product() {
             <InputNumber min={1} />
           </Form.Item>
           <Form.Item
-            label="Upload ảnh"
+            label="Upload ảnh mới"
             name="imageUpload"
-            rules={[{ required: true, message: "Vui lòng upload ảnh sản phẩm!" }]}
           >
             <Input type="file" accept="image/*" onChange={handleFileChange} />
-            {selectedFiles && (
-              <div>
-                <p>{selectedFiles.name}</p>
-                <button onClick={removeSelectedFile}>Remove</button>
-              </div>
-            )}
           </Form.Item>
         </Form>
       </Modal>
