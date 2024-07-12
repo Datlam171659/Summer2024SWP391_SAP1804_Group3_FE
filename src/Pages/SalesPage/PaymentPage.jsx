@@ -299,7 +299,7 @@ const PaymentPage = () => {
 
         const itemPrice = item.weight * kara;
         const totalPrice = item.weight * item.itemQuantity * kara;
-        return `${index + 1}. Tên sản phẩm: ${item.itemName},Serial Number: ${item.serialNumber}, Giá: ${Number(itemPrice.toFixed(0)).toLocaleString()}đ, Số Lượng: ${item.itemQuantity}, Tổng: ${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
+        return `${index + 1}. Tên sản phẩm: ${item.itemName},Serial Number: ${item.itemId}, Giá: ${Number(itemPrice.toFixed(0)).toLocaleString()}đ, Số Lượng: ${item.itemQuantity}, Tổng: ${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
       }).join("\n");
   
       const templateParams = {
