@@ -6,7 +6,7 @@ import { Button, ConfigProvider } from "antd";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { resetCart } from "../../Features/buy-back/buyBackCartSlice";
-import InvoiceComponent from "../../Components/Common/InvoiceComponent";
+import InvoiceBuyBack from "../../Components/Common/InvoiceBuyBack";
 
 function BuyBackSuccessPaymentPage() {
   const dispatch = useDispatch();
@@ -54,7 +54,7 @@ function BuyBackSuccessPaymentPage() {
         </div>
       </div>
       <div className="hidden">
-        <InvoiceComponent
+        <InvoiceBuyBack
           ref={invoiceComponentRef}
           cartItems={cartItems}
           customerInfor={customerInfor}
@@ -62,6 +62,7 @@ function BuyBackSuccessPaymentPage() {
           cartTotalAmount={cartTotalAmount}
         />
       </div>
+      {console.log("cartItems: ", cartItems)}
     </ConfigProvider>
 
   );
