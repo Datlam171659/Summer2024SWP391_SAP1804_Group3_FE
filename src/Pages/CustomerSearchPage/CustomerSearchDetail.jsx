@@ -212,7 +212,9 @@ function CustomerSearchDetail() {
         </div>
       </div>
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
-      <Modal title="Chi tiết hóa đơn" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} className='w-[1500px] ml-[500px]'>
+      <Modal title="Chi tiết hóa đơn" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} className='w-[1500px] ml-[500px]'
+      style= {{ top: '40%', transform: 'translateY(-50%)',transform: 'translateX(50%)' }}
+      >
         {loading ? (
           <p>Loading...</p>
         ) : invoiceIdDetail && invoiceIdDetail.data ? (

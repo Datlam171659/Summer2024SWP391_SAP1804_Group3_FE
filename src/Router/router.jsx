@@ -46,7 +46,7 @@ const router = createBrowserRouter([
       {
         path: "promotion",
         element: (
-          <RoleBasedRoute roles={['manager', 'admin']}>
+          <RoleBasedRoute roles={["manager", "admin"]}>
             <Promotion />
           </RoleBasedRoute>
         ),
@@ -81,13 +81,12 @@ const router = createBrowserRouter([
       },
       {
         path: "no-access",
-        element:
-          <NoAccess />,
+        element: <NoAccess />,
       },
       {
         path: "user",
         element: (
-          <RoleBasedRoute roles={['admin']}>
+          <RoleBasedRoute roles={["admin"]}>
             <UserManagePage />
           </RoleBasedRoute>
         ),
@@ -95,7 +94,7 @@ const router = createBrowserRouter([
       {
         path: "user/user-add",
         element: (
-          <RoleBasedRoute roles={['admin']}>
+          <RoleBasedRoute roles={["admin"]}>
             <AddUserPage />
           </RoleBasedRoute>
         ),
@@ -149,13 +148,13 @@ const router = createBrowserRouter([
   {
     path: "dashboard",
     element: (
-      <RootLayoput>
-        <DashBoardPage />
-      </RootLayoput>
+      <Authentication>
+        <RootLayoput>
+          <DashBoardPage />
+        </RootLayoput>
+      </Authentication>
     ),
   },
-
-
 ]);
 
 export default router;
