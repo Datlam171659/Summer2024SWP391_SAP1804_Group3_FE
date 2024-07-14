@@ -48,6 +48,7 @@ const PaymentPage = () => {
   const [addPoints, setPpointsTotal] = useState(0);
   const [customerInfo, setCustomerInfo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCashDisabled, setIsCashDisabled] = useState(false);
   const navigate = useNavigate();
 
   const MY_BANK = {
@@ -138,8 +139,8 @@ const PaymentPage = () => {
 
   const handleOkPay = () => {
     setPaymentType("Chuyển khoản");
+    setIsCashDisabled(true);
     setIsModalOpen(false);
-
   };
 
   const handleCancelPay = () => {
@@ -497,6 +498,7 @@ const PaymentPage = () => {
                         : "bg-black text-white hover:bg-gray-500"
                     }`}
                     onClick={() => setPaymentType("Tiền mặt")}
+                    disabled={isCashDisabled}
                   >
                     Tiền mặt
                   </Button>
