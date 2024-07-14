@@ -1,27 +1,30 @@
 import { Table } from 'antd';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import QRCode from 'react-qr-code';
 
-const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotalQuantity, cartTotalAmount,invoiceNumber }, ref) => {
+const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotalQuantity, cartTotalAmount, invoiceNumber, discount }, ref) => {
     const buyGold24k = useSelector(
         (state) => state.goldPrice.sellPrice[0]?.sellGold24k
-      );
-      const buyGold18k = useSelector(
+    );
+    const buyGold18k = useSelector(
         (state) => state.goldPrice.sellPrice[0]?.sellGold18k
-      );
-      const buyGold14k = useSelector(
+    );
+    const buyGold14k = useSelector(
         (state) => state.goldPrice.sellPrice[0]?.sellGold14k
-      );
-      const buyGold10k = useSelector(
+    );
+    const buyGold10k = useSelector(
         (state) => state.goldPrice.sellPrice[0]?.sellGold10k
-      );
+    );
+
     function getDate() {
         const today = new Date();
         const month = today.getMonth() + 1;
         const year = today.getFullYear();
         const date = today.getDate();
         return `${date}/${month}/${year}`;
-      }
+    }
+
     const columns = [
         {
             title: "STT",
@@ -69,12 +72,12 @@ const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotal
         },
         {
             title: "Số Lượng",
-            dataIndex: "quantity",
-            key: "quantity",
+            dataIndex: "itemQuantity",
+            key: "itemQuantity",
             width: 100,
             render: (_, record) => (
                 <div className="flex items-center">
-                    <span className="mx-2">{record.quantity}</span>
+                    <span className="mx-2">{record.itemQuantity}</span>
                 </div>
             ),
         },
@@ -119,15 +122,21 @@ const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotal
                         kara = 0;
                 }
 
-                const totalPrice = record.weight * record.quantity * kara;
+                const totalPrice = record.weight * record.itemQuantity * kara;
                 return `${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
             },
         }
     ];
+
+    const totalAmountAfterDiscount = cartTotalAmount - discount;
+
     return (
         <div ref={ref} className="p-8">
+            <div className="absolute top-0 right-0 m-4">
+                <QRCode value={invoiceNumber} size={80} />
+            </div>
             <h2 className="text-2xl font-bold text-center mb-4">HÓA ĐƠN MUA HÀNG</h2>
-            <p className="text-sm font-semibold">Mã hóa đơn :{invoiceNumber}</p>
+            <p className="text-sm font-semibold">Mã hóa đơn: {invoiceNumber}</p>
             <ul className="text-base mb-2">
                 <li className="text-sm font-semibold">Khách hàng: {customerInfor.customerName}</li>
                 <li className="text-sm font-semibold">Email: {customerInfor.email}</li>
@@ -135,7 +144,7 @@ const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotal
                 <li className="text-sm font-semibold">Sđt: {customerInfor.phoneNumber}</li>
                 <li className="text-sm font-semibold">Ngày: {getDate()}</li>
             </ul>
-            <div className="cart-items flex flex-col items-center space-y-8 w-full ">
+            <div className="cart-items flex flex-col items-center space-y-8 w-full">
                 <Table
                     dataSource={cartItems}
                     columns={columns}
@@ -144,14 +153,22 @@ const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotal
                     className="w-full rounded-[5px] font-medium"
                 />
             </div>
-            <div className='w-full flex justify-end  mt-6'>
-                <div className='w-1/4'>
-                    <p className="w-full flex justify-between text-md font-semibold"><span className='font-semibold mr-4'>Số lượng:</span> <span>{cartTotalQuantity}</span></p>
-                    <p className="w-full flex justify-between text-md font-semibold"><span className='font-semibold mr-4'>Tổng tiền:</span> <span> {cartTotalAmount.toLocaleString()}đ</span></p>
+            <div className="w-full flex justify-end mt-6">
+                <div className="w-1/4">
+                    <p className="w-full flex justify-between text-md font-semibold">
+                        <span className="font-semibold mr-4">Số lượng:</span>
+                        <span>{cartTotalQuantity}</span>
+                    </p>
+                    <p className="w-full flex justify-between text-md font-semibold">
+                        <span className="font-semibold mr-4">Giảm Giá:</span>
+                        <span>{Number(discount).toLocaleString()}%</span>
+                    </p>
+                    <p className="w-full flex justify-between text-md font-semibold">
+                        <span className="font-semibold mr-4">Tổng tiền:</span>
+                        <span>{totalAmountAfterDiscount.toLocaleString()}đ</span>
+                    </p>
                 </div>
             </div>
-
-
         </div>
     );
 });

@@ -13,8 +13,8 @@ import { fetchPromotions } from "../../Features/Promotion/promotionallSlice";
 import { reduceItemQuantity } from "../../Features/product/quantitySlice"; 
 import emailjs from 'emailjs-com';
 import { createInvoiceWithItems } from "../../Features/Invoice/InvoiceItemSlice"; 
-
-
+import { removePromotion } from '../../Features/Promotion/promotionallSlice';
+import { useLocation } from "react-router-dom";
 const PaymentPage = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
@@ -34,6 +34,7 @@ const PaymentPage = () => {
   );
   const cartTotalAmount = useSelector((state) => state.cart.cartTotalAmount);
   const cartTotalQuantity = useSelector((state) => state.cart.cartTotalQuantity);
+  const discount = useSelector((state) => state.cart.discount);
   const customerInfor = useSelector((state) => state.cart.customerInfor);
   const promotions = useSelector((state) => state.promotions.promotions);
   const [qrCode, setQrCode] = useState("");
@@ -48,6 +49,10 @@ const PaymentPage = () => {
   const [addPoints, setPpointsTotal] = useState(0);
   const [customerInfo, setCustomerInfo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCashDisabled, setIsCashDisabled] = useState(false);
+  const location = useLocation();
+  const promotionId = location.state?.promotionId || '';
+  console.log("check",promotionId)
   const navigate = useNavigate();
 
   const MY_BANK = {
@@ -71,7 +76,7 @@ const PaymentPage = () => {
     const date = today.getDate();
     return `${date}/${month}/${year}`;
   }
-
+{console.log("check promo",discount)}
   useEffect(() => {
     const qrLink = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-${MY_BANK.TEMPLATE}.png?amount=${cartTotalAmount}`;
     setQrCode(qrLink);
@@ -105,7 +110,6 @@ const PaymentPage = () => {
       };
     }
   }, [isModalOpen]);
-
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
     switch (name) {
@@ -138,8 +142,8 @@ const PaymentPage = () => {
 
   const handleOkPay = () => {
     setPaymentType("Chuyển khoản");
+    setIsCashDisabled(true);
     setIsModalOpen(false);
-
   };
 
   const handleCancelPay = () => {
@@ -207,6 +211,8 @@ const PaymentPage = () => {
     const companyName = "SWJ";
     const status = "Active";
     const now = new Date().toISOString(); 
+
+    console.log("check",promotionId)
     const invoiceData = {
       staffId: staffId,
       customerId,
@@ -275,6 +281,8 @@ const PaymentPage = () => {
     try {
       await dispatch(createInvoiceWithItems(invoiceData)).unwrap();
       await dispatch(addWarranty(customerId)).unwrap();
+      await dispatch(removePromotion(promotionId));
+
       await dispatch(rewardCustomer({ customerId, addPoints })).unwrap();
       const cartItemsDetails = cartItems.map((item, index) => {
         let goldType = "";
@@ -322,7 +330,7 @@ const PaymentPage = () => {
         message.error("Gửi email thất bại.");
       });
   
-      navigate('/sales-page/Payment/PrintReceiptPage', { state: { invoiceNumber } });
+      navigate('/sales-page/Payment/PrintReceiptPage', { state: { invoiceNumber }, });
     } catch (error) {
       message.error(`Tạo hóa đơn thất bại: ${error.message}`);
     }
@@ -458,6 +466,10 @@ const PaymentPage = () => {
                   <p>Tạm tính</p>
                   <p>{Number(cartTotalAmount.toFixed(0)).toLocaleString()}đ</p>
                 </div>
+                <div className="flex justify-between mb-3 text-lg">
+                  <p>Giảm giá</p>
+                  <p>{discount}%</p>
+                </div>
               </div>
               <div className="mt-14 flex justify-between">
                 <span className="text-lg font-semibold text-gray-800">
@@ -497,6 +509,7 @@ const PaymentPage = () => {
                         : "bg-black text-white hover:bg-gray-500"
                     }`}
                     onClick={() => setPaymentType("Tiền mặt")}
+                    disabled={isCashDisabled}
                   >
                     Tiền mặt
                   </Button>

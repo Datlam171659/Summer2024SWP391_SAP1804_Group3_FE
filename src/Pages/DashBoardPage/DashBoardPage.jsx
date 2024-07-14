@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { Line } from '@ant-design/charts';
+import { Pie } from '@ant-design/plots';
 import '../DashBoardPage/DashBoardPage.scss';
-import { Card, Space, Table } from 'antd';
+import { Card, Space, Table, DatePicker } from 'antd';
 import { UserOutlined, ShoppingCartOutlined, ShoppingOutlined, DollarCircleOutlined, TeamOutlined } from '@ant-design/icons';
 import CustomerApi from '../../Services/api/CustomerApi';
 import {getinvoiceAll, GetMonthlyRevenue} from '../../Services/api/InvoiceApi'
@@ -9,12 +11,18 @@ import {getProductAll} from '../../Services/api/productApi'
 import userkApi from "../../Services/api/UserApi";
 import DashBoardCard from './DashboardCard';
 import Title from 'antd/es/skeleton/Title';
+import moment from 'moment';
+const { RangePicker } = DatePicker;
+
 const DashBoardPage = () => {
   const [customerCount, setCustomerCount] = useState(0); 
   const [userCount, setUserCount] = useState(0); 
+  const [managerCount, setManagerCount] = useState(0);
+  const [staffCount, setStaffCount] = useState(0);
   const [invoiceCount, setInvoiceCount] = useState(0); 
   const [productCount, setProductCount] = useState(0); 
   const [monthlyRevenue, setMonthlyRevenue] = useState([]);
+  const [filteredRevenue, setFilteredRevenue] = useState([]);
   const [totalRevenue, setTotalRevenue] = useState(0); 
   const [topCustomers, setTopCustomers] = useState([]);
   const [topStaff, setTopStaff] = useState([]);
@@ -46,7 +54,14 @@ const DashBoardPage = () => {
           try {
             const response = await userkApi.getUserListApi();
             if (Array.isArray(response)) {
-              setUserCount(response.length);
+              const totalUsers = response.length;
+              const managers = response.filter(user => user.roleId === 1).length;
+              const staff = response.filter(user => user.roleId === 2).length;
+              setUserCount(totalUsers);
+              setManagerCount(managers);
+              setStaffCount(staff);
+              console.log(staffCount);
+              console.log(managerCount);
               const invoices = await getinvoiceAll();
               if (invoices && Array.isArray(invoices.data)) {
                 const staffWithInvoices = response.map(staff => ({
@@ -93,8 +108,9 @@ const DashBoardPage = () => {
                 date: item.key,
                 value: item.value 
               }));
-        
               setMonthlyRevenue(formattedData);
+              setFilteredRevenue(formattedData); 
+
     
               const total = formattedData.reduce((sum, record) => sum + record.value, 0);
               setTotalRevenue(total);
@@ -115,8 +131,38 @@ const DashBoardPage = () => {
         return new Intl.NumberFormat().format(value) + ' VNĐ';
       };
 
+      const pieData = [
+        { type: 'Nhân Viên', value: staffCount },
+        { type: 'Quản Lý', value: managerCount },
+      ];
+    
+      const pieConfig = {
+        appendPadding: 15,
+        data: pieData,
+        angleField: 'value',
+        colorField: 'type',
+        radius: 0.8,
+        label: {
+          formatter: (text, item) => {
+            const percent = ((item.value / pieData.reduce((acc, curr) => acc + curr.value, 0)) * 100).toFixed(2);
+            return `${percent}%`;
+          },
+          style: {
+            textAlign: 'center',
+            fontSize: 14,
+          },
+        },
+        legend: {
+          color: {
+            title: false,
+            position: 'right',
+            rowPadding: 5,
+          },
+        },
+      };
+      
       const config = {
-        data: monthlyRevenue,
+        data: filteredRevenue,
         xField: 'date',
         yField: 'value',
         width: 700,
@@ -165,6 +211,19 @@ const DashBoardPage = () => {
           key: 'invoiceCount',
         },
       ];
+
+      const handleDateRangeChange = (dates, dateStrings) => {
+        if (dates && dates.length === 2) {
+          const [start, end] = dateStrings;
+          const filtered = monthlyRevenue.filter((item) => {
+            const date = item.date;
+            return date >= start && date <= end;
+          });
+          setFilteredRevenue(filtered);
+        } else {
+          setFilteredRevenue(monthlyRevenue);
+        }
+      };     
     
       return (
         <div className='dashboard-content'>
@@ -181,19 +240,25 @@ const DashBoardPage = () => {
             <div className='left-content'>
               <div className="line-chart-container">
                 <Card title="Doanh số bán hàng theo tháng" style={{width:'100%'}}>
+                <RangePicker onChange={handleDateRangeChange} picker="month" format="YYYY-MM" style={{ marginBottom: 20 }} />
                 <Line {...config}/>
                 </Card>
-              </div>
-            </div>
-          <div className='right-content'>
-              <div className="top-customers">
-                  <Card title="Top 3 khách hàng có nhiều đơn hàng nhất:" className="card-top-customers">
-                    <Table columns={customerColumns} dataSource={topCustomers} rowKey="id" pagination={false} key="customerTable" />
-                  </Card>
               </div>
               <div className="top-staff">
                   <Card title="Top 3 nhân viên bán được nhiều nhất trong tháng:" className="card-top-staff">
                     <Table columns={staffColumns} dataSource={topStaff} rowKey="id" pagination={false} key="staffTable" />
+                  </Card>
+              </div>
+            </div>
+          <div className='right-content'>
+              <div className="pie-chart-container">
+                <Card title="Tỉ lệ người dùng hệ thống" className="card-pie-chart">
+                  <Pie {...pieConfig} />
+                </Card>
+              </div>
+              <div className="top-customers">
+                  <Card title="Top 3 khách hàng có nhiều đơn hàng nhất:" className="card-top-customers">
+                    <Table columns={customerColumns} dataSource={topCustomers} rowKey="id" pagination={false} key="customerTable" />
                   </Card>
               </div>
             </div>

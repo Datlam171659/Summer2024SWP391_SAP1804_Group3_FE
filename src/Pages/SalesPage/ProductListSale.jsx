@@ -140,7 +140,7 @@ const ProductList = () => {
     }, 0);
     const discountedAmount = cartTotalAmount * (1 - promotionPercentage / 100);
     dispatch(
-      updateTotals({ cartTotalQuantity, cartTotalAmount: discountedAmount })
+      updateTotals({ cartTotalQuantity, cartTotalAmount: discountedAmount,discount:promotionPercentage })
     );
   }, [
     cartItems,
@@ -163,7 +163,6 @@ const ProductList = () => {
       lastMessageTime = now;
     }
   };
-
   const handleAddToCart = (product) => {
     const existingItem = cartItems.find((item) => item.itemId === product.itemId);
     if (existingItem && existingItem.itemQuantity >= product.quantity) {
@@ -327,7 +326,7 @@ console.log(filteredProducts)
     ) {
       message.error("Vui lòng nhập thông tin khách hàng trước khi thanh toán");
     } else {
-      navigate("/sales-page/Payment");
+      navigate("/sales-page/Payment", { state: { promotionId: promotionDataSelect } });
     }
   };
   const openDiscountModal = () => {
@@ -737,6 +736,12 @@ console.log(filteredProducts)
               <span>Tổng số lượng: </span>
               <span>{cartTotalQuantity}</span>
             </div>
+            {promotionDataSelect && (
+            <div>
+              <span>Giảm giá: </span>
+              <span>{promotionPercentage}%</span>
+            </div>
+             )}
             <div>
               <span>Tổng giá: </span>
               <span>{currencyFormatter.format(cartTotalAmount)}</span>
