@@ -1,13 +1,15 @@
 import React from 'react';
 import 'tailwindcss/tailwind.css';
 import { Table } from 'antd';
-const WarrantyComponent = React.forwardRef(({cartItems, customerInfor }, ref) => {
-    // Function to add 3 months to the current date
+
+const WarrantyComponent = React.forwardRef(({ cartItems, customerInfor }, ref) => {
+    // Function to add months to the current date
     const addMonths = (date, months) => {
         const newDate = new Date(date);
         newDate.setMonth(newDate.getMonth() + months);
         return newDate;
     };
+
     const columns = [
         {
             title: "STT",
@@ -72,29 +74,31 @@ const WarrantyComponent = React.forwardRef(({cartItems, customerInfor }, ref) =>
         },
         {
             title: "Thời gian bảo hành",
-            dataIndex: "Thời gian bảo hành",
-            key: "Thời gian bảo hành",
-            width: 100,
+            dataIndex: "warrantyPeriod",
+            key: "warrantyPeriod",
+            width: 200,
             render: (_, record) => {
-                const itemName = record.itemName ? record.itemName : '';
-                let warrantyMessage = 'Không bảo hành';
-         
-                if (itemName.includes('14k')||itemName.includes('14K')) {
-                    warrantyMessage = 'Bảo hành 10 tháng';
-                } else if (itemName.includes('18k')||itemName.includes('18K')) {
-                    warrantyMessage = 'Bảo hành 1 năm';
+                const currentDate = new Date();
+                let warrantyEndDate = currentDate;
+
+                if (record.itemName.toLowerCase().includes("14k")) {
+                    warrantyEndDate = addMonths(currentDate, 10);
+                } else if (record.itemName.toLowerCase().includes("18k")) {
+                    warrantyEndDate = addMonths(currentDate, 12);
+                } else if (record.itemName.toLowerCase().includes("24k")) {
+                    warrantyEndDate = addMonths(currentDate, 24);
+                } else if (record.itemName.toLowerCase().includes("10k")) {
+                    warrantyEndDate = addMonths(currentDate, 6);
+                } else {
+                    return 'Không bảo hành';
                 }
-                 else if (itemName.includes('24k')||itemName.includes('24K')) {
-                warrantyMessage = 'Bảo hành 2 năm';
-            }
-        
-                 else if (itemName.includes('10k')||itemName.includes('10K')) {
-                warrantyMessage = 'Bảo hành 6 tháng';
-            }
-        
+
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                const warrantyEndDateString = warrantyEndDate.toLocaleDateString('vi-VN', options);
+
                 return (
                     <div className="flex items-center">
-                        {warrantyMessage}
+                        {warrantyEndDateString}
                     </div>
                 );
             },
@@ -103,11 +107,9 @@ const WarrantyComponent = React.forwardRef(({cartItems, customerInfor }, ref) =>
 
     // Get the current date
     const currentDate = new Date();
-    const warrantyEndDate = addMonths(currentDate, 3);
     // Format the dates
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     const currentDateString = currentDate.toLocaleDateString('vi-VN', options);
-    const warrantyEndDateString = warrantyEndDate.toLocaleDateString('vi-VN', options);
 
     return (
         <div ref={ref} className="p-8">
@@ -118,7 +120,7 @@ const WarrantyComponent = React.forwardRef(({cartItems, customerInfor }, ref) =>
                 <li className="text-sm font-semibold">Sđt: {customerInfor.phoneNumber}</li>
             </ul>
             <div>
-            <Table
+                <Table
                     dataSource={cartItems}
                     columns={columns}
                     rowKey="itemId"

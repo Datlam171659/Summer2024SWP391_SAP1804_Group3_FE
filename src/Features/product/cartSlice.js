@@ -46,6 +46,7 @@ const cartSlice = createSlice({
     updateTotals: (state, action) => {
       state.cartTotalQuantity = action.payload.cartTotalQuantity;
       state.cartTotalAmount = action.payload.cartTotalAmount;
+      state.discount = action.payload.discount;
     },
     updateCustomerInfo(state, action) {
       state.customerInfor = action.payload;

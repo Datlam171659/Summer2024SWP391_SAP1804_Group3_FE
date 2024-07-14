@@ -13,7 +13,7 @@ import { fetchPromotions } from "../../Features/Promotion/promotionallSlice";
 import { reduceItemQuantity } from "../../Features/product/quantitySlice"; 
 import emailjs from 'emailjs-com';
 import { createInvoiceWithItems } from "../../Features/Invoice/InvoiceItemSlice"; 
-
+import { removePromotion } from '../../Features/Promotion/promotionallSlice';
 
 const PaymentPage = () => {
   const dispatch = useDispatch();
@@ -34,6 +34,7 @@ const PaymentPage = () => {
   );
   const cartTotalAmount = useSelector((state) => state.cart.cartTotalAmount);
   const cartTotalQuantity = useSelector((state) => state.cart.cartTotalQuantity);
+  const discount = useSelector((state) => state.cart.discount);
   const customerInfor = useSelector((state) => state.cart.customerInfor);
   const promotions = useSelector((state) => state.promotions.promotions);
   const [qrCode, setQrCode] = useState("");
@@ -72,7 +73,7 @@ const PaymentPage = () => {
     const date = today.getDate();
     return `${date}/${month}/${year}`;
   }
-
+{console.log("check promo",discount)}
   useEffect(() => {
     const qrLink = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-${MY_BANK.TEMPLATE}.png?amount=${cartTotalAmount}`;
     setQrCode(qrLink);
@@ -106,7 +107,12 @@ const PaymentPage = () => {
       };
     }
   }, [isModalOpen]);
-
+  const handleDelete = async (id) => {
+    if (selectedPromotionForDelete) {
+    await dispatch(removePromotion(selectedPromotionForDelete));
+    message.success('Đã xóa khuyến mãi thành công');
+  }
+  };
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
     switch (name) {
@@ -323,7 +329,7 @@ const PaymentPage = () => {
         message.error("Gửi email thất bại.");
       });
   
-      navigate('/sales-page/Payment/PrintReceiptPage', { state: { invoiceNumber } });
+      navigate('/sales-page/Payment/PrintReceiptPage', { state: { invoiceNumber }, });
     } catch (error) {
       message.error(`Tạo hóa đơn thất bại: ${error.message}`);
     }
@@ -458,6 +464,10 @@ const PaymentPage = () => {
                 <div className="flex justify-between mb-3 text-lg">
                   <p>Tạm tính</p>
                   <p>{Number(cartTotalAmount.toFixed(0)).toLocaleString()}đ</p>
+                </div>
+                <div className="flex justify-between mb-3 text-lg">
+                  <p>Giảm giá</p>
+                  <p>{discount}%</p>
                 </div>
               </div>
               <div className="mt-14 flex justify-between">

@@ -140,7 +140,7 @@ const ProductList = () => {
     }, 0);
     const discountedAmount = cartTotalAmount * (1 - promotionPercentage / 100);
     dispatch(
-      updateTotals({ cartTotalQuantity, cartTotalAmount: discountedAmount })
+      updateTotals({ cartTotalQuantity, cartTotalAmount: discountedAmount,discount:promotionPercentage })
     );
   }, [
     cartItems,
@@ -163,7 +163,6 @@ const ProductList = () => {
       lastMessageTime = now;
     }
   };
-
   const handleAddToCart = (product) => {
     const existingItem = cartItems.find((item) => item.itemId === product.itemId);
     if (existingItem && existingItem.itemQuantity >= product.quantity) {

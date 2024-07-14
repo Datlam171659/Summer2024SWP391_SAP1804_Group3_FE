@@ -114,6 +114,7 @@ function Promotion() {
     setIsDeleteModalOpen(false); 
   }
   };
+  console.log(selectedPromotionForDelete)
   const columns = [
     {
       title: "id",
@@ -123,8 +124,8 @@ function Promotion() {
     },
     {
       title: "Mã discount",
-      dataIndex: "code",
-      key: "code",
+      dataIndex: "id",
+      key: "id",
     },
     {
       title: "Phần trăm",
@@ -215,7 +216,7 @@ function Promotion() {
         <p>Bạn có chắc muốn duyệt khuyến mãi này không?</p>
         {selectedPromotion && (
           <div>
-            <p>Mã discount: {selectedPromotion.code}</p>
+            <p>Mã discount: {selectedPromotion.id}</p>
             <p>Phần trăm: {selectedPromotion.discountPct}%</p>
             <p>Trạng thái: {selectedPromotion.status}</p>
           </div>
