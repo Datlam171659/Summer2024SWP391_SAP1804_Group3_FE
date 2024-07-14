@@ -14,7 +14,7 @@ import { reduceItemQuantity } from "../../Features/product/quantitySlice";
 import emailjs from 'emailjs-com';
 import { createInvoiceWithItems } from "../../Features/Invoice/InvoiceItemSlice"; 
 import { removePromotion } from '../../Features/Promotion/promotionallSlice';
-
+import { useLocation } from "react-router-dom";
 const PaymentPage = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
@@ -50,6 +50,9 @@ const PaymentPage = () => {
   const [customerInfo, setCustomerInfo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCashDisabled, setIsCashDisabled] = useState(false);
+  const location = useLocation();
+  const promotionId = location.state?.promotionId || '';
+  console.log("check",promotionId)
   const navigate = useNavigate();
 
   const MY_BANK = {
@@ -107,12 +110,6 @@ const PaymentPage = () => {
       };
     }
   }, [isModalOpen]);
-  const handleDelete = async (id) => {
-    if (selectedPromotionForDelete) {
-    await dispatch(removePromotion(selectedPromotionForDelete));
-    message.success('Đã xóa khuyến mãi thành công');
-  }
-  };
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
     switch (name) {
@@ -214,6 +211,8 @@ const PaymentPage = () => {
     const companyName = "SWJ";
     const status = "Active";
     const now = new Date().toISOString(); 
+
+    console.log("check",promotionId)
     const invoiceData = {
       staffId: staffId,
       customerId,
@@ -282,6 +281,8 @@ const PaymentPage = () => {
     try {
       await dispatch(createInvoiceWithItems(invoiceData)).unwrap();
       await dispatch(addWarranty(customerId)).unwrap();
+      await dispatch(removePromotion(promotionId));
+
       await dispatch(rewardCustomer({ customerId, addPoints })).unwrap();
       const cartItemsDetails = cartItems.map((item, index) => {
         let goldType = "";

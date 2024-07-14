@@ -326,7 +326,7 @@ console.log(filteredProducts)
     ) {
       message.error("Vui lòng nhập thông tin khách hàng trước khi thanh toán");
     } else {
-      navigate("/sales-page/Payment");
+      navigate("/sales-page/Payment", { state: { promotionId: promotionDataSelect } });
     }
   };
   const openDiscountModal = () => {
