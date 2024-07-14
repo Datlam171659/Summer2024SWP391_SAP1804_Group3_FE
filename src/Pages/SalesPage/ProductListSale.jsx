@@ -737,6 +737,12 @@ console.log(filteredProducts)
               <span>Tổng số lượng: </span>
               <span>{cartTotalQuantity}</span>
             </div>
+            {promotionDataSelect && (
+            <div>
+              <span>Giảm giá: </span>
+              <span>{promotionPercentage}%</span>
+            </div>
+             )}
             <div>
               <span>Tổng giá: </span>
               <span>{currencyFormatter.format(cartTotalAmount)}</span>
