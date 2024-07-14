@@ -4,7 +4,7 @@ import { Button, Input, message, Table, Select, Space, Spin, Form, Modal, Checkb
 import { MinusCircleOutlined, MinusOutlined, PlusOutlined, ScanOutlined } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import buyBackApi from "../../Services/api/buyBackApi";
-import { addItem, decrementQuantity, incrementQuantity, removeItem, updateTotals } from "../../Features/buy-back/buyBackCartSlice";
+import { addItem, decrementQuantity, incrementQuantity, removeItem, resetCustomerId, updateCustomerId, updateTotals } from "../../Features/buy-back/buyBackCartSlice";
 import { Html5QrcodeScanner } from "html5-qrcode";
 
 const ProductListBuyBack = () => {
@@ -17,10 +17,13 @@ const ProductListBuyBack = () => {
   const [isScanModalVisible, setIsScanModalVisible] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
   const [invoiceItems, setInvoiceItems] = useState([]);
+  const [tempCustomerId, setTempCustomerId] = useState('');
 
   const isButtonDisabled = !searchQuery;
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.buyBackCart.cartItems);
+  const customerID = useSelector((state) => state.buyBackCart.customerId);
+
   const cartTotalQuantity = useSelector((state) => state.buyBackCart.cartTotalQuantity);
   const cartTotalAmount = useSelector((state) => state.buyBackCart.cartTotalAmount);
   const buyGold24k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold24k);
@@ -99,14 +102,27 @@ const ProductListBuyBack = () => {
   }, [isScanModalVisible]);
 
 
+  useEffect(() => {
+    if (cartItems.length === 0) {
+      dispatch(resetCustomerId());
+    }
+  }, [cartItems, dispatch]);
+
   const handleSearch = async () => {
     setLoading(true);
     try {
-      const result = await buyBackApi.getInvoice(searchQuery);
-      setInvoiceItems(result);
-      setIsInvoiceModalVisible(true);
+      const response = await buyBackApi.getInvoiceNumber(searchQuery);
+      if (response.success) {
+        const invoiceId = response.data.id;
+        const result = await buyBackApi.getInvoice(invoiceId);
+        setInvoiceItems(result);
+        setIsInvoiceModalVisible(true);
+        setTempCustomerId(response.data.customerId);
+      } else {
+        message.error("Không tìm thấy hóa đơn. Vui lòng thử lại");
+      }
     } catch (error) {
-      message.error("Không tìm thấy hóa đơn. Vui lòng thử lại");
+      message.error("Có lỗi xảy ra. Vui lòng thử lại");
     } finally {
       setLoading(false);
     }
@@ -119,8 +135,18 @@ const ProductListBuyBack = () => {
         quantity: item.quantity
       }));
     });
+    dispatch(updateCustomerId(tempCustomerId));
     setIsInvoiceModalVisible(false);
     setSelectedItems([]);
+    setTempCustomerId('')
+  };
+
+  const handleCloseAddItems = () => {
+    
+    setIsInvoiceModalVisible(false);
+    setSelectedItems([]);
+    setTempCustomerId('')
+
   };
 
   const handleCheckboxChange = (selectedRowKeys) => {
@@ -286,6 +312,16 @@ const ProductListBuyBack = () => {
       dataIndex: "weight",
       key: "weight",
       width: 100,
+    },
+    {
+      title: "Giá lúc mua",
+      dataIndex: "buyPrice",
+      key: "buyPrice",
+      width: 120,
+      render: (_, record) => {
+        const formattedPrice = Number(record.buyPrice).toLocaleString() + 'đ';
+        return <span style={{ color: 'red' }}>{formattedPrice}</span>;
+      },
     },
     {
       title: "Giá",
@@ -543,7 +579,7 @@ const ProductListBuyBack = () => {
         >
           <div id='reader'></div>
         </Modal>
-        <Modal title="Chọn sản phẩm từ hóa đơn" visible={isInvoiceModalVisible} onOk={handleAddItems} onCancel={() => setIsInvoiceModalVisible(false)}
+        <Modal title="Chọn sản phẩm từ hóa đơn" visible={isInvoiceModalVisible} onOk={handleAddItems} onCancel={handleCloseAddItems}
           className="flex flex-col items-center space-y-8 w-full ">
           <Table
             rowSelection={rowSelection}
@@ -557,6 +593,7 @@ const ProductListBuyBack = () => {
         </Modal>
 
       </div>
+      {console.log("customerID: ", customerID)}
     </div>
 
   );

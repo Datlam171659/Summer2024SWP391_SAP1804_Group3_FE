@@ -106,7 +106,7 @@ function Authentication({ children }) {
             shouldRender.current = false;
             authenticate();
         }
-    }, []);
+    }, [navigate]);
 
     return (
         children
