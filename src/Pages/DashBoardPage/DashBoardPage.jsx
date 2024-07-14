@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Line } from '@ant-design/charts';
 import '../DashBoardPage/DashBoardPage.scss';
-import { Card, Space, Table } from 'antd';
+import { Card, Space, Table, DatePicker } from 'antd';
 import { UserOutlined, ShoppingCartOutlined, ShoppingOutlined, DollarCircleOutlined, TeamOutlined } from '@ant-design/icons';
 import CustomerApi from '../../Services/api/CustomerApi';
 import {getinvoiceAll, GetMonthlyRevenue} from '../../Services/api/InvoiceApi'
@@ -9,12 +9,16 @@ import {getProductAll} from '../../Services/api/productApi'
 import userkApi from "../../Services/api/UserApi";
 import DashBoardCard from './DashboardCard';
 import Title from 'antd/es/skeleton/Title';
+import moment from 'moment';
+const { RangePicker } = DatePicker;
+
 const DashBoardPage = () => {
   const [customerCount, setCustomerCount] = useState(0); 
   const [userCount, setUserCount] = useState(0); 
   const [invoiceCount, setInvoiceCount] = useState(0); 
   const [productCount, setProductCount] = useState(0); 
   const [monthlyRevenue, setMonthlyRevenue] = useState([]);
+  const [filteredRevenue, setFilteredRevenue] = useState([]);
   const [totalRevenue, setTotalRevenue] = useState(0); 
   const [topCustomers, setTopCustomers] = useState([]);
   const [topStaff, setTopStaff] = useState([]);
@@ -93,8 +97,9 @@ const DashBoardPage = () => {
                 date: item.key,
                 value: item.value 
               }));
-        
               setMonthlyRevenue(formattedData);
+              setFilteredRevenue(formattedData); // Initially show all data
+
     
               const total = formattedData.reduce((sum, record) => sum + record.value, 0);
               setTotalRevenue(total);
@@ -116,7 +121,7 @@ const DashBoardPage = () => {
       };
 
       const config = {
-        data: monthlyRevenue,
+        data: filteredRevenue,
         xField: 'date',
         yField: 'value',
         width: 700,
@@ -165,6 +170,20 @@ const DashBoardPage = () => {
           key: 'invoiceCount',
         },
       ];
+
+      const handleDateRangeChange = (dates, dateStrings) => {
+        if (dates && dates.length === 2) {
+          const [start, end] = dateStrings;
+          const filtered = monthlyRevenue.filter((item) => {
+            const date = item.date;
+            return date >= start && date <= end;
+          });
+          setFilteredRevenue(filtered);
+        } else {
+          setFilteredRevenue(monthlyRevenue);
+        }
+      };
+      
     
       return (
         <div className='dashboard-content'>
@@ -181,6 +200,7 @@ const DashBoardPage = () => {
             <div className='left-content'>
               <div className="line-chart-container">
                 <Card title="Doanh số bán hàng theo tháng" style={{width:'100%'}}>
+                <RangePicker onChange={handleDateRangeChange} picker="month" format="YYYY-MM" style={{ marginBottom: 20 }} />
                 <Line {...config}/>
                 </Card>
               </div>

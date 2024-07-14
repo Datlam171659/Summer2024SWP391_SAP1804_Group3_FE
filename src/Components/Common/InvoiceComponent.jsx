@@ -1,6 +1,7 @@
 import { Table } from 'antd';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import QRCode from 'react-qr-code';
 
 const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotalQuantity, cartTotalAmount,invoiceNumber }, ref) => {
     const buyGold24k = useSelector(
@@ -126,6 +127,9 @@ const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotal
     ];
     return (
         <div ref={ref} className="p-8">
+            <div className="absolute top-0 right-0 m-4">
+                <QRCode value={invoiceNumber} size={80} />
+            </div>
             <h2 className="text-2xl font-bold text-center mb-4">HÓA ĐƠN MUA HÀNG</h2>
             <p className="text-sm font-semibold">Mã hóa đơn :{invoiceNumber}</p>
             <ul className="text-base mb-2">
