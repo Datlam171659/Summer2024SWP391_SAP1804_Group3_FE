@@ -126,14 +126,13 @@ const InvoiceBuyBack = React.forwardRef(({ cartItems, customerInfor, cartTotalQu
     ];
     return (
         <div ref={ref} className="p-8">
-            <h2 className="text-2xl font-bold text-center mb-4">HÓA ĐƠN MUA HÀNG</h2>
-            {/* <p className="text-sm font-semibold">Mã hóa đơn :{invoiceNumber}</p> */}
-            <ul className="text-base mb-2">
-                <li className="text-sm font-semibold">Khách hàng: {customerInfor.customerName}</li>
-                <li className="text-sm font-semibold">Email: {customerInfor.email}</li>
-                <li className="text-sm font-semibold">Địa chỉ: {customerInfor.address}</li>
-                <li className="text-sm font-semibold">Sđt: {customerInfor.phoneNumber}</li>
-                <li className="text-sm font-semibold">Ngày: {getDate()}</li>
+            <h2 className="text-2xl font-bold text-center mb-6 mt-8">HÓA ĐƠN MUA HÀNG</h2>
+            <ul className="text-base mb-4 w-full">
+                <li className="w-[30%] text-sm font-semibold flex justify-between"><span className='font-semibold'>Khách hàng: </span><span className='font-normal ml-6'>{customerInfor.customerName}</span></li>
+                <li className="w-[30%] text-sm font-semibold flex justify-between"><span className='font-semibold'>Email: </span> <span className='font-normal ml-6'>{customerInfor.email}</span></li>
+                <li className="w-[30%] text-sm font-semibold flex justify-between"><span className='font-semibold'>Địa chỉ: </span><span className='font-normal ml-6'>{customerInfor.address}</span></li>
+                <li className="w-[30%] text-sm font-semibold flex justify-between"><span className='font-semibold'>Số điện thoại: </span><span className='font-normal ml-6'>{customerInfor.phoneNumber}</span></li>
+                <li className="w-[30%] text-sm font-semibold flex justify-between"><span className='font-semibold'>Ngày: </span><span className='font-normal ml-6'>{getDate()}</span></li>
             </ul>
             <div className="cart-items flex flex-col items-center space-y-8 w-full ">
                 <Table
@@ -145,9 +144,9 @@ const InvoiceBuyBack = React.forwardRef(({ cartItems, customerInfor, cartTotalQu
                 />
             </div>
             <div className='w-full flex justify-end  mt-6'>
-                <div className='w-1/4'>
+                <div className='w-[30%]'>
                     <p className="w-full flex justify-between text-md font-semibold"><span className='font-semibold mr-4'>Số lượng:</span> <span>{cartTotalQuantity}</span></p>
-                    <p className="w-full flex justify-between text-md font-semibold"><span className='font-semibold mr-4'>Tổng tiền:</span> <span> {cartTotalAmount.toLocaleString()}đ</span></p>
+                    <p className="w-full flex justify-between text-md font-semibold"><span className='font-semibold mr-4'>Tổng tiền trả khách:</span> <span> {cartTotalAmount.toLocaleString()}đ</span></p>
                 </div>
             </div>
 

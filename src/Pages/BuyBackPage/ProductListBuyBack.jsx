@@ -502,7 +502,7 @@ const ProductListBuyBack = () => {
                 </div>
                 <div className="mt-14 flex justify-between">
                   <span className="text-lg font-semibold text-gray-800">
-                    Thành tiền
+                  Tổng tiền trả khách
                   </span>
                   <span className="amount text-xl font-bold text-gray-800">
                     {Number(cartTotalAmount.toFixed(0)).toLocaleString()}
