@@ -102,6 +102,11 @@ function CustomerSearchDetail() {
       dataIndex: ['item', 'accessoryType'],
       key: 'accessoryType',
     },
+    {
+      title: 'Loại phụ kiện',
+      dataIndex: 'quantity',
+      key: 'quantity',
+    },
   ];
   const calculateRewardLevel = (points) => {
     if (points >= 1000) return 'Vũ Trụ';
