@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   cartItems: [],
   customerInfor: [],
+  customerId: '',
   cartTotalQuantity: 0,
   cartTotalAmount: 0,
 };
@@ -20,7 +21,7 @@ const buyBackCartSlice = createSlice({
       } else {
         state.cartItems.push({
           ...newItem,
-          maxQuantity: newItem.quantity, 
+          maxQuantity: newItem.quantity,
         });
       }
     },
@@ -48,14 +49,21 @@ const buyBackCartSlice = createSlice({
     updateCustomerInfo(state, action) {
       state.customerInfor = action.payload;
     },
+    updateCustomerId: (state, action) => {
+      state.customerId = action.payload;
+    },
+    resetCustomerId: (state) => {
+      state.customerId = '';
+    },
     resetCart: (state) => {
       state.cartItems = [];
       state.customerInfor = [];
       state.cartTotalQuantity = 0;
       state.cartTotalAmount = 0;
+      state.customerId = ''
     },
   },
 });
 
-export const { addItem, removeItem, incrementQuantity, decrementQuantity, updateTotals, updateCustomerInfo, resetCart } = buyBackCartSlice.actions;
+export const { addItem, removeItem, incrementQuantity, decrementQuantity, updateTotals, updateCustomerInfo, resetCart, updateCustomerId, resetCustomerId } = buyBackCartSlice.actions;
 export default buyBackCartSlice.reducer;
