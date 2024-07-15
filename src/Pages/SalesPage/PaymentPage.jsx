@@ -321,6 +321,7 @@ const PaymentPage = () => {
         cartTotalQuantity: cartTotalQuantity,
         cartTotalAmount: cartTotalAmount.toLocaleString(),
         cartItemsDetails,
+        discount,
       };
 
       emailjs.send('service_w6685q7', 'template_4ih77go', templateParams, 'aRYuyBmKOYvAYpoIL')

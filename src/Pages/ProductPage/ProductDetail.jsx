@@ -6,6 +6,7 @@ import { fetchItemImage } from '../../Features/product/itemImageDetailSlice';
 import { useParams, useNavigate } from 'react-router-dom';
 import { message, Button } from "antd";
 import { EditOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import QRCode from 'qrcode.react';
 
 function ProductDetail() {
   const dispatch = useDispatch();
@@ -68,6 +69,14 @@ function ProductDetail() {
   if (!product) {
     return <div className="text-center">Không tìm thấy sản phẩm</div>;
   }
+
+  const statusDisplay = editableProduct.quantity === 0 ? (
+    <span className="ml-2 text-red-500">Hết Hàng</span>
+  ) : (
+    <span className="ml-2">{product.status}</span>
+  );
+
+  const qrCodeEnabled = editableProduct.quantity !== 0;
 
   return (
     <div className="bg-gray-100 w-full py-12 px-4">
@@ -166,7 +175,7 @@ function ProductDetail() {
                     className="ml-2 border p-1"
                   />
                 ) : (
-                  <span className="ml-2">{product.status}</span>
+                  <span className="ml-2">{statusDisplay}</span>
                 )}
               </div>
               <div className="my-2">
@@ -184,7 +193,7 @@ function ProductDetail() {
                 )}
               </div>
               <div className="my-2">
-                <strong>Số lượng:</strong>
+                <strong>Trọng lượng:</strong>
                 {isEditing ? (
                   <input 
                     type="text" 
@@ -197,8 +206,29 @@ function ProductDetail() {
                   <span className="ml-2">{product.weight}</span>
                 )}
               </div>
-            </div>
-          </div>
+              <div className="my-2">
+                <strong>Số lượng:</strong>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="quantity"
+                    value={editableProduct.quantity || ''}
+                    onChange={handleChange}
+                    className="ml-2 border p-1"
+                  />
+                ) : (
+                  <span className="ml-2">{product.quantity}</span>
+                )}
+              </div>
+              </div>
+                <div className="my-4">
+                  <strong>QR Code:</strong>
+                  <div className="mt-4">
+                    {qrCodeEnabled && <QRCode value={product.itemId} />}
+                    {!qrCodeEnabled && <div className="text-red-500 font-bold">Sản phẩm đã hết hàng</div>}
+                  </div>
+                </div>
+              </div>
         </div>
       </div>
     </div>
