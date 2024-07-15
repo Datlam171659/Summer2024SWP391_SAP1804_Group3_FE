@@ -21,24 +21,24 @@ const BuyBackPaymentPage = () => {
   const customerInfor = useSelector((state) => state.buyBackCart.customerInfor);
   const [customerType, setCustomerType] = useState('newCustomer');
   const [searchedCustomer, setSearchedCustomer] = useState(null);
-  const [newCustomer, setNewCustomer] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [customerName, setCustomerName] = useState(null);
   const [customerEmail, setCustomerEmail] = useState(null);
   const [customerGender, setCustomerGender] = useState("Nam");
   const [customerAddress, setCustomerAddress] = useState(null);
   const isButtonDisabled = !customerName || !customerEmail || !customerAddress || !phoneNumber;
-
+  const customerIdFromSlice = useSelector((state) => state.buyBackCart.customerId);
 
   useEffect(() => {
     dispatch(fetchCustomerData());
   }, [dispatch]);
 
   useEffect(() => {
-    if (cartItems.length === 0) {
-      navigate("/buy-back-page/");
+    const foundCustomer = customerData.find(customer => customer.id === customerIdFromSlice);
+    if (foundCustomer) {
+      dispatch(updateCustomerInfo(foundCustomer));
     }
-  }, [cartItems, navigate]);
+  }, [customerData, customerIdFromSlice, dispatch]);
 
   const handleInputChange = (e) => {
     const name = e.target ? e.target.name : 'gender';
@@ -113,12 +113,6 @@ const BuyBackPaymentPage = () => {
     }
   };
 
-  // const handleConfirm = () => {
-  //   if (isButtonDisabled) {
-  //     message.error("Vui lòng nhập đầy đủ thông tin khách hàng trước khi xác nhận.");
-  //     return;
-  //   }
-  // };
   const handleConfirm = () => {
     if (customerInfor.length === 0) {
       message.error("Vui lòng nhập đầy đủ thông tin khách hàng trước khi xác nhận.");
@@ -127,30 +121,6 @@ const BuyBackPaymentPage = () => {
     }
   };
 
-  const handleCancel = () => {
-    setCustomerName("");
-    setCustomerAddress("");
-    setCustomerGender("");
-    setPhoneNumber("");
-    setCustomerEmail("");
-    setSearchedCustomer(null)
-    dispatch(updateCustomerInfo([]));
-  };
-
-  const handleSelectChange = (value) => {
-    setCustomerType(value);
-    setCustomerName("");
-    setCustomerAddress("");
-    setCustomerGender("");
-    setPhoneNumber("");
-    setCustomerEmail("");
-    dispatch(updateCustomerInfo([]));
-
-  };
-
-  const handleReset = () => {
-    dispatch(resetCart());
-  };
 
   const columns = [
     {
@@ -284,99 +254,28 @@ const BuyBackPaymentPage = () => {
           </div>
         </div>
         <div className="customer-info bg-white p-4 rounded-lg mb-4">
-          <div className="flex items-center mb-[15px] pb-[15px] pt-[10px] border-b-[1px]">
-            <div className="w-[25%]"><h3 className="text-lg mr-4 font-bold w-full">Thông tin khách hàng</h3></div>
-            <Space wrap className="w-full">
-              <Select
-                defaultValue="newCustomer"
-                style={{ width: "200px" }}
-                onChange={handleSelectChange}
-                options={[
-                  { value: "newCustomer", label: "Nhập mới" },
-                  { value: "member", label: "Khách hàng thành viên" },
-                ]}
-              />
-            </Space>
+          <div className=" items-center mb-[15px] pb-[15px] pt-[10px] border-b-[1px]">
+            <div className="w-[25%]"><h3 className="text-lg mr-4 mb-4 font-bold w-full">Thông tin khách hàng</h3></div>
+
+            <div className="customer-details">
+              <div className=" w-1/5 flex justify-between">
+                <strong className="mr-4">SĐT:</strong><span>{customerInfor.phoneNumber}</span>
+              </div>
+              <div className=" w-1/5 flex justify-between">
+                <strong className="mr-4">Địa Chỉ:</strong><span> {customerInfor.address}</span>
+              </div>
+              <div className=" w-1/5 flex justify-between">
+                <strong className="mr-4">Giới Tính:</strong><span>{customerInfor.gender}</span>
+              </div>
+              <div className=" w-1/5 flex justify-between">
+                <strong className="mr-4">Email:</strong> <span>{customerInfor.email}</span>
+              </div>
+
+            </div>
+
+            <Button type="default">Sửa</Button>
           </div>
 
-          {customerType === 'newCustomer' && (
-            <Form className="newCustomer grid grid-cols-2 gap-4">
-              <div>
-                <div className="flex items-center mb-3 font-medium">
-                  <p className="w-1/3">Số điện thoại:</p>
-                  <Input name="phoneNumber" placeholder="Nhập số điện thoại" className="w-2/3" value={phoneNumber}
-                    onChange={handleInputChange} />
-                </div>
-                <div className="flex items-center mb-3 font-medium">
-                  <p className="w-1/3">Tên Khách Hàng:</p>
-                  <Input name="customerName" placeholder="Nhập tên khách hàng" className="w-2/3" value={customerName}
-                    onChange={handleInputChange} />
-                </div>
-                <div className="flex items-center mb-3 font-medium">
-                  <p className="w-1/3">Địa Chỉ:</p>
-                  <Input name="address" placeholder="Nhập địa chỉ" className="w-2/3" value={customerAddress}
-                    onChange={handleInputChange} />
-                </div>
-                <div className="flex items-center mb-3 font-medium">
-                  <p className="w-1/3">E-mail:</p>
-                  <Input name="email" type="email" placeholder="Nhập E-mail" className="w-2/3" value={customerEmail}
-                    onChange={handleInputChange} />
-                </div>
-              </div>
-              <div className="flex items-center ml-16 mb-40 font-medium">
-                <p className="w-1/6">Giới Tính:</p>
-                <Space wrap className="w-full">
-                  <Select
-                    name="gender"
-                    defaultValue="Nam"
-                    style={{ width: "100%" }}
-                    value={customerGender}
-                    onChange={handleInputChange}
-                    options={[
-                      { value: "Nam", label: "Nam" },
-                      { value: "Nữ", label: "Nữ" },
-                    ]}
-                  />
-                </Space>
-              </div>
-              <Button disabled={isButtonDisabled} type="primary" onClick={handleSubmit}>Tạo</Button>
-              <Button type="default" onClick={handleCancel}>Hủy</Button>
-            </Form>
-          )}
-          {customerType === 'member' && (
-            <div className="customer-info bg-white p-4 pt-0 pl-0 rounded-lg mb-4">
-              <div className="flex mb-4">
-                <Input
-                  placeholder="Nhập số điện thoại khách hàng"
-                  value={phoneNumber}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setPhoneNumber(value);
-                    if (value === '') {
-                      handleCancel();
-                    }
-                  }}
-                  className="mr-2 w-1/3"
-                  allowClear
-                />
-                <Button type="primary" onClick={handleSearchClick}>Tìm kiếm</Button>
-              </div>
-              {isLoading ? (
-                <Spin />
-              ) : (
-                searchedCustomer && (
-                  <div className="customer-details">
-                    <p><strong>Tên:</strong> {searchedCustomer.customerName}</p>
-                    <p><strong>SĐT:</strong> {searchedCustomer.phoneNumber}</p>
-                    <p><strong>Địa Chỉ:</strong> {searchedCustomer.address}</p>
-                    <p><strong>Giới Tính:</strong> {searchedCustomer.gender}</p>
-                    <p><strong>Email:</strong> {searchedCustomer.email}</p>
-                  </div>
-                )
-              )}
-              <Button type="default" onClick={handleCancel}>Hủy</Button>
-            </div>
-          )}
 
         </div>
         <div className="flex w-full">
@@ -432,7 +331,7 @@ const BuyBackPaymentPage = () => {
               <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
 
               <Link to="/buy-back-page">
-                <Button className="w-full h-14 bg-white text-black uppercase font-bold hover:bg-gray-500 mt-4" onClick={handleCancel}>
+                <Button className="w-full h-14 bg-white text-black uppercase font-bold hover:bg-gray-500 mt-4">
                   Hủy
                 </Button>
               </Link>

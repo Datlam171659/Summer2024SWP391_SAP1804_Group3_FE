@@ -41,6 +41,20 @@ const buyBackApi = {
         throw error;
       });
   },
+  updateCustomer: (id, customerInfo) => {
+    return axiosClient.put(`/api/Customer/${id}`, customerInfo)
+      .then(response => {
+        if (response.data) {
+          return response.data;
+        } else {
+          throw new Error(response.statusText);
+        }
+      })
+      .catch(error => {
+        console.error("There was an error updating the customer!", error);
+        throw error;
+      });
+  },
   getInvoice: (id) => {
     return axiosClient.get(`/api/Sales/InvoiceItems/${id}`)
       .then(response => {
@@ -50,8 +64,9 @@ const buyBackApi = {
             itemId: item.itemId,
             accessoryType: item.item.accessoryType,
             itemName: item.item.itemName,
-            quantity: item.item.quantity,
+            quantity: item.quantity,
             weight: item.item.weight,
+            buyPrice: item.total,
           }));
         } else {
           throw new Error(response.data.message);
@@ -63,6 +78,16 @@ const buyBackApi = {
       });
   },
 
+  getInvoiceNumber: (invoiceNumber) => {
+    return axiosClient.get(`/api/Sales/Invoice/ByNumber/${invoiceNumber}`)
+      .then(response => {
+        return response.data;
+      })
+      .catch(error => {
+        console.error("There was an error fetching the InvoiceNumber!", error);
+        throw error;
+      });
+  },
 };
 
 export default buyBackApi;
