@@ -423,12 +423,6 @@ function Product() {
             <InputNumber min={1} />
           </Form.Item>
           <Form.Item
-            name="status"
-            label="Trạng thái"
-          >
-            <Input.TextArea />
-          </Form.Item>
-          <Form.Item
             label="Upload ảnh mới"
             name="imageUpload"
           >

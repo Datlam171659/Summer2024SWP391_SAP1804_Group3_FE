@@ -175,10 +175,6 @@ function Promotion() {
         >
           Không Duyệt
         </Button>
-          <DeleteOutlined
-          onClick={() => showDeleteModal(record.id)}
-          style={{ color: 'red', fontSize: '17px', cursor: 'pointer', marginLeft: '15px' }}
-        />
         </div>
       ),
     },
@@ -253,24 +249,6 @@ function Promotion() {
         }
       >
         <p>Bạn có chắc muốn không duyệt khuyến mãi này không?</p>
-      </Modal>
-
-      <Modal
-          title="Xác nhận xóa khuyến mãi"
-          visible={isDeleteModalOpen}
-          onOk={handleDelete}
-          onCancel={handleDeleteCancel}
-          style= {{ top: '50%', transform: 'translateY(-50%)' }}
-          footer={[
-            <Button key="back" onClick={handleDeleteCancel}>
-              Hủy
-            </Button>,
-            <Button key="submit" type="primary" onClick={handleDelete}>
-              Xác nhận
-            </Button>,
-          ]}
-        >
-          <p>Bạn có xác nhận xóa khuyến mãi này không?</p>
       </Modal>
       <Modal
         title="Xác nhận xóa tất cả khuyến mãi"
