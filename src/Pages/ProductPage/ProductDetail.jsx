@@ -165,34 +165,6 @@ function ProductDetail() {
                 )}
               </div>
               <div className="my-2">
-                <strong>Tình trạng:</strong>
-                {isEditing ? (
-                  <input 
-                    type="text" 
-                    name="status" 
-                    value={editableProduct.status || ''} 
-                    onChange={handleChange} 
-                    className="ml-2 border p-1"
-                  />
-                ) : (
-                  <span className="ml-2">{statusDisplay}</span>
-                )}
-              </div>
-              <div className="my-2">
-                <strong>Kích thước:</strong>
-                {isEditing ? (
-                  <input 
-                    type="text" 
-                    name="size" 
-                    value={editableProduct.size || ''} 
-                    onChange={handleChange} 
-                    className="ml-2 border p-1"
-                  />
-                ) : (
-                  <span className="ml-2">{product.size}</span>
-                )}
-              </div>
-              <div className="my-2">
                 <strong>Trọng lượng:</strong>
                 {isEditing ? (
                   <input 
