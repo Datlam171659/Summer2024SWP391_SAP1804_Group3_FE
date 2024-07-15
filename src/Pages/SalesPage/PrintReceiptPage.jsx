@@ -57,14 +57,14 @@ function PrintReceiptPage() {
       </div>
       <div className="hidden">
       <InvoiceComponent
-  ref={invoiceComponentRef}
-  cartItems={cartItems}
-  customerInfor={customerInfor}
-  cartTotalQuantity={cartTotalQuantity}
-  cartTotalAmount={cartTotalAmount}
-  invoiceNumber={invoiceNumber} 
-  discount={discount} 
-/>
+        ref={invoiceComponentRef}
+        cartItems={cartItems}
+        customerInfor={customerInfor}
+        cartTotalQuantity={cartTotalQuantity}
+        cartTotalAmount={cartTotalAmount}
+        invoiceNumber={invoiceNumber} 
+        discount={discount} 
+        />
         <WarrantyComponent
           ref={warrantyComponentRef}
           customerInfor={customerInfor}

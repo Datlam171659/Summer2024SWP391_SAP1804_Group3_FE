@@ -92,6 +92,10 @@ function Promotion() {
     setIsDeleteAllModalOpen(false);
   };
 
+  const handleRefresh = () => {
+    window.location.reload();
+  };
+  
   const handleDeleteAll = async () => {
     try {
       for (const promotion of promotions) {
@@ -182,13 +186,21 @@ function Promotion() {
 
   return (
     <div className="p-4 flex-col justify-center align-middle w-full mt-10">
-      <Button
-        onClick={showDeleteAllModal} 
-        type="primary"
-        className="mb-4"
-      >
-        Xóa tất cả khuyến mãi
-      </Button>
+        <div className="mb-4 flex">
+          <Button
+            onClick={showDeleteAllModal} 
+            type="primary"
+            className="mr-4"
+          >
+            Xóa tất cả khuyến mãi
+          </Button>
+          <Button
+            onClick={handleRefresh}
+            type="primary"
+          >
+            Làm mới
+          </Button>
+        </div>
       <Table
         dataSource={promotions}
         columns={columns}

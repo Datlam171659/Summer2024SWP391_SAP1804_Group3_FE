@@ -316,6 +316,7 @@ console.log(filteredProducts)
       value: item.id,
       label: `${item.discountPct}%`,
     }));
+
   const handleCreateOrder = () => {
     if (cartItems.length === 0) {
       message.error("Giỏ hàng trống. Không thể tạo đơn");
