@@ -11,6 +11,16 @@ const buyBackApi = {
         throw error;
       });
   },
+  getCustomerbyId: (id) => {
+    return axiosClient.get(`/api/Customer/${id}`)
+      .then(response => {
+        return response.data;
+      })
+      .catch(error => {
+        console.error("There was an error fetching the customer!", error);
+        throw error;
+      });
+  },
   getCustomerInforApi: () => {
     return axiosClient.get('/api/Customer')
       .then(response => {
