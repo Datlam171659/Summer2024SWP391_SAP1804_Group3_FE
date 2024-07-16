@@ -26,7 +26,9 @@ const DashBoardPage = () => {
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [topCustomers, setTopCustomers] = useState([]);
   const [topStaff, setTopStaff] = useState([]);
-
+  const [soldInvoiceCount, setSoldInvoiceCount] = useState(0);
+  const [buyBackInvoiceCount, setBuyBackInvoiceCount] = useState(0);
+  
 
   useEffect(() => {
     const fetchCustomerCount = async () => {
@@ -60,8 +62,6 @@ const DashBoardPage = () => {
           setUserCount(totalUsers);
           setManagerCount(managers);
           setStaffCount(staff);
-          console.log(staffCount);
-          console.log(managerCount);
           const invoices = await getinvoiceAll();
           if (invoices && Array.isArray(invoices.data)) {
             const staffWithInvoices = response.map(staff => ({
@@ -81,7 +81,11 @@ const DashBoardPage = () => {
       try {
         const response = await getinvoiceAll();
         if (response && Array.isArray(response.data)) {
-          setInvoiceCount(response.data.length);
+          const soldInvoices = response.data.filter(invoice => !invoice.isBuyBack);
+          const buyBackInvoices = response.data.filter(invoice => invoice.isBuyBack);
+          setInvoiceCount(response.data.length); 
+          setSoldInvoiceCount(soldInvoices.data.length);
+          setBuyBackInvoiceCount(buyBackInvoices.data.length);
         }
       } catch (error) {
         console.error(`Error: ${error}`);
@@ -244,7 +248,8 @@ const DashBoardPage = () => {
           <Space direction='horizontal'>
             <DashBoardCard icon={<UserOutlined style={{ color: "red" }} />} title={"Khách Hàng"} value={customerCount} key="customers" />
             <DashBoardCard icon={<TeamOutlined style={{ color: "purple" }} />} title={"Nhân Viên"} value={userCount} key="staff" />
-            <DashBoardCard icon={<ShoppingCartOutlined style={{ color: "blue" }} />} title={"Đơn Hàng Đã Bán"} value={invoiceCount} key="orders" />
+            <DashBoardCard icon={<ShoppingCartOutlined style={{ color: "blue" }} />} title={"Đơn Hàng Đã Bán"} value={soldInvoiceCount} key="soldOrders" />
+            <DashBoardCard icon={<ShoppingCartOutlined style={{ color: "orange" }} />} title={"Đơn Hàng Đã Mua"} value={buyBackInvoiceCount} key="boughtOrders" />            
             <DashBoardCard icon={<ShoppingOutlined style={{ color: "brown" }} />} title={"Số Mặt Hàng"} value={productCount} key="products" />
             <DashBoardCard icon={<DollarCircleOutlined style={{ color: "green" }} />} title={"Tổng Doanh Thu"} value={formatRevenue(totalRevenue)} key="revenue" />
           </Space>
