@@ -340,7 +340,7 @@ function Product() {
               <div className="flex w-[85%]">
                 <Search allowClear onClear={handleRefresh} placeholder="Tìm kiếm theo tên hoặc ID sản phẩm" onSearch={handleSearch} style={{ width: "50%", marginRight: "10px" }} />
                 <Select defaultValue="inStock" placeholder="Chọn loại sản phẩm" onChange={(value) => handleProductTypeChange(value)} style={{ width: 200 }}>
-                  <Select.Option value="inStock">Sản phẩm trong kho</Select.Option>
+                  <Select.Option value="inStock">Sản phẩm bán hàng</Select.Option>
                   <Select.Option value="buyBack">Sản phẩm mua lại</Select.Option>
                 </Select>
               </div>
