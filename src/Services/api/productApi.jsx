@@ -2,6 +2,9 @@ import axios from "../axios/config";
 const getProductAll = () => {
   return axios.get(`/api/Item`, {});
 };
+const getAllBuyBack = () => {
+  return axios.get(`/api/Item/GetAllBuyBack`, {});
+};
 const getItemImage = () => {
   return axios.get(`/api/ItemImage`, {});
 };
@@ -15,10 +18,10 @@ const removeItem = (itemId) => {
 const addItem = (productDetails) => {
   return axios.post(`/api/Item`, productDetails);
 };
-const UploadImageItem = (File,itemId) => {
-  return axios.post(`/api/ItemImage/upload`, File,itemId);
+const UploadImageItem = (File, itemId) => {
+  return axios.post(`/api/ItemImage/upload`, File, itemId);
 };
-const ItemimageDetail = (itemID,count ) => {
+const ItemimageDetail = (itemID, count) => {
   return axios.get(`/api/ItemImage/ItemImages/${itemID}?count=${count}`);
 };
 const edititem = async (itemId, productDetails) => {
@@ -31,4 +34,4 @@ const edititem = async (itemId, productDetails) => {
 const reduceitem = async (itemId, quantity) => {
   return axios.put(`/api/Item/updateQuantity/${itemId}?quantity=${quantity}`);
 };
-export { getProductAll, getProductById, removeItem, addItem,edititem,reduceitem,getItemImage,UploadImageItem,ItemimageDetail };
+export { getProductAll, getAllBuyBack, getProductById, removeItem, addItem, edititem, reduceitem, getItemImage, UploadImageItem, ItemimageDetail };
