@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./Product.scss";
-import { Button, message, Table, Modal, Form, Input, InputNumber, Checkbox } from "antd";
+import { Button, message, Table, Modal, Form, Input, InputNumber, Checkbox,Tabs } from "antd";
 import { fetchProductData } from "../../Features/product/productSlice";
 import { MinusCircleOutlined, EditOutlined, FileAddFilled, DeleteFilled, UploadOutlined } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
@@ -23,6 +23,7 @@ function Product() {
   const [selectedFiles, setSelectedFiles] = useState(null);
   const [selectedTypes, setSelectedTypes] = useState([]); 
   const [filteredData, setFilteredData] = useState(productData);
+  const [filteredDatabuy, setFilteredDatabuy] = useState(productData);
   const [imageUrl, setImageUrl] = useState(""); 
 
   const [form] = Form.useForm();
@@ -61,7 +62,190 @@ function Product() {
 
     return true;
   };
+  const onChange = (key) => {
+    console.log(key);
+  };
+  const columns = [
+    {
+      title: "STT",
+      dataIndex: "itemId",
+      key: "itemId",
+      render: (_, __, index) => index + 1,
+    },
+    {
+      title: "Mã Hàng",
+      dataIndex: "itemId",
+      key: "itemId",
+    },
+    {
+      title: "Tên Hàng",
+      dataIndex: "itemName",
+      key: "itemName",
+      render: (text, record) => (
+        <Link to={`/product/productdetail/${record.itemId}`}>{text}</Link>
+      )
+    },
+    {
+      title: "Mô Tả",
+      dataIndex: "description",
+      key: "description",
+    },
+    {
+      title: "Loại Vàng",
+      dataIndex: "goldType",
+      key: "goldType",
+      width: 100,
+      render: (_, record) => {
+        let goldType = "";
+        if (record.itemName.toLowerCase().includes("10k")) {
+          goldType = "10K";
+        } else if (record.itemName.toLowerCase().includes("14k")) {
+          goldType = "14K";
+        } else if (record.itemName.toLowerCase().includes("18k")) {
+          goldType = "18K";
+        } else if (record.itemName.toLowerCase().includes("24k")) {
+          goldType = "24K";
+        }
+        return goldType;
+      },
+    },
+    {
+      title: "Số lượng",
+      dataIndex: "quantity",
+      key: "quantity",
+      render: (quantity) => (
+        quantity === 0
+          ? <span style={{ color: 'red' }}>Hết hàng</span>
+          : <span>{quantity}</span>
+      ),
+    },
+    {
+      title: "Action",
+      dataIndex: "",
+      key: "action",
+      render: (_, record) => (
+        <div className="flex space-x-2">
+          <button
+            className="text-green-400 hover:text-green-600 transition duration-300"
+            onClick={() => showEditModal(record)}
+          >
+            <EditOutlined />
+          </button>
+          <button
+            className="text-red-400 hover:text-red-600 transition duration-300"
+            onClick={() => showDeleteModal(record)}
+          >
+            <MinusCircleOutlined />
+          </button>
+        </div>
+      ),
+    },
+  ];
+  
+  const columns2 = [
+    {
+      title: "STT",
+      dataIndex: "itemId",
+      key: "itemId",
+      render: (_, __, index) => index + 1,
+    },
+    {
+      title: "Mã Hàng",
+      dataIndex: "itemId",
+      key: "itemId",
+    },
+    {
+      title: "Tên Hàng",
+      dataIndex: "itemName",
+      key: "itemName",
+      render: (text, record) => (
+        <Link to={`/product/productdetail/${record.itemId}`}>{text}</Link>
+      )
+    },
+    {
+      title: "Mô Tả",
+      dataIndex: "description",
+      key: "description",
+    },
+    {
+      title: "Loại Vàng",
+      dataIndex: "goldType",
+      key: "goldType",
+      width: 100,
+      render: (_, record) => {
+        let goldType = "";
+        if (record.itemName.toLowerCase().includes("10k")) {
+          goldType = "10K";
+        } else if (record.itemName.toLowerCase().includes("14k")) {
+          goldType = "14K";
+        } else if (record.itemName.toLowerCase().includes("18k")) {
+          goldType = "18K";
+        } else if (record.itemName.toLowerCase().includes("24k")) {
+          goldType = "24K";
+        }
+        return goldType;
+      },
+    },
+    {
+      title: "Số lượng",
+      dataIndex: "quantity",
+      key: "quantity",
+      render: (quantity) => (
+        quantity === 0
+          ? <span style={{ color: 'red' }}>Hết hàng</span>
+          : <span>{quantity}</span>
+      ),
+    },
+    {
+      title: "Action",
+      dataIndex: "",
+      key: "action",
+      render: (_, record) => (
+        <div className="flex space-x-2">
+          <button
+            className="text-green-400 hover:text-green-600 transition duration-300"
+            onClick={() => showEditModal(record)}
+          >
+            <EditOutlined />
+          </button>
+          <button
+            className="text-red-400 hover:text-red-600 transition duration-300"
+            onClick={() => showDeleteModal(record)}
+          >
+            <MinusCircleOutlined />
+          </button>
+        </div>
+      ),
+    },
+  ];
+  const items = [
+    {
+      key: '1',
+      label: 'Sản phẩm bán',
+      children: (
+        <Table
+        dataSource={filteredData}
+        columns={columns}
+        loading={isLoadingProductData}
+        rowKey="itemId"
+      />
 
+      ),
+    },
+    {
+      key: '2',
+      label: 'Sản phẩm mua lại',
+      children: (
+        <Table
+        dataSource={filteredDatabuy}
+        columns={columns2}
+        loading={isLoadingProductData}
+        rowKey="itemId"
+      />
+
+      ),
+    },
+  ];
   const handleDeleteOk = () => {
     dispatch(removeProduct(selectedProduct.itemId))
       .then(() => {
@@ -198,82 +382,7 @@ function Product() {
     form.resetFields();
   };
 
-  const columns = [
-    {
-      title: "STT",
-      dataIndex: "itemId",
-      key: "itemId",
-      render: (_, __, index) => index + 1,
-    },
-    {
-      title: "Mã Hàng",
-      dataIndex: "itemId",
-      key: "itemId",
-    },
-    {
-      title: "Tên Hàng",
-      dataIndex: "itemName",
-      key: "itemName",
-      render: (text, record) => (
-        <Link to={`/product/productdetail/${record.itemId}`}>{text}</Link>
-      )
-    },
-    {
-      title: "Mô Tả",
-      dataIndex: "description",
-      key: "description",
-    },
-    {
-      title: "Loại Vàng",
-      dataIndex: "goldType",
-      key: "goldType",
-      width: 100,
-      render: (_, record) => {
-        let goldType = "";
-        if (record.itemName.toLowerCase().includes("10k")) {
-          goldType = "10K";
-        } else if (record.itemName.toLowerCase().includes("14k")) {
-          goldType = "14K";
-        } else if (record.itemName.toLowerCase().includes("18k")) {
-          goldType = "18K";
-        } else if (record.itemName.toLowerCase().includes("24k")) {
-          goldType = "24K";
-        }
-        return goldType;
-      },
-    },
-    {
-      title: "Số lượng",
-      dataIndex: "quantity",
-      key: "quantity",
-      render: (quantity) => (
-        quantity === 0
-          ? <span style={{ color: 'red' }}>Hết hàng</span>
-          : <span>{quantity}</span>
-      ),
-    },
-    {
-      title: "Action",
-      dataIndex: "",
-      key: "action",
-      render: (_, record) => (
-        <div className="flex space-x-2">
-          <button
-            className="text-green-400 hover:text-green-600 transition duration-300"
-            onClick={() => showEditModal(record)}
-          >
-            <EditOutlined />
-          </button>
-          <button
-            className="text-red-400 hover:text-red-600 transition duration-300"
-            onClick={() => showDeleteModal(record)}
-          >
-            <MinusCircleOutlined />
-          </button>
-        </div>
-      ),
-    },
-  ];
+  
 
   useEffect(() => {
     dispatch(fetchProductData());
@@ -282,6 +391,8 @@ function Product() {
     if (productData) {
       const filteredProducts = productData.filter(product => !product.isBuyBack && product.status !=="Deleted");
       setFilteredData(filteredProducts);
+      const filteredProductsbuy = productData.filter(product => product.isBuyBack);
+      setFilteredDatabuy(filteredProductsbuy)
     }
   }, [productData]);
 
@@ -307,13 +418,8 @@ function Product() {
         Refresh
       </Button>
       </div>
-      <Table
-        dataSource={filteredData}
-        columns={columns}
-        loading={isLoadingProductData}
-        rowKey="itemId"
-      />
-
+      <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+   
       <Modal
         title="Xóa sản phẩm"
         open={isModalOpen}
