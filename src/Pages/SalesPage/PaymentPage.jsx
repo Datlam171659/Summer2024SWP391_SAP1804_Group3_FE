@@ -211,7 +211,7 @@ const PaymentPage = () => {
     const companyName = "SWJ";
     const status = "Active";
     const now = new Date().toISOString(); 
-
+    const isBuyBack = false;
     console.log("check",promotionId)
     const invoiceData = {
       staffId: staffId,
@@ -224,6 +224,7 @@ const PaymentPage = () => {
       quantity: cartTotalQuantity,
       subTotal: cartTotalAmount,
       createdDate: now,
+      isBuyBack:isBuyBack,
       items: cartItems.map(item => {
         let goldType = "";
         if (item.itemName.toLowerCase().includes("10k")) {
