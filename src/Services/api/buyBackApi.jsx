@@ -98,6 +98,20 @@ const buyBackApi = {
         throw error;
       });
   },
+  createBuyBackInvoice: (invoiceInfor) => {
+    return axiosClient.post('/api/Sales/CreateInvoiceWithItems', invoiceInfor)
+      .then(response => {
+        if (response.data) {
+          return response.data;
+        } else {
+          throw new Error(response.data.message);
+        }
+      })
+      .catch(error => {
+        console.error("There was an error creating the invoice!", error);
+        throw error;
+      });
+  },
 };
 
 export default buyBackApi;
