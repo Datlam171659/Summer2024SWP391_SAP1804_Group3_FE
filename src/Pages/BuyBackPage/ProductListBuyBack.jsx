@@ -130,19 +130,51 @@ const ProductListBuyBack = () => {
 
   const handleAddItems = () => {
     selectedItems.forEach(item => {
-      dispatch(addItem({
+      let goldType = "";
+      if (item.itemName.toLowerCase().includes("10k")) {
+        goldType = "10K";
+      } else if (item.itemName.toLowerCase().includes("14k")) {
+        goldType = "14K";
+      } else if (item.itemName.toLowerCase().includes("18k")) {
+        goldType = "18K";
+      } else if (item.itemName.toLowerCase().includes("24k")) {
+        goldType = "24K";
+      }
+
+      let kara;
+      switch (goldType) {
+        case "10K":
+          kara = buyGold10k;
+          break;
+        case "14K":
+          kara = buyGold14k;
+          break;
+        case "18K":
+          kara = buyGold18k;
+          break;
+        case "24K":
+          kara = buyGold24k;
+          break;
+        default:
+          kara = 0;
+      }
+      const price = item.weight * kara;
+      const items = {
         ...item,
-        quantity: item.quantity
-      }));
+        price: price,
+        quantity: item.quantity,
+      };
+
+      dispatch(addItem(items));
     });
     dispatch(updateCustomerId(tempCustomerId));
     setIsInvoiceModalVisible(false);
     setSelectedItems([]);
-    setTempCustomerId('')
+    setTempCustomerId('');
   };
 
   const handleCloseAddItems = () => {
-    
+
     setIsInvoiceModalVisible(false);
     setSelectedItems([]);
     setTempCustomerId('')
@@ -185,6 +217,37 @@ const ProductListBuyBack = () => {
         .replace(/[^0-9]/g, "")
         .slice(0, 14);
 
+      let goldType = "";
+      if (newItem.itemName.toLowerCase().includes("10k")) {
+        goldType = "10K";
+      } else if (newItem.itemName.toLowerCase().includes("14k")) {
+        goldType = "14K";
+      } else if (newItem.itemName.toLowerCase().includes("18k")) {
+        goldType = "18K";
+      } else if (newItem.itemName.toLowerCase().includes("24k")) {
+        goldType = "24K";
+      }
+
+      let kara;
+      switch (goldType) {
+        case "10K":
+          kara = buyGold10k;
+          break;
+        case "14K":
+          kara = buyGold14k;
+          break;
+        case "18K":
+          kara = buyGold18k;
+          break;
+        case "24K":
+          kara = buyGold24k;
+          break;
+        default:
+          kara = 0;
+      }
+
+      const price = newItem.weight * kara;
+
       const newItemWithId = {
         itemId: `BBI${formattedDateTime}`,
         itemImagesId: "string",
@@ -194,7 +257,7 @@ const ProductListBuyBack = () => {
         sku: "string",
         itemName: newItem.itemName,
         description: newItem.description,
-        price: 0,
+        price: price,
         size: "string",
         weight: newItem.weight,
         createdDate: currentDateTime.toISOString(),
@@ -502,7 +565,7 @@ const ProductListBuyBack = () => {
                 </div>
                 <div className="mt-14 flex justify-between">
                   <span className="text-lg font-semibold text-gray-800">
-                  Tổng tiền trả khách
+                    Tổng tiền trả khách
                   </span>
                   <span className="amount text-xl font-bold text-gray-800">
                     {Number(cartTotalAmount.toFixed(0)).toLocaleString()}
@@ -593,7 +656,7 @@ const ProductListBuyBack = () => {
         </Modal>
 
       </div>
-      {console.log("customerID: ", customerID)}
+      {/* {console.log("cartItems: ", cartItems)} */}
     </div>
 
   );

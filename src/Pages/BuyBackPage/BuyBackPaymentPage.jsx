@@ -29,9 +29,15 @@ const BuyBackPaymentPage = () => {
   const [customerAddress, setCustomerAddress] = useState("");
   const [customerGender, setCustomerGender] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
+  // const [staffId, setStaffId] = useState("");
+
+  // const currentDateTime = new Date();
+  // const formattedDateTime = currentDateTime.toISOString().replace(/[^0-9]/g, "").slice(0, 14);
+  // const invoiceNumber = "BBI" + formattedDateTime;
 
   useEffect(() => {
     dispatch(fetchCustomerData());
+    // setStaffId(localStorage.getItem('nameid'))
   }, [dispatch]);
 
   useEffect(() => {
@@ -55,7 +61,44 @@ const BuyBackPaymentPage = () => {
     if (!customerInfor) {
       message.error("Vui lòng nhập đầy đủ thông tin khách hàng trước khi xác nhận.");
     } else {
-      navigate("/buy-back-page/Payment/PrintReceiptPage");
+      const currentDateTime = new Date();
+      const formattedDateTime = currentDateTime.toISOString().replace(/[^0-9]/g, "").slice(0, 14);
+      const invoiceNumber = "BBI" + formattedDateTime;
+      const staffId = localStorage.getItem('nameid');
+
+      const invoiceInfor = {
+        invoice: {
+          staffId: staffId,
+          customerId: customerInfor.id,
+          invoiceNumber: invoiceNumber,
+          companyName: "PNJ",
+          buyerAddress: customerInfor.address,
+          status: "Active",
+          paymentType: "Tiền mặt",
+          quantity: cartTotalQuantity,
+          subTotal: cartTotalAmount,
+          createdDate: currentDateTime.toISOString(),
+          isBuyBack: true
+        },
+        items: cartItems.map(item => ({
+          itemID: item.itemId,
+          returnPolicyID: "1", 
+          itemQuantity: item.quantity,
+          warrantyExpiryDate: currentDateTime.toISOString(),
+          price: item.price,
+          total: item.price * item.quantity
+        })
+        )
+      };
+      // console.log("invoiceInfor: ", invoiceInfor)
+      buyBackApi.createBuyBackInvoice(invoiceInfor)
+        .then(response => {
+          message.success("Hóa đơn đã được tạo thành công.");
+          navigate("/buy-back-page/Payment/PrintReceiptPage");
+        })
+        .catch(error => {
+          message.error("Có lỗi xảy ra khi tạo hóa đơn.");
+        });
     }
   };
 
@@ -223,7 +266,7 @@ const BuyBackPaymentPage = () => {
           <div className="items-center mb-[15px] pb-[15px] pt-[10px] border-b-[1px]">
             <div className="w-[15%] mr-4 mb-6 flex justify-between items-center">
               <h3 className="text-[20px] font-bold w-full">Thông tin khách hàng</h3>
-              <FormOutlined className="text-[16px] text-gray-900 hover:text-gray-600 cursor-zoom-in" onClick={handleEditCustomerInfo}/>
+              <FormOutlined className="text-[16px] text-gray-900 hover:text-gray-600 cursor-zoom-in" onClick={handleEditCustomerInfo} />
             </div>
             <div className="customer-details">
               <div className="w-1/5 flex justify-between text-[16px] mb-2">
@@ -325,6 +368,7 @@ const BuyBackPaymentPage = () => {
           </Form.Item>
         </Form>
       </Modal>
+      {/* {console.log("customerInfor: ", customerInfor)} */}
     </ConfigProvider>
   );
 };
