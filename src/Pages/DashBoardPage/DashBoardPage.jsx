@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { Line } from '@ant-design/charts';
 import { Pie } from '@ant-design/plots';
 import '../DashBoardPage/DashBoardPage.scss';
-import { Card, Space, Table, DatePicker } from 'antd';
+import { Card, Space, Table, DatePicker, Tooltip } from 'antd';
 import { UserOutlined, ShoppingCartOutlined, ShoppingOutlined, DollarCircleOutlined, TeamOutlined } from '@ant-design/icons';
 import CustomerApi from '../../Services/api/CustomerApi';
 import { getinvoiceAll, GetMonthlyRevenue } from '../../Services/api/InvoiceApi'
@@ -81,11 +81,11 @@ const DashBoardPage = () => {
       try {
         const response = await getinvoiceAll();
         if (response && Array.isArray(response.data)) {
-          const soldInvoices = response.data.filter(invoice => !invoice.isBuyBack);
-          const buyBackInvoices = response.data.filter(invoice => invoice.isBuyBack);
-          setInvoiceCount(response.data.length); 
-          setSoldInvoiceCount(soldInvoices.data.length);
-          setBuyBackInvoiceCount(buyBackInvoices.data.length);
+          const soldInvoices = response.data.filter(invoice => invoice.isBuyBack === false);
+          const buyBackInvoices = response.data.filter(invoice => invoice.isBuyBack === true);
+          // setInvoiceCount(response.data.length); 
+          setSoldInvoiceCount(soldInvoices.length);
+          setBuyBackInvoiceCount(buyBackInvoices.length);
         }
       } catch (error) {
         console.error(`Error: ${error}`);
@@ -163,9 +163,11 @@ const DashBoardPage = () => {
         rowPadding: 5,
       },
     },
+    tooltip: false,
   };
 
   const config = {
+    tooltip: false,
     data: filteredRevenue,
     xField: 'date',
     yField: 'value',
@@ -183,6 +185,8 @@ const DashBoardPage = () => {
       label: {
         style: {
           fill: '#000000',
+          fontSize: 12,
+          fontWeight: 'bold',
         },
         formatter: (text) =>
           new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(text),
