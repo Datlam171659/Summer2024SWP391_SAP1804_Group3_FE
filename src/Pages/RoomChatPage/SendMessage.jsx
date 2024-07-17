@@ -2,6 +2,7 @@ import { collection, serverTimestamp, addDoc } from 'firebase/firestore';
 import React, { useState } from 'react'
 import { db } from '../firebase/ChatRoomFirebase';
 import { message } from 'antd';
+
 const SendMessage = () => {
     const [value, setValue] = useState("");
     const uniqueName = localStorage.getItem('UniqueName');
