@@ -107,7 +107,7 @@ function ProductDetail() {
                 </Button>
               )}
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 text-black">
               <div className="my-2">
                 <strong>Tên sản phẩm:</strong>
                 {isEditing ? (
@@ -193,7 +193,7 @@ function ProductDetail() {
                 )}
               </div>
               </div>
-                <div className="my-4">
+                <div className="my-4 text-black">
                   <strong>QR Code:</strong>
                   <div className="mt-4">
                     {qrCodeEnabled && <QRCode value={product.itemId} />}

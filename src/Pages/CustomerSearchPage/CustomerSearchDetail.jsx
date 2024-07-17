@@ -158,7 +158,7 @@ function CustomerSearchDetail() {
   }
 
   return (
-    <div className='m-6 flex-col justify-center align-middle mx-8'>
+    <div className='m-6 flex-col justify-center align-middle mx-8 text-black'>
       <Button 
         className="hover:bg-gray-900 font-bold rounded ml-2 mb-2"
         icon={<ArrowLeftOutlined />} 
