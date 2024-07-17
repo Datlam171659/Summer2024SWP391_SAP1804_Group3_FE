@@ -22,7 +22,7 @@ import Promotion from "../Pages/Promotion/Promotion";
 import RoleBasedRoute from "../Components/Common/RoleBasedRoute";
 import NoAccess from "../Pages/Authen/NoAccess";
 import StaffStationPage from "../Pages/StaffStationPage/StaffStationPage";
-
+import ChatRoom from "../Pages/RoomChatPage/ChatRoom";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -151,6 +151,16 @@ const router = createBrowserRouter([
       <Authentication>
         <RootLayoput>
           <DashBoardPage />
+        </RootLayoput>
+      </Authentication>
+    ),
+  },
+  {
+    path: "chat-room",
+    element: (
+      <Authentication>
+        <RootLayoput>
+          <ChatRoom />
         </RootLayoput>
       </Authentication>
     ),

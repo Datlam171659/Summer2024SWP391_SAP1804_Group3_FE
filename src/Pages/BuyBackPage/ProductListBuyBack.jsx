@@ -437,7 +437,7 @@ const ProductListBuyBack = () => {
   ];
 
   return (
-    <div>
+    <div className="text-black">
       <h1 className="text-2xl font-bold mb-0 ml-5 mt-4">Mua Lại Trang Sức</h1>
       <div className="flex flex-col lg:flex-row">
         <div className="my-1 w-screen lg:w-full p-4">
