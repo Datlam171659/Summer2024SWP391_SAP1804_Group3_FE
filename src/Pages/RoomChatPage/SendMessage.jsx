@@ -6,9 +6,9 @@ import { message } from 'antd';
 const SendMessage = () => {
     const [value, setValue] = useState("");
     const uniqueName = localStorage.getItem('UniqueName');
+    const role = localStorage.getItem("role");
     const messageTimeout = 3000;
     let lastMessageTime = null;
-
     const showMessageError = (messageText) => {
       const now = Date.now();
       if (!lastMessageTime || now - lastMessageTime > messageTimeout) {
@@ -26,18 +26,18 @@ const SendMessage = () => {
           await addDoc(collection(db, "messages"), {
             text: value,
             name: uniqueName,
+            role: role,
             createdAt: serverTimestamp(),
           })
         } catch(error) {
           console.log(error);
         }
-        console.log(value);
         setValue("");
     }
 
   return (
     <div className='bg-gray-200 fixed bottom-0 w-full py-10 shadow-lg pl-10 '>
-        <form onSubmit={handleSendMessage} className='w-3/4 px-2 flex  '>
+        <form onSubmit={handleSendMessage} className='w-3/4  pl-10 flex  '>
             <input value={value} onChange={e => setValue(e.target.value)} 
             className='input text-black w-full 
                         focus:outline-none bg-gray-100 rounded-r-none' type='text'/>
