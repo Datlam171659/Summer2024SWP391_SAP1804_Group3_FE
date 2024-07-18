@@ -13,7 +13,7 @@ const ChatBox = () => {
 
     useEffect(scrollToBottom, [messages])
 
-    useEffect(() => {
+    useEffect(() => { 
     const q = query(
         collection(db, "messages"),
         orderBy("createdAt"),
@@ -31,7 +31,7 @@ const ChatBox = () => {
   }, []);
 
   return (
-    <div className="pb-44 pt-20 containerWrap">
+    <div className="pb-44 pt-20 max-h-[80vh] overflow-y-auto containerWrap">
       {messages.map((message) => (
         <Message key={message.id} message={message} />
       ))}

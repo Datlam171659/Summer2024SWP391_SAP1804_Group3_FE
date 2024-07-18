@@ -23,6 +23,7 @@ import RoleBasedRoute from "../Components/Common/RoleBasedRoute";
 import NoAccess from "../Pages/Authen/NoAccess";
 import StaffStationPage from "../Pages/StaffStationPage/StaffStationPage";
 import ChatRoom from "../Pages/RoomChatPage/ChatRoom";
+import OrderPage from "../Pages/OrderPage/OrderPage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -82,6 +83,10 @@ const router = createBrowserRouter([
       {
         path: "no-access",
         element: <NoAccess />,
+      },
+      {
+        path: "orders",
+        element: <OrderPage />,
       },
       {
         path: "user",

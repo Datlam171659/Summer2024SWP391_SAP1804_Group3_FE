@@ -77,6 +77,12 @@ function CustomerSearchDetail() {
       key: 'paymentType',
     },
     {
+      title: 'Loại đơn hàng',
+      dataIndex: 'isBuyBack',
+      key: 'isBuyBack',
+      render: (isBuyBack) => (isBuyBack ? 'Mua lại' : 'Bán ra'),
+    },
+    {
       title: 'Ngày tạo',
       dataIndex: 'createdDate',
       key: 'createdDate',
@@ -124,9 +130,9 @@ function CustomerSearchDetail() {
       key: '1',
       label: 'Hóa đơn',
       children: (
-        <Table 
-          columns={columns} 
-          dataSource={customerInvoices} 
+        <Table
+          columns={columns}
+          dataSource={customerInvoices}
           loading={invoicesLoading}
           rowKey="id"
         />
@@ -142,8 +148,8 @@ function CustomerSearchDetail() {
           ) : hasRewards ? (
             <div>
               <h2 className='text-2xl font-bold'>Điểm của khách hàng</h2>
-             <p className='my-3 text-xl'> Điểm :{rewards?.pointsTotal}</p>
-             <p className='my-3 text-xl'>Hạng của khách hàng là:{calculateRewardLevel(rewards?.pointsTotal)}</p>
+              <p className='my-3 text-xl'> Điểm :{rewards?.pointsTotal}</p>
+              <p className='my-3 text-xl'>Hạng của khách hàng là:{calculateRewardLevel(rewards?.pointsTotal)}</p>
             </div>
           ) : (
             <p>Bạn chưa có điểm. Hãy mua hàng để tích điểm!</p>
@@ -159,9 +165,9 @@ function CustomerSearchDetail() {
 
   return (
     <div className='m-6 flex-col justify-center align-middle mx-8 text-black'>
-      <Button 
+      <Button
         className="hover:bg-gray-900 font-bold rounded ml-2 mb-2"
-        icon={<ArrowLeftOutlined />} 
+        icon={<ArrowLeftOutlined />}
         onClick={handleGoBack} />
       <h1 className='text-4xl uppercase font-bold'>Trang thông tin khách hàng</h1>
       <div className='mt-8 flex'>
@@ -171,19 +177,19 @@ function CustomerSearchDetail() {
               <p>Đợi chút.....</p>
             ) : customer ? (
               <>
-              <div className='flex mr-3'>
-              <UserOutlined className='mr-6 text-7xl mt-3' />
-              <div className='flex-col'>
-              <div className='flex w-[500%] mt-5 mr-'>
-                  <h1 className='mr-6 text-xl font-bold uppercase'>Tên:</h1>
-                  <p className='text-lg'>{customer.customerName}</p>
+                <div className='flex mr-3'>
+                  <UserOutlined className='mr-6 text-7xl mt-3' />
+                  <div className='flex-col'>
+                    <div className='flex w-[500%] mt-5 mr-'>
+                      <h1 className='mr-6 text-xl font-bold uppercase'>Tên:</h1>
+                      <p className='text-lg'>{customer.customerName}</p>
+                    </div>
+                    <div className='flex w-[500%] mt-3'>
+                      <h1 className='mr-6 text-xl font-bold uppercase'>Số điện thoại:</h1>
+                      <p className='text-lg'>{customer.phoneNumber}</p>
+                    </div>
+                  </div>
                 </div>
-                <div className='flex w-[500%] mt-3'>
-                  <h1 className='mr-6 text-xl font-bold uppercase'>Số điện thoại:</h1>
-                  <p className='text-lg'>{customer.phoneNumber}</p>
-                </div>
-                </div>
-              </div>      
               </>
             ) : (
               <p>Không tìm thấy thông tin khách hàng.</p>
@@ -218,18 +224,18 @@ function CustomerSearchDetail() {
       </div>
       <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
       <Modal title="Chi tiết hóa đơn" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel} className='w-[1500px] ml-[500px]'
-      style= {{ top: '40%', transform: 'translateY(-50%)',transform: 'translateX(50%)' }}
+        style={{ top: '40%', transform: 'translateY(-50%)', transform: 'translateX(50%)' }}
       >
         {loading ? (
           <p>Loading...</p>
         ) : invoiceIdDetail && invoiceIdDetail.data ? (
-          <Table 
-            columns={columnsmodal} 
-            dataSource={invoiceIdDetail.data} 
-            rowKey="itemId" 
-            pagination={false} 
+          <Table
+            columns={columnsmodal}
+            dataSource={invoiceIdDetail.data}
+            rowKey="itemId"
+            pagination={false}
             className='w-full'
-          />      
+          />
         ) : (
           <p>Không có dữ liệu hóa đơn.</p>
         )}

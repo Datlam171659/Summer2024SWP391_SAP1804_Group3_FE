@@ -10,7 +10,7 @@ import InvoiceBuyBack from "../../Components/Common/InvoiceBuyBack";
 
 function BuyBackSuccessPaymentPage() {
   const dispatch = useDispatch();
-  const handleReset = () => {
+  const handleReset = () => { 
     dispatch(resetCart());
   };
  
@@ -19,6 +19,8 @@ function BuyBackSuccessPaymentPage() {
   const customerInfor = useSelector((state) => state.buyBackCart.customerInfor);
   const cartTotalQuantity = useSelector((state) => state.buyBackCart.cartTotalQuantity);
   const cartTotalAmount = useSelector((state) => state.buyBackCart.cartTotalAmount);
+  const invoiceNumber = useSelector((state) => state.buyBackCart.invoiceNumber);
+
   const invoiceComponentRef = useRef();
 
   useEffect(() => {
@@ -60,6 +62,7 @@ function BuyBackSuccessPaymentPage() {
           customerInfor={customerInfor}
           cartTotalQuantity={cartTotalQuantity}
           cartTotalAmount={cartTotalAmount}
+          invoiceNumber={invoiceNumber}
         />
       </div>
       {console.log("cartItems: ", cartItems)}

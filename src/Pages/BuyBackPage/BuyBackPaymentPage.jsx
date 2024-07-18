@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Input, Table, Select, Space, ConfigProvider, Spin, Form, message, Modal } from "antd";
 import { fetchCustomerData } from "../../Features/buy-back/buyBackCustomerSlice";
-import { resetCart, updateCustomerInfo } from "../../Features/buy-back/buyBackCartSlice";
+import { resetCart, updateCustomerInfo, updateInvoiceNumber } from "../../Features/buy-back/buyBackCartSlice";
 import buyBackApi from "../../Services/api/buyBackApi";
 import { EditOutlined, FormOutlined } from "@ant-design/icons";
 
@@ -66,6 +66,8 @@ const BuyBackPaymentPage = () => {
       const invoiceNumber = "BBI" + formattedDateTime;
       const staffId = localStorage.getItem('nameid');
 
+      dispatch(updateInvoiceNumber(invoiceNumber));
+
       const invoiceInfor = {
         invoice: {
           staffId: staffId,
@@ -90,7 +92,7 @@ const BuyBackPaymentPage = () => {
         })
         )
       };
-      // console.log("invoiceInfor: ", invoiceInfor)
+      console.log("invoiceInfor: ", invoiceInfor)
       buyBackApi.createBuyBackInvoice(invoiceInfor)
         .then(response => {
           message.success("Hóa đơn đã được tạo thành công.");
