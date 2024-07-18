@@ -30,7 +30,7 @@ const ExchangeRatePage = () => {
 
     return (
 
-        <div className='w-full block'>
+        <div className='w-full block text-black'>
             <div className="w-11/12 mt-10 block justify-center mx-auto">
                 <h2 className="w-full text-center text-2xl font-semibold">Giá Vàng Hôm Nay</h2>
                 <div className="button-container w-full flex justify-center mt-9">
