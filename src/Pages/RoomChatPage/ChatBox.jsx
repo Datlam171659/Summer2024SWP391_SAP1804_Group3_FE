@@ -13,7 +13,7 @@ const ChatBox = () => {
 
     useEffect(scrollToBottom, [messages])
 
-    useEffect(() => {
+    useEffect(() => { 
     const q = query(
         collection(db, "messages"),
         orderBy("createdAt"),
@@ -31,6 +31,7 @@ const ChatBox = () => {
   }, []);
 
   return (
+
     <div className="flex flex-col h-[calc(100vh-8rem)] border border-gray-300 overflow-hidden">
       <div className="flex-1 overflow-y-auto">
       {messages.map((message) => (

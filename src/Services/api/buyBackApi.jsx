@@ -37,6 +37,24 @@ const buyBackApi = {
         throw error;
       });
   },
+
+  getinvoiceAll: () => {
+    return axiosClient.get('/api/Sales/Invoices')
+      .then(response => {
+        const responseData = response.data;
+        if (responseData) {
+          const orderData = responseData.data;
+          return orderData;
+        } else {
+          throw new Error(responseData.message);
+        }
+      })
+      .catch(error => {
+        console.error("There was an error fetching order information!", error);
+        throw error;
+      });
+  },
+
   createCustomer: (customerInfo) => {
     return axiosClient.post('/api/Customer', customerInfo)
       .then(response => {

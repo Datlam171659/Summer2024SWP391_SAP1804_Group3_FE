@@ -575,11 +575,11 @@ const ProductListBuyBack = () => {
               </div>
             </div>
             <div className="cart-summary mt-6 bg-white p-6 pt-2 rounded-lg shadow-md  w-[49%]">
-              <Button
+              {/* <Button
                 onClick={showAddItemModal}
                 className="w-full h-14 bg-slate-600 text-white uppercase font-bold">
                 Thêm sản phẩm khác
-              </Button>
+              </Button> */}
               <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"></hr>
               <div>
                 <Button onClick={handleCreateOrder} className="w-full h-14 bg-black text-white uppercase font-bold">

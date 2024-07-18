@@ -61,7 +61,7 @@ function Sidebar() {
     {
       icon: <InboxOutlined style={{ fontSize: "16px" }} />,
       title: 'Đơn hàng',
-      to: "",
+      to: "/orders",
 
     },
 

@@ -1,14 +1,14 @@
 import React from "react";
-import { format } from "date-fns"; 
+import { format } from "date-fns";
 import { vi } from 'date-fns/locale';
 
-const Message = ({ message }) => {  
-  const uniqueName = localStorage.getItem('UniqueName');  
+const Message = ({ message }) => {
+  const uniqueName = localStorage.getItem('UniqueName');
   const messagePosition = message.name === uniqueName ? "chat-end" : "chat-start";
   const formattedDate = message.createdAt ? format(message.createdAt.toDate(), "dd/MM/yyyy HH:mm", { locale: vi }) : '';
 
   const getRoleColorClass = (role) => {
-    switch(role) {
+    switch (role) {
       case "admin":
         return "text-red-500";
       case "manager":
@@ -21,7 +21,7 @@ const Message = ({ message }) => {
   };
 
   const getRoleDisplayName = (role) => {
-    switch(role) {
+    switch (role) {
       case "admin":
         return "Admin";
       case "manager":
@@ -38,7 +38,7 @@ const Message = ({ message }) => {
       <div className={`chat ${messagePosition} pl-35 ml-10 pr-10`}>
         <div className="chat-image avatar">
           <div className="w-10 rounded-full">
-            <img src={`${process.env.PUBLIC_URL}/avt-dang-iu.jpg`} alt="My Image"/> 
+            <img src={`${process.env.PUBLIC_URL}/avt-dang-iu.jpg`} alt="My Image" />
           </div>
         </div>
         <div className={`chat-header font-bold ${getRoleColorClass(message.role)}`}>
