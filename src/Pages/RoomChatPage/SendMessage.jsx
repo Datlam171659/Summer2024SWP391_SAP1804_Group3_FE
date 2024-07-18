@@ -37,7 +37,7 @@ const SendMessage = () => {
 
   return (
     <div className='bg-gray-200 fixed bottom-0 w-full py-10 shadow-lg pl-10 '>
-        <form onSubmit={handleSendMessage} className='w-3/4  pl-10 flex  '>
+        <form onSubmit={handleSendMessage} className='w-3/4 ml-12 flex'>
             <input value={value} onChange={e => setValue(e.target.value)} 
             className='input text-black w-full 
                         focus:outline-none bg-gray-100 rounded-r-none' type='text'/>

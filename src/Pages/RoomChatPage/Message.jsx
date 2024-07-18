@@ -35,7 +35,7 @@ const Message = ({ message }) => {
 
   return (
     <div className="w-full">
-      <div className={`chat ${messagePosition} pl-40 ml-10`}>
+      <div className={`chat ${messagePosition} pl-35 ml-10 pr-10`}>
         <div className="chat-image avatar">
           <div className="w-10 rounded-full">
             <img src={`${process.env.PUBLIC_URL}/avt-dang-iu.jpg`} alt="My Image" />
@@ -44,11 +44,10 @@ const Message = ({ message }) => {
         <div className={`chat-header font-bold ${getRoleColorClass(message.role)}`}>
           {`${message.name} (${getRoleDisplayName(message.role)})`}
         </div>
-        <div className="chat-bubble bg-white text-black">{message.text}</div>
-        {message.imageUrl && (
-          <img src={message.imageUrl} alt="Sent" className="w-full max-w-xs mt-2" />
-        )}
-        <div className="text-gray-500 mt-2 text-xs">{formattedDate}</div>
+        <div className="chat-bubble bg-white text-black">
+        <div dangerouslySetInnerHTML={{ __html: message.text.replace(/\n/g, '<br>') }} />
+        </div>
+        <div className="text-gray-500 mt-2 text-xs">{formattedDate}</div> 
       </div>
     </div>
   );
