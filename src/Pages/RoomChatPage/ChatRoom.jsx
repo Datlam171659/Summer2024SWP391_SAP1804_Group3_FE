@@ -4,7 +4,7 @@ import SendMessage from './SendMessage'
 
 const ChatRoom = () => {
   return (
-    <div className='w-3/4'>
+    <div className='w-full'>
         <ChatBox/>
         <SendMessage/>
     </div>

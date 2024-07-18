@@ -31,11 +31,13 @@ const ChatBox = () => {
   }, []);
 
   return (
-    <div className="pb-44 pt-20 containerWrap">
+    <div className="flex flex-col h-[calc(100vh-8rem)] border border-gray-300 overflow-hidden">
+      <div className="flex-1 overflow-y-auto">
       {messages.map((message) => (
         <Message key={message.id} message={message} />
       ))}
       <div ref={messagesEndRef}></div>
+      </div>
     </div>
   );
 };
