@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchPromotions, approvePromotion, removePromotion, rejectPromotion } from '../../Features/Promotion/promotionallSlice';
 import { Button, message, Table, Modal } from "antd";
 import { DeleteOutlined } from '@ant-design/icons';
+import { collection, serverTimestamp, addDoc } from 'firebase/firestore';
+import { db } from '../firebase/ChatRoomFirebase';
 
 function Promotion() {
   const dispatch = useDispatch();
@@ -24,13 +26,34 @@ function Promotion() {
     }
   }, [promotionStatus, dispatch]);
 
+  const postMessageToChatRoom = async (messageContent) => {
+    try {
+      await addDoc(collection(db, "messages"), {
+        text: messageContent,
+        name: localStorage.getItem('UniqueName'), 
+        role: localStorage.getItem("role"), 
+        createdAt: serverTimestamp(),
+      });
+    } catch (error) {
+      console.error('Failed to post message to chat room', error);
+    }
+  };
+
   const handleApprove = async () => {
     if (selectedPromotion) {
       try {
         await dispatch(approvePromotion(selectedPromotion.id)).unwrap();
         setTimeout(() => {
-          message.success('Promotion approved successfully');
+          message.success('Giảm giá đã được chấp nhận');
         }, 500);
+
+        const messageContent = `<b>Mã giảm giá:</b> ${selectedPromotion.id}
+        <b>Phần trăm giảm:</b> ${selectedPromotion.discountPct}%
+        <b>Nội dung:</b> ${selectedPromotion.description}
+        <b>Trạng thái:</b> <span style="color: green; font-weight: bold;">Đồng Ý</span>
+        `;
+        await postMessageToChatRoom(messageContent);
+
         setIsModalOpen(false);
         dispatch(fetchPromotions()); 
       } catch (err) {
@@ -41,11 +64,20 @@ function Promotion() {
 
   const handleReject = async () => {
     if (selectedPromotion) {
+      console.log(selectedPromotion)
       try {
-        await dispatch(rejectPromotion(selectedPromotion)).unwrap();
+        await dispatch(rejectPromotion(selectedPromotion.id)).unwrap();
         setTimeout(() => {
-          message.success('Promotion rejected successfully');
+          message.success('Giảm giá đã bị từ chối');
         }, 500);
+
+        const messageContent = `<b>Mã giảm giá:</b> ${selectedPromotion.id}
+        <b>Phần trăm giảm:</b> ${selectedPromotion.discountPct}%
+        <b>Nội dung:</b> ${selectedPromotion.description}
+        <b>Trạng thái:</b> <span style="color: red; font-weight: bold;">Từ Chối</span>
+        `;
+        await postMessageToChatRoom(messageContent);
+
         setIsRejectModalOpen(false);
         dispatch(fetchPromotions());
       } catch (err) {
@@ -74,8 +106,8 @@ function Promotion() {
     setSelectedPromotionForDelete(null);
   };
 
-  const showRejectModal = (id) => {
-    setSelectedPromotion(id);
+  const showRejectModal = (promotion) => {
+    setSelectedPromotion(promotion);
     setIsRejectModalOpen(true);
   };
   
@@ -118,7 +150,7 @@ function Promotion() {
     setIsDeleteModalOpen(false); 
   }
   };
-  console.log(selectedPromotionForDelete)
+  // console.log(selectedPromotionForDelete)
   const columns = [
     {
       title: "id",
@@ -169,7 +201,7 @@ function Promotion() {
             Duyệt
           </Button>
           <Button
-          onClick={() => showRejectModal(record.id)}
+          onClick={() => showRejectModal(record)}
           className="text-blue-500 hover:text-red-700 transition duration-200"
           disabled={record.status === 'Duyệt' || record.status === 'Từ Chối'}
         >
