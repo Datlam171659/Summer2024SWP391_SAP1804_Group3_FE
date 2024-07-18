@@ -333,7 +333,7 @@ function Product() {
       }}
     >
       <div className="w-full mt-12">
-        <h1 className="text-2xl font-bold mb-0 ml-5">Sản phẩm</h1>
+        <h1 className="text-2xl font-bold mb-0 ml-5 text-black">Sản Phẩm</h1>
         <div className="w-full flex justify-center">
           <div className="Product w-[96%] mt-4">
             <div className="w-full mb-1 flex justify-between">
