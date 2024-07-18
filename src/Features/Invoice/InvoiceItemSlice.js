@@ -16,6 +16,7 @@ export const createInvoiceWithItems = createAsyncThunk(
         invoiceData.quantity,
         invoiceData.subTotal,
         invoiceData.createdDate,
+        invoiceData.isBuyBack,
         invoiceData.items
       )
    

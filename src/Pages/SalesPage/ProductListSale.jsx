@@ -445,7 +445,7 @@ console.log(filteredProducts)
   };
 
   return (
-    <div className="product-list-container">
+    <div className="product-list-container text-black">
       <div className="header">
         <h2 className="title">Cửa hàng trang sức</h2>
         <div className="search-container">

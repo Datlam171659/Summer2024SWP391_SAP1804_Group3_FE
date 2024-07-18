@@ -127,10 +127,6 @@ const CustomerSearchPage = () => {
             dataIndex: 'email'
         },
         {
-            title: strCustomerSearch.Points,
-            dataIndex: 'points'
-        },
-        {
             title: strCustomerSearch.Actions,
             key: 'actions',
             render: (text, record) => (
