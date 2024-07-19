@@ -113,7 +113,7 @@ const Reproduct = React.forwardRef(({ cartItems, customerInfor }, ref) => {
 
     return (
         <div ref={ref} className="p-8">
-            <h2 className="text-2xl font-bold text-center mb-4">GIẤY BẢO HÀNH</h2>
+            <h2 className="text-2xl font-bold text-center mb-4">GIẤY TRả HÀNG</h2>
             <ul className="text-base mb-2">
                 <li className="text-sm font-semibold">Khách hàng: {customerInfor.customerName}</li>
                 <li className="text-sm font-semibold">Địa chỉ: {customerInfor.address}</li>
