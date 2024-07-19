@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom';
-import { Line } from '@ant-design/charts';
+import { Line, Column } from '@ant-design/charts';
 import { Pie } from '@ant-design/plots';
 import '../DashBoardPage/DashBoardPage.scss';
-import { Card, Space, Table, DatePicker, Tooltip } from 'antd';
+import { Card, Space, Table, DatePicker } from 'antd';
 import { UserOutlined, ShoppingCartOutlined, ShoppingOutlined, DollarCircleOutlined, TeamOutlined } from '@ant-design/icons';
 import CustomerApi from '../../Services/api/CustomerApi';
 import { getinvoiceAll, GetMonthlyRevenue } from '../../Services/api/InvoiceApi'
 import { getProductAll } from '../../Services/api/productApi'
 import userkApi from "../../Services/api/UserApi";
 import DashBoardCard from './DashboardCard';
-import Title from 'antd/es/skeleton/Title';
-import moment from 'moment';
 const { RangePicker } = DatePicker;
 
 const DashBoardPage = () => {
@@ -19,7 +16,6 @@ const DashBoardPage = () => {
   const [userCount, setUserCount] = useState(0);
   const [managerCount, setManagerCount] = useState(0);
   const [staffCount, setStaffCount] = useState(0);
-  const [invoiceCount, setInvoiceCount] = useState(0);
   const [productCount, setProductCount] = useState(0);
   const [monthlyRevenue, setMonthlyRevenue] = useState([]);
   const [filteredRevenue, setFilteredRevenue] = useState([]);
@@ -28,7 +24,7 @@ const DashBoardPage = () => {
   const [topStaff, setTopStaff] = useState([]);
   const [soldInvoiceCount, setSoldInvoiceCount] = useState(0);
   const [buyBackInvoiceCount, setBuyBackInvoiceCount] = useState(0);
-  
+  const [monthlyCustomers, setMonthlyCustomers] = useState([]);
 
   useEffect(() => {
     const fetchCustomerCount = async () => {
@@ -124,12 +120,44 @@ const DashBoardPage = () => {
       }
     };
 
+    const fetchMonthlyCustomers = async () => {
+      try {
+        const response = await CustomerApi.getMonthlyCustomers();
+        if (Array.isArray(response)) {
+          const formattedData = response.map(item => ({
+            month: item.key,
+            value: item.value
+          }));
+          setMonthlyCustomers(formattedData);
+          }
+        } catch (error) {
+        console.error(`Error: ${error}`);
+      }
+    };
+    
     fetchCustomerCount();
     fetchInvoiceCount();
     fetchProductCount();
     fetchUserCount();
     fetchMonthlyRevenue();
+    fetchMonthlyCustomers();
   }, []);
+
+  const columnConfig = {
+    data: monthlyCustomers,
+    xField: 'month',
+    yField: 'value',
+    label: {
+      position: 'top',
+      style: {
+        fill: '#000000', 
+        fontSize: 14, 
+        fontWeight: 'bold', 
+        opacity: 1,
+      },
+    },
+    tooltip: false
+  };
 
   const formatRevenue = (value) => {
     return new Intl.NumberFormat().format(value) + ' VNĐ';
@@ -263,10 +291,10 @@ const DashBoardPage = () => {
             <div className="line-chart-container">
               <Card title="Doanh số bán hàng theo tháng" style={{ width: '100%' }}>
                 <RangePicker onChange={handleDateRangeChange} picker="month" format="YYYY-MM" style={{ marginBottom: 20 }} />
-                <Line {...config} className="w-full"/>
+                <Line {...config} className="w-3/4"/>
               </Card>
             </div>
-            <div className='w-full flex justify-between'>
+            <div className='w-full flex justify-between mt-10'>
               <div className="top-staff">
                 <Card title="Top 3 nhân viên bán được nhiều nhất trong tháng:" className="card-top-staff w-full">
                   <Table columns={staffColumns} dataSource={topStaff} rowKey="id" pagination={false} key="staffTable" />
@@ -281,8 +309,13 @@ const DashBoardPage = () => {
 
           </div>
           <div className='right-content'>
-            <div className="pie-chart-container h-[557.27px]">
-              <Card title="Tỉ lệ người dùng hệ thống" className="card-pie-chart w-[500px] h-full">
+            <div className="column-chart-container">
+              <Card title="Số khách hàng mới hàng tháng" style={{ width: '95%' }}>
+                <Column {...columnConfig} className="w-3/4" />
+              </Card>
+            </div>
+            <div className="pie-chart-container h-[585px]">
+              <Card title="Tỉ lệ người dùng hệ thống" className="card-pie-chart w-[400px] h-full mt-10">
                 <Pie {...pieConfig} />
               </Card>
             </div>

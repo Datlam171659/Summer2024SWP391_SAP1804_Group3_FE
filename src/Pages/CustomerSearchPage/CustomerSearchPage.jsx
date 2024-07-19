@@ -107,7 +107,7 @@ const CustomerSearchPage = () => {
             title: strCustomerSearch.Customername,
             dataIndex: 'customerName',
             render: (text, record) =>(
-                <Link to={`/customer/customerdetail/${record.id}`}>{text}</Link>
+                <Link className="text-blue-500" to={`/customer/customerdetail/${record.id}`}>{text}</Link>
               )  
         },
         {
@@ -131,8 +131,8 @@ const CustomerSearchPage = () => {
             key: 'actions',
             render: (text, record) => (
                 <Space size="middle">
-                    <EditOutlined onClick={() => handleUpdate(record)} />
-                    <DeleteOutlined onClick={() => handleDelete(record.id)} />
+                    <EditOutlined className='text-yellow-500' onClick={() => handleUpdate(record)} />
+                    <DeleteOutlined className='text-red-500' onClick={() => handleDelete(record.id)} />
                 </Space>
             )
         }

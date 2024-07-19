@@ -171,7 +171,7 @@ function CustomerSearchDetail() {
         onClick={handleGoBack} />
       <h1 className='text-4xl uppercase font-bold'>Trang thông tin khách hàng</h1>
       <div className='mt-8 flex'>
-        <div className='bg-white px-32 pt-2 rounded-lg shadow-md w-full ml-1 flex justify-center'>
+        <div className='bg-white text-black px-32 pt-2 rounded-lg shadow-md w-full ml-1 flex justify-center'>
           <div>
             {customerLoading ? (
               <p>Đợi chút.....</p>

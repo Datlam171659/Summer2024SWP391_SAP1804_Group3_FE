@@ -231,7 +231,7 @@ function Product() {
       dataIndex: "itemName",
       key: "itemName",
       render: (text, record) => (
-        <Link to={`/product/productdetail/${record.itemId}`}>{text}</Link>
+        <Link className="text-blue-500" to={`/product/productdetail/${record.itemId}`}>{text}</Link>
       )
     },
     {
@@ -363,7 +363,7 @@ function Product() {
                   onClick={handleRefresh}
                   style={{ marginBottom: 16, marginLeft: 16 }}
                 >
-                  Refresh
+                  Làm mới
                 </Button>
               </div>
             </div>

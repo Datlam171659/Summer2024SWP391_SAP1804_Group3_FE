@@ -78,7 +78,7 @@ const Login = () => {
           </div>
           <div className="login-content">
             <div className="login-title">
-              <h3 className="font-bold">LOG IN</h3>
+              <h3 className="font-bold text-black">LOG IN</h3>
             </div>
 
             <Form

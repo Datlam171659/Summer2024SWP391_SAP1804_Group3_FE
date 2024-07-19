@@ -17,7 +17,7 @@ const getCustomerByEmail = async (email) => {
 
 const getCustomerByPhoneNumber = async (phoneNumber) => {
     const response = await axios.get(`${baseURL}/phone/${phoneNumber}`); 
-    console.log('getCustomerByPhoneNumber response:', response);
+    // console.log('getCustomerByPhoneNumber response:', response);
     return response.data;
 }
 
@@ -35,6 +35,11 @@ const updateCustomer = async (customerId, customerData) => {
     return response.data;
 }
 
+const getMonthlyCustomers = async () => {
+    const response = await axios.get(`${baseURL}/MonthlyCustomer`);
+    return response.data;
+};
+
 export default { 
     getAllCustomers, 
     addCustomer, 
@@ -42,4 +47,5 @@ export default {
     getCustomerByEmail,
     getCustomerByPhoneNumber,
     getCustomerByID,
+    getMonthlyCustomers
 };
