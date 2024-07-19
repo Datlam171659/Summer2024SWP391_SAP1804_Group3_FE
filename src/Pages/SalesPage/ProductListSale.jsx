@@ -523,10 +523,11 @@ console.log(filteredProducts)
               type="primary"
               onClick={showModal}
               className=" bg-black text-white"
+              disabled={searchedCustomer===null}
             >
               Yêu Cầu Giảm Giá
             </Button>
-            <Button onClick={openDiscountModal} disabled={customerType === "newCustomer"}>
+            <Button onClick={openDiscountModal} disabled={customerType === "newCustomer"&&searchedCustomer===null||searchedCustomer===null}>
   Chọn giảm giá
 </Button>
             <Modal
