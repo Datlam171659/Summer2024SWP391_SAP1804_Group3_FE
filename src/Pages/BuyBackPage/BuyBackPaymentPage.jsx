@@ -252,7 +252,7 @@ const BuyBackPaymentPage = () => {
     >
       <div className="payment-page w-full p-4">
         <div className="order-summary bg-gray-50 p-4 rounded-lg mb-4">
-          <h2 className="text-xl font-bold mb-4">Đơn hàng</h2>
+          <h2 className="text-xl font-bold mb-4 text-black">Đơn hàng</h2>
           <div className="cart-items w-full">
             <Table
               dataSource={cartItems}
@@ -267,23 +267,23 @@ const BuyBackPaymentPage = () => {
         <div className="customer-info bg-white p-4 rounded-lg mb-4">
           <div className="items-center mb-[15px] pb-[15px] pt-[10px] border-b-[1px]">
             <div className="w-[15%] mr-4 mb-6 flex justify-between items-center">
-              <h3 className="text-[20px] font-bold w-full">Thông tin khách hàng</h3>
+              <h3 className="text-[20px] font-bold w-full text-black">Thông tin khách hàng</h3>
               <FormOutlined className="text-[16px] text-gray-900 hover:text-gray-600 cursor-zoom-in" onClick={handleEditCustomerInfo} />
             </div>
-            <div className="customer-details">
-              <div className="w-1/5 flex justify-between text-[16px] mb-2">
+            <div className="customer-details text-black">
+              <div className="w-2/5 flex justify-between text-[16px] mb-2">
                 <p className="mr-4 font-semibold">Tên khách hàng:</p><span className="italic">{customerInfor.customerName}</span>
               </div>
-              <div className="w-1/5 flex justify-between text-[16px] mb-2">
+              <div className="w-2/5 flex justify-between text-[16px] mb-2">
                 <p className="mr-4 font-semibold">Số điện thoại:</p><span className="italic">{customerInfor.phoneNumber}</span>
               </div>
-              <div className="w-1/5 flex justify-between text-[16px] mb-2">
+              <div className="w-2/5 flex justify-between text-[16px] mb-2">
                 <p className="mr-4 font-semibold">Địa Chỉ:</p><span className="italic">{customerInfor.address}</span>
               </div>
-              <div className="w-1/5 flex justify-between text-[16px] mb-2">
+              <div className="w-2/5 flex justify-between text-[16px] mb-2">
                 <p className="mr-4 font-semibold">Giới Tính:</p><span className="italic">{customerInfor.gender}</span>
               </div>
-              <div className="w-1/5 flex justify-between text-[16px] mb-2">
+              <div className="w-2/5 flex justify-between text-[16px] mb-2">
                 <p className="mr-4 font-semibold">E-mail:</p><span className="italic">{customerInfor.email}</span>
               </div>
             </div>
@@ -294,11 +294,11 @@ const BuyBackPaymentPage = () => {
           <div className="cart-summary mt-4 bg-white p-6 rounded-lg shadow-md w-1/2 mr-3">
             <div className="cart-checkout mt-6">
               <div className="flex-row">
-                <div className="flex justify-between mb-3 text-lg">
+                <div className="flex justify-between mb-3 text-lg text-black">
                   <p>Tổng số lượng sản phẩm:</p>
                   <p>{cartTotalQuantity}</p>
                 </div>
-                <div className="flex justify-between mb-3 text-lg">
+                <div className="flex justify-between mb-3 text-lg text-black">
                   <p>Tạm tính</p>
                   <p>{Number(cartTotalAmount.toFixed(0)).toLocaleString()}đ</p>
                 </div>

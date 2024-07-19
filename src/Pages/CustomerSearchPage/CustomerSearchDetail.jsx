@@ -182,7 +182,7 @@ console.log("check buy back invoice", customerInvoicesBuyBack)
         className="hover:bg-gray-900 font-bold rounded ml-2 mb-2"
         icon={<ArrowLeftOutlined />}
         onClick={handleGoBack} />
-      <h1 className='text-4xl uppercase font-bold'>Trang thông tin khách hàng</h1>
+      <h1 className='text-4xl uppercase font-bold text-black'>Trang thông tin khách hàng</h1>
       <div className='mt-8 flex'>
         <div className='bg-white text-black px-32 pt-2 rounded-lg shadow-md w-full ml-1 flex justify-center'>
           <div>
