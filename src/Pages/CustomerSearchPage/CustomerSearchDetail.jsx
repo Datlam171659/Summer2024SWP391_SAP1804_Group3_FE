@@ -39,8 +39,9 @@ function CustomerSearchDetail() {
   }, [dispatch]);
 
   const customerInvoices = allInvoice ? allInvoice.filter(invoice => invoice.customerId === id) : [];
+  const customerInvoicesBuyBack = allInvoice ? allInvoice.filter(invoice => invoice.customerId === id&&invoice.isBuyBack===true) : [];
   const totalInvoices = customerInvoices.length;
-
+console.log("check buy back invoice", customerInvoicesBuyBack)
   const showModal = async (id) => {
     await dispatch(fetchInvoiceById(id));
     setIsModalVisible(true);
@@ -57,8 +58,8 @@ function CustomerSearchDetail() {
   const columns = [
     {
       title: 'Mã hóa đơn',
-      dataIndex: 'id',
-      key: 'id',
+      dataIndex: 'invoiceNumber',
+      key: 'invoiceNumber',
       render: (text) => <a onClick={() => showModal(text)}>{text}</a>,
     },
     {
@@ -140,6 +141,18 @@ function CustomerSearchDetail() {
     },
     {
       key: '2',
+      label: 'Hóa đơn mua lại',
+      children: (
+        <Table
+          columns={columns}
+          dataSource={customerInvoicesBuyBack}
+          loading={invoicesLoading}
+          rowKey="id"
+        />
+      ),
+    },
+    {
+      key: '3',
       label: 'Điểm',
       children: (
         <div>
