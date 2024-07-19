@@ -310,7 +310,7 @@ const DashBoardPage = () => {
           </div>
           <div className='right-content'>
             <div className="column-chart-container">
-              <Card title="Số khách hàng mới hàng tháng" style={{ width: '95%' }}>
+              <Card title="Khách hàng mới mỗi tháng" style={{ width: '95%' }}>
                 <Column {...columnConfig} className="w-3/4" />
               </Card>
             </div>
