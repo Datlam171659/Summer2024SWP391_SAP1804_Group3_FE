@@ -15,6 +15,7 @@ import emailjs from 'emailjs-com';
 import { createInvoiceWithItems } from "../../Features/Invoice/InvoiceItemSlice"; 
 import { removePromotion } from '../../Features/Promotion/promotionallSlice';
 import { useLocation } from "react-router-dom";
+import '../SalesPage/PaymentPage.scss'
 const PaymentPage = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
@@ -484,6 +485,7 @@ const PaymentPage = () => {
   ];
 
   return (
+    <div className="payment-page">
     <ConfigProvider 
       theme={{
         token: {
@@ -500,7 +502,7 @@ const PaymentPage = () => {
     
     <div id="content">
     <Button type="button" 
-            className="bg-black hover:bg-gray-900 text-white font-bold rounded ml-4 mt-4"
+            className="go-back-btn bg-black hover:bg-gray-900 text-white font-bold rounded ml-4 mt-4"
             icon={<ArrowLeftOutlined />} 
             onClick={handleGoBack} 
             />
@@ -557,7 +559,7 @@ const PaymentPage = () => {
               >
                 <div className="flex justify-between">
                   <Button
-                    className={`w-1/2 h-14 uppercase font-bold ${
+                    className={`ck-btn w-1/2 h-14 uppercase font-bold ${
                       paymentType === "Chuyển khoản"
                         ? "bg-gray-500 text-white"
                         : "bg-black text-white hover:bg-gray-500"
@@ -567,7 +569,7 @@ const PaymentPage = () => {
                     Chuyển khoản
                   </Button>
                   <Button
-                    className={`w-1/2 h-14 uppercase font-bold ${
+                    className={`tm-btn w-1/2 h-14 uppercase font-bold ${
                       paymentType === "Tiền mặt"
                         ? "bg-gray-500 text-white"
                         : "bg-black text-white hover:bg-gray-500"
@@ -583,7 +585,7 @@ const PaymentPage = () => {
             <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
             <div>
               <Link to="/sales-page/Payment/PrintReceiptPage">
-                <Button className="w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500" onClick={handleConfirm}>
+                <Button className="confirm-btn w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500" onClick={handleConfirm}>
                   Xác Nhận
                 </Button>
               </Link>
@@ -604,6 +606,7 @@ const PaymentPage = () => {
       </div>
     </div>
     </ConfigProvider>
+    </div>
   );
 };
 
