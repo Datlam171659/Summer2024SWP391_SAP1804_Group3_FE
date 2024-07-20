@@ -15,7 +15,7 @@ import { fetchProductBuyBackData } from "../../Features/product/productBuyBackSl
 function Product() {
   const dispatch = useDispatch();
   const productData = useSelector((state) => state.product.productData);
-  const buyBackData = useSelector((state) => state.productBuyBack.producBuyBacktData); // Giả sử dụng tên đúng của slice trong Redux store
+  const buyBackData = useSelector((state) => state.productBuyBack.producBuyBacktData); 
   const isLoadingProductData = useSelector((state) => state.product.isLoadingProductData);
   const imageUploadState = useSelector((state) => state.imageUpload);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -345,12 +345,13 @@ function Product() {
                 </Select>
               </div>
 
-              <div className="flex">
+              <div className="all-btn flex">
 
                 <Button type="primary" className="filter-button mr-4" onClick={showFilterModal}>
                   Lọc sản phẩm
                 </Button>
                 <Button
+                  className="add-product-btn"
                   type="primary"
                   onClick={() => setIsAddModalOpen(true)}
                   style={{ marginBottom: 16 }}
@@ -359,6 +360,7 @@ function Product() {
                   Thêm sản phẩm
                 </Button>
                 <Button
+                  className="refresh-btn"
                   type="primary"
                   onClick={handleRefresh}
                   style={{ marginBottom: 16, marginLeft: 16 }}

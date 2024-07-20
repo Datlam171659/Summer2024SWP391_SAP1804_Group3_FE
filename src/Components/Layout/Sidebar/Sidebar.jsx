@@ -119,7 +119,7 @@ function Sidebar() {
   return (
     <Sider
       id='sidebar'
-      className='sidebar'
+      className='sidebar text-black'
       collapsed={collapsed}
       theme='light'
       style={{

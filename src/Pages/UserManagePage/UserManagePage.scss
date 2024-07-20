@@ -56,18 +56,6 @@
             height: 40px; 
             font-size: 16px; 
         }
-        
-        .search-button, .add-user-btn {
-            width: 15%;  
-            background-color: blue;
-            border: none;
-            justify-content: space-between;
-
-            &:hover {
-                background-color: darken(blue, 10%);
-            }
-        }
-
     }
     .ant-pagination {
         display: flex; 
@@ -97,6 +85,20 @@
           } 
         }
       }
+    }
+    .search-btn{
+      background-color: var(--btn-background);
+      color: var(--btn-text-color);
+      &:hover {
+        background-color: var(--btn-hover-background);
+      }
+    }
+    .add-user-btn{
+      background-color: var(--btn-background);
+          color: var(--btn-text-color);
+          &:hover {
+            background-color: var(--btn-hover-background);
+          }
     }
   }
 
