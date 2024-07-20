@@ -445,7 +445,7 @@ console.log(filteredProducts)
   };
 
   return (
-    <div className="product-list-container">
+    <div className="product-list-container text-black">
       <div className="header">
         <h2 className="title">Cửa hàng trang sức</h2>
         <div className="search-container">
@@ -456,9 +456,10 @@ console.log(filteredProducts)
             className="search-bar"
           />
           <Button
+            type="primary"
             onClick={handleSearch}
             loading={loading}
-            className=" bg-black text-white"
+            className="search-btn"
           >
             Tìm kiếm
           </Button>
@@ -522,11 +523,12 @@ console.log(filteredProducts)
             <Button
               type="primary"
               onClick={showModal}
-              className=" bg-black text-white"
+              className="dis-req-btn"
+              disabled={searchedCustomer===null}
             >
               Yêu Cầu Giảm Giá
             </Button>
-            <Button onClick={openDiscountModal} disabled={customerType === "newCustomer"}>
+            <Button className='ml-5' onClick={openDiscountModal} disabled={customerType === "newCustomer"&&searchedCustomer===null||searchedCustomer===null}>
   Chọn giảm giá
 </Button>
             <Modal
@@ -577,7 +579,7 @@ console.log(filteredProducts)
                     onChange={handleInputChange}
                     className="rounded-[5px]"
                   />
-                  <Button onClick={handleSearchClick} className="ml-2">
+                  <Button onClick={handleSearchClick} className="search-btn ml-2">
                     Tìm kiếm
                   </Button>
                 </div>
@@ -726,7 +728,7 @@ console.log(filteredProducts)
       className="w-[130px] mb-2"
     />
     <Button
-      className="bg-black text-white"
+      className="add-to-cart-btn"
       onClick={handleAddToCart}
     >
       Thêm vào giỏ hàng
@@ -750,7 +752,7 @@ console.log(filteredProducts)
             <Button
               type="primary"
               onClick={handleCreateOrder}
-              className="w-full text-center bg-black text-white"
+              className="checkout-btn w-full text-center bg-black text-white"
             >
               Thanh Toán
             </Button>

@@ -231,7 +231,7 @@ function Product() {
       dataIndex: "itemName",
       key: "itemName",
       render: (text, record) => (
-        <Link to={`/product/productdetail/${record.itemId}`}>{text}</Link>
+        <Link className="text-blue-500" to={`/product/productdetail/${record.itemId}`}>{text}</Link>
       )
     },
     {
@@ -333,14 +333,14 @@ function Product() {
       }}
     >
       <div className="w-full mt-12">
-        <h1 className="text-2xl font-bold mb-0 ml-5">Sản phẩm</h1>
+        <h1 className="text-2xl font-bold mb-0 ml-5 text-black">Sản Phẩm</h1>
         <div className="w-full flex justify-center">
           <div className="Product w-[96%] mt-4">
             <div className="w-full mb-1 flex justify-between">
               <div className="flex w-[85%]">
                 <Search allowClear onClear={handleRefresh} placeholder="Tìm kiếm theo tên hoặc ID sản phẩm" onSearch={handleSearch} style={{ width: "50%", marginRight: "10px" }} />
                 <Select defaultValue="inStock" placeholder="Chọn loại sản phẩm" onChange={(value) => handleProductTypeChange(value)} style={{ width: 200 }}>
-                  <Select.Option value="inStock">Sản phẩm trong kho</Select.Option>
+                  <Select.Option value="inStock">Sản phẩm bán hàng</Select.Option>
                   <Select.Option value="buyBack">Sản phẩm mua lại</Select.Option>
                 </Select>
               </div>
@@ -363,7 +363,7 @@ function Product() {
                   onClick={handleRefresh}
                   style={{ marginBottom: 16, marginLeft: 16 }}
                 >
-                  Refresh
+                  Làm mới
                 </Button>
               </div>
             </div>

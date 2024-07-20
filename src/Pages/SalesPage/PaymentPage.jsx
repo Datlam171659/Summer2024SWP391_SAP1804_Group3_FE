@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Table, ConfigProvider, message, Modal } from "antd";
@@ -50,15 +50,27 @@ const PaymentPage = () => {
   const [customerInfo, setCustomerInfo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCashDisabled, setIsCashDisabled] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const location = useLocation();
+  const successMessageShown = useRef(false);
   const promotionId = location.state?.promotionId || '';
-  console.log("check",promotionId)
+  // console.log("check",promotionId)
   const navigate = useNavigate();
 
+  const formatDate = (date) => {
+    const day = String(date.getDate()).padStart(2, '0'); 
+    const month = String(date.getMonth() + 1).padStart(2, '0'); 
+    const year = date.getFullYear();
+  
+    return `${day}${month}${year}`;
+  };
+
   const MY_BANK = {
-    BANK_ID: "Vietcombank",
-    ACCOUNT_NO: "1025210358",
-    TEMPLATE: "compact2"
+    BANK_ID: "ACB",
+    ACCOUNT_NO: "37942897",
+    TEMPLATE: "compact2",
+    DESCRIPTION:  `${customerInfor.id}${formatDate(new Date())}SELL`,
+    ACCOUNT_NAME: "FJEWELRY SHOP"
   };
 
   const calculatePoints = (cartTotalAmount) => {
@@ -76,12 +88,62 @@ const PaymentPage = () => {
     const date = today.getDate();
     return `${date}/${month}/${year}`;
   }
-{console.log("check promo",discount)}
+
+  async function checkPaid(price, content) {
+    if(isSuccess){
+      return;
+    } else {
+    try{
+      const response = await fetch(
+        "https://script.google.com/macros/s/AKfycbzESerl7FzVcPjT7napuXGUmnebQsmJ-IFz90zHfXAAxXPNzV-GshSyG_XUFO94-tdy/exec"
+      );
+      const data = await response.json();
+      const lastPaid = data.data[data.data.length -1];
+      const lastPrice = lastPaid["Giá trị"];
+      const lastContent = lastPaid["Mô tả"].trim().toLowerCase().replace(/[\s-]/g, '');
+      const normalizedContent = content.toLowerCase().replace(/[\s-]/g, '');
+      const roundedPrice = Math.round(price);
+      console.log(normalizedContent);
+      console.log(lastContent)
+      if(lastPrice >= roundedPrice && lastContent.includes(normalizedContent)) {     
+        setIsCashDisabled(true);
+        setIsModalOpen(false);
+        setPaymentType("Chuyển khoản");
+        if (!successMessageShown.current) {
+          message.success("Thanh toán thành công");
+          successMessageShown.current = true;
+        }
+        setIsSuccess(true);
+      } else {
+        console.log("Không có giao dịch tương ứng");
+      }
+    } catch(error){
+      console.log(error);
+      }
+    }
+  }
+// {console.log("check promo",discount)}
   useEffect(() => {
-    const qrLink = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-${MY_BANK.TEMPLATE}.png?amount=${cartTotalAmount}`;
+      if (isSuccess) return;
+      const interval = setInterval(() => {
+        if (!isSuccess) {
+          checkPaid(cartTotalAmount, MY_BANK.DESCRIPTION);
+        } else {
+          clearInterval(interval); 
+        }
+      }, 1000);
+      const timeout = setTimeout(() => {
+        clearInterval(interval);
+      }, 20000);
+    const formattedAmount = (cartTotalAmount / 1000).toFixed(3).replace('.', '').replace(',', '.'); 
+    const qrLink = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-${MY_BANK.TEMPLATE}.png?amount=${formattedAmount}&addInfo=${MY_BANK.DESCRIPTION}&accountName=${MY_BANK.ACCOUNT_NAME}`;
     setQrCode(qrLink);
-  }, [cartTotalAmount]);
-  console.log("check cart item",cartItems)
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, [cartTotalAmount,isSuccess]);
+  // console.log("check cart item",cartItems)
   useEffect(() => {
     dispatch(fetchCustomerData());
     setPpointsTotal(calculatePoints(cartTotalAmount));
@@ -211,8 +273,8 @@ const PaymentPage = () => {
     const companyName = "SWJ";
     const status = "Active";
     const now = new Date().toISOString(); 
-
-    console.log("check",promotionId)
+    const isBuyBack = false;
+    // console.log("check",promotionId)
     const invoiceData = {
       staffId: staffId,
       customerId,
@@ -224,6 +286,7 @@ const PaymentPage = () => {
       quantity: cartTotalQuantity,
       subTotal: cartTotalAmount,
       createdDate: now,
+      isBuyBack:isBuyBack,
       items: cartItems.map(item => {
         let goldType = "";
         if (item.itemName.toLowerCase().includes("10k")) {
@@ -324,7 +387,7 @@ const PaymentPage = () => {
         discount,
       };
 
-      emailjs.send('service_w6685q7', 'template_4ih77go', templateParams, 'aRYuyBmKOYvAYpoIL')
+      emailjs.send('service_2kxr0wt', 'template_ktsnxsg', templateParams, 'GsBxjtc2i5nJN_tRj')
       .then((response) => {
         message.success("Tạo hóa đơn và gửi email thành công!");
       }, (err) => {
@@ -443,7 +506,7 @@ const PaymentPage = () => {
             />
       <div className="payment-page w-full p-4">
         <div className="order-summary bg-gray-50 p-4 rounded-lg mb-4">
-          <h2 className="text-xl font-bold mb-4">Đơn hàng</h2>
+          <h2 className="text-xl font-bold mb-4 text-black">Đơn hàng</h2>
           <div className="cart-items w-full">
             <Table
               dataSource={cartItems}
@@ -459,15 +522,15 @@ const PaymentPage = () => {
           <div className="cart-summary mt-4 bg-white p-6 rounded-lg shadow-md w-1/2 mr-3">
             <div className="cart-checkout mt-6">
               <div className="flex-row">
-                <div className="flex justify-between mb-3 text-lg">
+                <div className="flex justify-between mb-3 text-lg text-black">
                   <p>Tổng số lượng sản phẩm: </p>
                   <p>{cartTotalQuantity}</p>
                 </div>
-                <div className="flex justify-between mb-3 text-lg">
+                <div className="flex justify-between mb-3 text-lg text-black">
                   <p>Tạm tính</p>
                   <p>{Number(cartTotalAmount.toFixed(0)).toLocaleString()}đ</p>
                 </div>
-                <div className="flex justify-between mb-3 text-lg">
+                <div className="flex justify-between mb-3 text-lg text-black">
                   <p>Giảm giá</p>
                   <p>{discount}%</p>
                 </div>

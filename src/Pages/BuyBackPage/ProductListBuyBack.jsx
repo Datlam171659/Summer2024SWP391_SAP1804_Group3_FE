@@ -130,19 +130,51 @@ const ProductListBuyBack = () => {
 
   const handleAddItems = () => {
     selectedItems.forEach(item => {
-      dispatch(addItem({
+      let goldType = "";
+      if (item.itemName.toLowerCase().includes("10k")) {
+        goldType = "10K";
+      } else if (item.itemName.toLowerCase().includes("14k")) {
+        goldType = "14K";
+      } else if (item.itemName.toLowerCase().includes("18k")) {
+        goldType = "18K";
+      } else if (item.itemName.toLowerCase().includes("24k")) {
+        goldType = "24K";
+      }
+
+      let kara;
+      switch (goldType) {
+        case "10K":
+          kara = buyGold10k;
+          break;
+        case "14K":
+          kara = buyGold14k;
+          break;
+        case "18K":
+          kara = buyGold18k;
+          break;
+        case "24K":
+          kara = buyGold24k;
+          break;
+        default:
+          kara = 0;
+      }
+      const price = item.weight * kara;
+      const items = {
         ...item,
-        quantity: item.quantity
-      }));
+        price: price,
+        quantity: item.quantity,
+      };
+
+      dispatch(addItem(items));
     });
     dispatch(updateCustomerId(tempCustomerId));
     setIsInvoiceModalVisible(false);
     setSelectedItems([]);
-    setTempCustomerId('')
+    setTempCustomerId('');
   };
 
   const handleCloseAddItems = () => {
-    
+
     setIsInvoiceModalVisible(false);
     setSelectedItems([]);
     setTempCustomerId('')
@@ -185,6 +217,37 @@ const ProductListBuyBack = () => {
         .replace(/[^0-9]/g, "")
         .slice(0, 14);
 
+      let goldType = "";
+      if (newItem.itemName.toLowerCase().includes("10k")) {
+        goldType = "10K";
+      } else if (newItem.itemName.toLowerCase().includes("14k")) {
+        goldType = "14K";
+      } else if (newItem.itemName.toLowerCase().includes("18k")) {
+        goldType = "18K";
+      } else if (newItem.itemName.toLowerCase().includes("24k")) {
+        goldType = "24K";
+      }
+
+      let kara;
+      switch (goldType) {
+        case "10K":
+          kara = buyGold10k;
+          break;
+        case "14K":
+          kara = buyGold14k;
+          break;
+        case "18K":
+          kara = buyGold18k;
+          break;
+        case "24K":
+          kara = buyGold24k;
+          break;
+        default:
+          kara = 0;
+      }
+
+      const price = newItem.weight * kara;
+
       const newItemWithId = {
         itemId: `BBI${formattedDateTime}`,
         itemImagesId: "string",
@@ -194,7 +257,7 @@ const ProductListBuyBack = () => {
         sku: "string",
         itemName: newItem.itemName,
         description: newItem.description,
-        price: 0,
+        price: price,
         size: "string",
         weight: newItem.weight,
         createdDate: currentDateTime.toISOString(),
@@ -437,7 +500,7 @@ const ProductListBuyBack = () => {
   ];
 
   return (
-    <div>
+    <div className="text-black">
       <h1 className="text-2xl font-bold mb-0 ml-5 mt-4">Mua Lại Trang Sức</h1>
       <div className="flex flex-col lg:flex-row">
         <div className="my-1 w-screen lg:w-full p-4">
@@ -502,7 +565,7 @@ const ProductListBuyBack = () => {
                 </div>
                 <div className="mt-14 flex justify-between">
                   <span className="text-lg font-semibold text-gray-800">
-                  Tổng tiền trả khách
+                    Tổng tiền trả khách
                   </span>
                   <span className="amount text-xl font-bold text-gray-800">
                     {Number(cartTotalAmount.toFixed(0)).toLocaleString()}
@@ -512,11 +575,11 @@ const ProductListBuyBack = () => {
               </div>
             </div>
             <div className="cart-summary mt-6 bg-white p-6 pt-2 rounded-lg shadow-md  w-[49%]">
-              <Button
+              {/* <Button
                 onClick={showAddItemModal}
                 className="w-full h-14 bg-slate-600 text-white uppercase font-bold">
                 Thêm sản phẩm khác
-              </Button>
+              </Button> */}
               <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"></hr>
               <div>
                 <Button onClick={handleCreateOrder} className="w-full h-14 bg-black text-white uppercase font-bold">
@@ -593,7 +656,7 @@ const ProductListBuyBack = () => {
         </Modal>
 
       </div>
-      {console.log("customerID: ", customerID)}
+      {/* {console.log("cartItems: ", cartItems)} */}
     </div>
 
   );

@@ -29,6 +29,7 @@ import rewardDetailReducer from '../Features/Customer/rewardDetailSlice';
 import invoiceByIdReducer from '../Features/Invoice/invoiceByIdSlice';
 import invoiceByNumberReducer from '../Features/Invoice/invoiceByNumberSlice';
 import productBuyBackReducer, { fetchProductBuyBackData } from '../Features/product/productBuyBackSlice';
+import orderReducer from '../Features/order/orderSlice';
 const store = configureStore({
   reducer: {
     product: productReducer,
@@ -46,6 +47,7 @@ const store = configureStore({
     itemImages: itemImageReducer,
     warranty: warrantyReducer,
     invoice: invoiceReducer,
+    orders: orderReducer,
     customerDetail: customerDetailReducer,
     warrantyall: warrantyAllReducer,
     invoicefull: invoicefullReducer,

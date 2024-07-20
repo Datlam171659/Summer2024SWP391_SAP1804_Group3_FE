@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom';
-import { Line } from '@ant-design/charts';
+import { Line, Column } from '@ant-design/charts';
 import { Pie } from '@ant-design/plots';
 import '../DashBoardPage/DashBoardPage.scss';
 import { Card, Space, Table, DatePicker } from 'antd';
@@ -10,8 +9,6 @@ import { getinvoiceAll, GetMonthlyRevenue } from '../../Services/api/InvoiceApi'
 import { getProductAll } from '../../Services/api/productApi'
 import userkApi from "../../Services/api/UserApi";
 import DashBoardCard from './DashboardCard';
-import Title from 'antd/es/skeleton/Title';
-import moment from 'moment';
 const { RangePicker } = DatePicker;
 
 const DashBoardPage = () => {
@@ -19,14 +16,15 @@ const DashBoardPage = () => {
   const [userCount, setUserCount] = useState(0);
   const [managerCount, setManagerCount] = useState(0);
   const [staffCount, setStaffCount] = useState(0);
-  const [invoiceCount, setInvoiceCount] = useState(0);
   const [productCount, setProductCount] = useState(0);
   const [monthlyRevenue, setMonthlyRevenue] = useState([]);
   const [filteredRevenue, setFilteredRevenue] = useState([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [topCustomers, setTopCustomers] = useState([]);
   const [topStaff, setTopStaff] = useState([]);
-
+  const [soldInvoiceCount, setSoldInvoiceCount] = useState(0);
+  const [buyBackInvoiceCount, setBuyBackInvoiceCount] = useState(0);
+  const [monthlyCustomers, setMonthlyCustomers] = useState([]);
 
   useEffect(() => {
     const fetchCustomerCount = async () => {
@@ -60,8 +58,6 @@ const DashBoardPage = () => {
           setUserCount(totalUsers);
           setManagerCount(managers);
           setStaffCount(staff);
-          console.log(staffCount);
-          console.log(managerCount);
           const invoices = await getinvoiceAll();
           if (invoices && Array.isArray(invoices.data)) {
             const staffWithInvoices = response.map(staff => ({
@@ -81,7 +77,11 @@ const DashBoardPage = () => {
       try {
         const response = await getinvoiceAll();
         if (response && Array.isArray(response.data)) {
-          setInvoiceCount(response.data.length);
+          const soldInvoices = response.data.filter(invoice => invoice.isBuyBack === false);
+          const buyBackInvoices = response.data.filter(invoice => invoice.isBuyBack === true);
+          // setInvoiceCount(response.data.length); 
+          setSoldInvoiceCount(soldInvoices.length);
+          setBuyBackInvoiceCount(buyBackInvoices.length);
         }
       } catch (error) {
         console.error(`Error: ${error}`);
@@ -120,12 +120,44 @@ const DashBoardPage = () => {
       }
     };
 
+    const fetchMonthlyCustomers = async () => {
+      try {
+        const response = await CustomerApi.getMonthlyCustomers();
+        if (Array.isArray(response)) {
+          const formattedData = response.map(item => ({
+            month: item.key,
+            value: item.value
+          }));
+          setMonthlyCustomers(formattedData);
+          }
+        } catch (error) {
+        console.error(`Error: ${error}`);
+      }
+    };
+
     fetchCustomerCount();
     fetchInvoiceCount();
     fetchProductCount();
     fetchUserCount();
     fetchMonthlyRevenue();
+    fetchMonthlyCustomers();
   }, []);
+
+  const columnConfig = {
+    data: monthlyCustomers,
+    xField: 'month',
+    yField: 'value',
+    label: {
+      position: 'top',
+      style: {
+        fill: '#000000', 
+        fontSize: 14, 
+        fontWeight: 'bold', 
+        opacity: 1,
+      },
+    },
+    tooltip: false,
+  };
 
   const formatRevenue = (value) => {
     return new Intl.NumberFormat().format(value) + ' VNĐ';
@@ -159,9 +191,11 @@ const DashBoardPage = () => {
         rowPadding: 5,
       },
     },
+    tooltip: false,
   };
 
   const config = {
+    tooltip: false,
     data: filteredRevenue,
     xField: 'date',
     yField: 'value',
@@ -179,6 +213,8 @@ const DashBoardPage = () => {
       label: {
         style: {
           fill: '#000000',
+          fontSize: 12,
+          fontWeight: 'bold',
         },
         formatter: (text) =>
           new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(text),
@@ -218,7 +254,7 @@ const DashBoardPage = () => {
       key: 'fullName',
     },
     {
-      title: 'Tổng số đơn bán được',
+      title: 'Tổng đơn',
       dataIndex: 'invoiceCount',
       key: 'invoiceCount',
     },
@@ -244,7 +280,8 @@ const DashBoardPage = () => {
           <Space direction='horizontal'>
             <DashBoardCard icon={<UserOutlined style={{ color: "red" }} />} title={"Khách Hàng"} value={customerCount} key="customers" />
             <DashBoardCard icon={<TeamOutlined style={{ color: "purple" }} />} title={"Nhân Viên"} value={userCount} key="staff" />
-            <DashBoardCard icon={<ShoppingCartOutlined style={{ color: "blue" }} />} title={"Đơn Hàng Đã Bán"} value={invoiceCount} key="orders" />
+            <DashBoardCard icon={<ShoppingCartOutlined style={{ color: "blue" }} />} title={"Đơn Hàng Đã Bán"} value={soldInvoiceCount} key="soldOrders" />
+            <DashBoardCard icon={<ShoppingCartOutlined style={{ color: "orange" }} />} title={"Đơn Hàng Đã Mua"} value={buyBackInvoiceCount} key="boughtOrders" />            
             <DashBoardCard icon={<ShoppingOutlined style={{ color: "brown" }} />} title={"Số Mặt Hàng"} value={productCount} key="products" />
             <DashBoardCard icon={<DollarCircleOutlined style={{ color: "green" }} />} title={"Tổng Doanh Thu"} value={formatRevenue(totalRevenue)} key="revenue" />
           </Space>
@@ -254,17 +291,17 @@ const DashBoardPage = () => {
             <div className="line-chart-container">
               <Card title="Doanh số bán hàng theo tháng" style={{ width: '100%' }}>
                 <RangePicker onChange={handleDateRangeChange} picker="month" format="YYYY-MM" style={{ marginBottom: 20 }} />
-                <Line {...config} className="w-full"/>
+                <Line {...config} width={600} height={300}/>
               </Card>
             </div>
-            <div className='w-full flex justify-between'>
+            <div className='w-full flex justify-between mt-5'>
               <div className="top-staff">
-                <Card title="Top 3 nhân viên bán được nhiều nhất trong tháng:" className="card-top-staff w-full">
-                  <Table columns={staffColumns} dataSource={topStaff} rowKey="id" pagination={false} key="staffTable" />
+                <Card title="Top 3 nhân viên bán được nhiều nhất:" className="card-top-staff">
+                  <Table columns={staffColumns} dataSource={topStaff} rowKey="id" pagination={false} key="staffTable" className='w-full'/>
                 </Card>
               </div>
               <div className="top-customers">
-                <Card title="Top 3 khách hàng có nhiều đơn hàng nhất:" className="card-top-customers">
+                <Card title="Top 3 khách hàng có nhiều đơn nhất:" className="card-top-customers">
                   <Table columns={customerColumns} dataSource={topCustomers} rowKey="id" pagination={false} key="customerTable" />
                 </Card>
               </div>
@@ -272,9 +309,14 @@ const DashBoardPage = () => {
 
           </div>
           <div className='right-content'>
-            <div className="pie-chart-container h-[557.27px]">
-              <Card title="Tỉ lệ người dùng hệ thống" className="card-pie-chart w-[500px] h-full">
-                <Pie {...pieConfig} />
+            <div className="column-chart-container">
+              <Card title="Khách hàng mới mỗi tháng" style={{ width: '100%' }}>
+                <Column {...columnConfig} width={600} height={350} className="w-full" />
+              </Card>
+            </div>
+            <div className="pie-chart-container h-[585px]">
+              <Card title="Tỉ lệ người dùng hệ thống" className="card-pie-chart w-[400px] h-[420px] mt-10">
+                <Pie {...pieConfig} width={350} height={350}/>
               </Card>
             </div>
           </div>

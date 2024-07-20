@@ -30,13 +30,13 @@ const ExchangeRatePage = () => {
 
     return (
 
-        <div className='w-full block'>
+        <div className='w-full block text-black '>
             <div className="w-11/12 mt-10 block justify-center mx-auto">
                 <h2 className="w-full text-center text-2xl font-semibold">Giá Vàng Hôm Nay</h2>
                 <div className="button-container w-full flex justify-center mt-9">
                     <button className="full-screen-button" onClick={handleFullScreen}>Toàn màn hình</button>
                 </div>
-                <div ref={tableRef} className="table-container w-full flex justify-center mt-9">
+                <div ref={tableRef} className="table-container w-full flex justify-center mt-9" style={{backgroundColor: "#F5F5F5"}}>
                     <table className="gold-price-table w-4/5 text-center border-collapse border border-black">
                         <thead>
                             <tr>
