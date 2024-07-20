@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Table, ConfigProvider, message, Modal } from "antd";
@@ -50,16 +50,26 @@ const PaymentPage = () => {
   const [customerInfo, setCustomerInfo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCashDisabled, setIsCashDisabled] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const location = useLocation();
+  const successMessageShown = useRef(false);
   const promotionId = location.state?.promotionId || '';
   // console.log("check",promotionId)
   const navigate = useNavigate();
+
+  const formatDate = (date) => {
+    const day = String(date.getDate()).padStart(2, '0'); 
+    const month = String(date.getMonth() + 1).padStart(2, '0'); 
+    const year = date.getFullYear();
+  
+    return `${day}${month}${year}`;
+  };
 
   const MY_BANK = {
     BANK_ID: "ACB",
     ACCOUNT_NO: "37942897",
     TEMPLATE: "compact2",
-    DESCRIPTION: `${cartItems.map(item => `${item.itemQuantity}${item.itemId}`).join("AND")}SELL`,
+    DESCRIPTION:  `${customerInfor.id}${formatDate(new Date())}SELL`,
     ACCOUNT_NAME: "FJEWELRY SHOP"
   };
 
@@ -80,6 +90,9 @@ const PaymentPage = () => {
   }
 
   async function checkPaid(price, content) {
+    if(isSuccess){
+      return;
+    } else {
     try{
       const response = await fetch(
         "https://script.google.com/macros/s/AKfycbzESerl7FzVcPjT7napuXGUmnebQsmJ-IFz90zHfXAAxXPNzV-GshSyG_XUFO94-tdy/exec"
@@ -89,29 +102,47 @@ const PaymentPage = () => {
       const lastPrice = lastPaid["Giá trị"];
       const lastContent = lastPaid["Mô tả"].trim().toLowerCase().replace(/[\s-]/g, '');
       const normalizedContent = content.toLowerCase().replace(/[\s-]/g, '');
-      
-      console.log("Last Content:", lastContent);
-      console.log("Normalized Content:", normalizedContent);
-      if(lastPrice >= price && lastContent.includes(normalizedContent)) {
-        message.success("Thanh toán thành công");
+      const roundedPrice = Math.round(price);
+      console.log(normalizedContent);
+      console.log(lastContent)
+      if(lastPrice >= roundedPrice && lastContent.includes(normalizedContent)) {     
         setIsCashDisabled(true);
         setIsModalOpen(false);
+        setPaymentType("Chuyển khoản");
+        if (!successMessageShown.current) {
+          message.success("Thanh toán thành công");
+          successMessageShown.current = true;
+        }
+        setIsSuccess(true);
       } else {
         console.log("Không có giao dịch tương ứng");
       }
     } catch(error){
       console.log(error);
+      }
     }
   }
 // {console.log("check promo",discount)}
   useEffect(() => {
-    setInterval(() => {
-      checkPaid(cartTotalAmount, MY_BANK.DESCRIPTION);
-    }, 1000);
+      if (isSuccess) return;
+      const interval = setInterval(() => {
+        if (!isSuccess) {
+          checkPaid(cartTotalAmount, MY_BANK.DESCRIPTION);
+        } else {
+          clearInterval(interval); 
+        }
+      }, 1000);
+      const timeout = setTimeout(() => {
+        clearInterval(interval);
+      }, 20000);
     const formattedAmount = (cartTotalAmount / 1000).toFixed(3).replace('.', '').replace(',', '.'); 
     const qrLink = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-${MY_BANK.TEMPLATE}.png?amount=${formattedAmount}&addInfo=${MY_BANK.DESCRIPTION}&accountName=${MY_BANK.ACCOUNT_NAME}`;
     setQrCode(qrLink);
-  }, [cartTotalAmount]);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, [cartTotalAmount,isSuccess]);
   // console.log("check cart item",cartItems)
   useEffect(() => {
     dispatch(fetchCustomerData());
