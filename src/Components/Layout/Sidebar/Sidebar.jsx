@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { decrypt } from '../../../Utils/crypto';
 import "./Sidebar.scss"
 import NavItem from './NavItem/NavItem';
-import { CloseOutlined, MenuOutlined, SearchOutlined, DollarOutlined, AppstoreOutlined, InboxOutlined, LineChartOutlined, SettingOutlined, UserOutlined, PercentageOutlined, LogoutOutlined, ScheduleOutlined } from '@ant-design/icons';
+import { CloseOutlined, MenuOutlined, SearchOutlined, DollarOutlined, AppstoreOutlined, InboxOutlined, LineChartOutlined, SettingOutlined, UserOutlined, PercentageOutlined, LogoutOutlined, ScheduleOutlined, CommentOutlined } from '@ant-design/icons';
 import Search from 'antd/es/transfer/search';
 import { strings_vi } from '../../../Services/languages/displaystrings';
 import { useNavigate } from 'react-router-dom';
@@ -61,11 +61,11 @@ function Sidebar() {
     {
       icon: <InboxOutlined style={{ fontSize: "16px" }} />,
       title: 'Đơn hàng',
-      to: "",
+      to: "/orders",
 
     },
 
-    role === "0" || role === "1" ? {
+    role === "Admin" || role === "Manager" ? {
       icon: <PercentageOutlined style={{ fontSize: "16px" }} />,
       title: 'Khuyến mãi',
       to: "/promotion",
@@ -75,7 +75,7 @@ function Sidebar() {
         display: "hidden"
       }
     ,
-    role === "0" ? {
+    role === "Admin" || role === "Staff" ? {
       icon: <SearchOutlined style={{ fontSize: "16px" }} />,
       title: strSidebar.SearchProfile,
       to: "/customer-search",
@@ -84,7 +84,7 @@ function Sidebar() {
       {
         display: "hidden"
       },
-    role === "0" ? {
+    role === "Admin" ? {
       icon: <UserOutlined style={{ fontSize: "16px" }} />,
       title: 'Nhân sự',
       to: "/user",
@@ -97,7 +97,11 @@ function Sidebar() {
       icon: <ScheduleOutlined style={{ fontSize: "16px" }} />,
       title: 'Quầy',
       to: "/station",
-
+    },
+    {
+      icon: <CommentOutlined style={{ fontSize: "16px" }} />,
+      title: 'Giao Tiếp',
+      to: "/chat-room",
     },
     {
       icon: <SettingOutlined style={{ fontSize: "16px" }} />,
@@ -115,7 +119,7 @@ function Sidebar() {
   return (
     <Sider
       id='sidebar'
-      className='sidebar'
+      className='sidebar text-black'
       collapsed={collapsed}
       theme='light'
       style={{
@@ -143,9 +147,9 @@ function Sidebar() {
           display={item.display}
         />
       ))}
-      <div className='flex mt-[30%] mx-[5%] mb-[0] pt-[5px] pb-[5px] rounded-[5px] [transition:0.3] hover:bg-[rgb(246,_246,_246)]'>
+      <div className='text-black flex mt-[30%] mx-[5%] mb-[0] pt-[5px] pb-[5px] rounded-[5px] [transition:0.3] hover:bg-[rgb(246,_246,_246)]'>
         <p className="mr-3"><LogoutOutlined style={{ fontSize: "14px" }} /></p>
-        <button className="" onClick={handleLogout}>Đăng xuất</button>
+        <button className="logout-btn" onClick={handleLogout}>Đăng xuất</button>
       </div>
     </Sider>
   );

@@ -59,7 +59,7 @@ function ProductDetail() {
   };
 
   if (isLoadingProductDetail) {
-    return <div className="text-center">Đang lấy thông tin....</div>;
+    return <div className="text-center text-black">Đang lấy thông tin....</div>;
   }
 
   if (isError) {
@@ -107,7 +107,7 @@ function ProductDetail() {
                 </Button>
               )}
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 text-black">
               <div className="my-2">
                 <strong>Tên sản phẩm:</strong>
                 {isEditing ? (
@@ -116,7 +116,7 @@ function ProductDetail() {
                     name="itemName" 
                     value={editableProduct.itemName || ''} 
                     onChange={handleChange} 
-                    className="ml-2 border p-1"
+                    className="ml-2 border p-1 bg-transparent"
                   />
                 ) : (
                   <span className="ml-2">{product.itemName}</span>
@@ -130,7 +130,7 @@ function ProductDetail() {
                     name="accessoryType" 
                     value={editableProduct.accessoryType || ''} 
                     onChange={handleChange} 
-                    className="ml-2 border p-1"
+                    className="ml-2 border p-1 bg-transparent"
                   />
                 ) : (
                   <span className="ml-2">{product.accessoryType}</span>
@@ -144,7 +144,7 @@ function ProductDetail() {
                     name="itemId" 
                     value={editableProduct.itemId || ''} 
                     onChange={handleChange} 
-                    className="ml-2 border p-1"
+                    className="ml-2 border p-1 bg-transparent"
                   />
                 ) : (
                   <span className="ml-2">{product.itemId}</span>
@@ -158,7 +158,7 @@ function ProductDetail() {
                     name="description" 
                     value={editableProduct.description || ''} 
                     onChange={handleChange} 
-                    className="ml-2 border p-1"
+                    className="ml-2 border p-1 bg-transparent"
                   />
                 ) : (
                   <span className="ml-2">{product.description}</span>
@@ -172,7 +172,7 @@ function ProductDetail() {
                     name="weight" 
                     value={editableProduct.weight || ''} 
                     onChange={handleChange} 
-                    className="ml-2 border p-1"
+                    className="ml-2 border p-1 bg-transparent"
                   />
                 ) : (
                   <span className="ml-2">{product.weight}</span>
@@ -186,14 +186,14 @@ function ProductDetail() {
                     name="quantity"
                     value={editableProduct.quantity || ''}
                     onChange={handleChange}
-                    className="ml-2 border p-1"
+                    className="ml-2 border p-1 bg-transparent"
                   />
                 ) : (
                   <span className="ml-2">{product.quantity}</span>
                 )}
               </div>
               </div>
-                <div className="my-4">
+                <div className="my-4 text-black">
                   <strong>QR Code:</strong>
                   <div className="mt-4">
                     {qrCodeEnabled && <QRCode value={product.itemId} />}

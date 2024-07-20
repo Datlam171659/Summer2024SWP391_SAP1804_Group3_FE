@@ -76,3 +76,27 @@ label[for="selectFile"]:hover {
     font-size: 14px;
     color: rgb(255, 126, 103);
 }
+
+.all-btn{
+    .add-product-btn{
+        background-color: var(--btn-background);
+        color: var(--btn-text-color);
+        &:hover {
+          background-color: var(--btn-hover-background);
+        }
+    }
+    .refresh-btn{
+        background-color: var(--btn-background);
+        color: var(--btn-text-color);
+        &:hover {
+          background-color: var(--btn-hover-background);
+        }
+    }
+    .filter-button{
+        background-color: var(--btn-background);
+        color: var(--btn-text-color);
+        &:hover {
+          background-color: var(--btn-hover-background);
+        }
+    }
+}

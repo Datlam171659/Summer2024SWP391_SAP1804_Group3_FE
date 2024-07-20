@@ -131,14 +131,14 @@ const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotal
     const totalAmountAfterDiscount = cartTotalAmount - discount;
 
     return (
-        <div ref={ref} className="p-8">
+        <div ref={ref} className="p-8 mt-8">
             <div className="absolute top-0 right-0 m-4">
                 <QRCode value={invoiceNumber} size={80} />
             </div>
             <h2 className="text-2xl font-bold text-center mb-4">HÓA ĐƠN MUA HÀNG</h2>
             <p className="text-sm font-semibold">Mã hóa đơn: {invoiceNumber}</p>
             <ul className="text-base mb-2">
-                <li className="text-sm font-semibold">Khách hàng: {customerInfor.customerName}</li>
+                <li className="text-sm font-semibold">Khách hàng:      {customerInfor.customerName}</li>
                 <li className="text-sm font-semibold">Email: {customerInfor.email}</li>
                 <li className="text-sm font-semibold">Địa chỉ: {customerInfor.address}</li>
                 <li className="text-sm font-semibold">Sđt: {customerInfor.phoneNumber}</li>

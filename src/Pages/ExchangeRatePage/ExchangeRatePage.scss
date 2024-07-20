@@ -8,8 +8,11 @@
 }
 
 .full-screen-button {
-    background-color: #1e1e28;
-    color: white;
+    background-color: var(--btn-background);
+          color: var(--btn-text-color);
+          &:hover {
+            background-color: var(--btn-hover-background);
+          }
     padding: 10px 20px;
     border: none;
     cursor: pointer;

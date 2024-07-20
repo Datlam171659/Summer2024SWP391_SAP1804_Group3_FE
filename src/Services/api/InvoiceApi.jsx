@@ -36,6 +36,7 @@ const createInvoice = (
   quantity,
   subTotal,
   createdDate,
+  isBuyBack,
   items
 ) => {
   return axios.post('/api/Sales/CreateInvoiceWithItems', {
@@ -50,6 +51,7 @@ const createInvoice = (
       quantity,
       subTotal,
       createdDate,
+      isBuyBack
     },
     items: items.map(item => ({
       itemID: item.itemID,

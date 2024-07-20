@@ -1,27 +1,29 @@
 import { Table } from 'antd';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import QRCode from 'react-qr-code';
 
-const InvoiceBuyBack = React.forwardRef(({ cartItems, customerInfor, cartTotalQuantity, cartTotalAmount }, ref) => {
+
+const InvoiceBuyBack = React.forwardRef(({ cartItems, customerInfor, cartTotalQuantity, cartTotalAmount, invoiceNumber }, ref) => {
     const buyGold24k = useSelector(
         (state) => state.goldPrice.buyPrice[0]?.buyGold24k
-      );
-      const buyGold18k = useSelector(
+    );
+    const buyGold18k = useSelector(
         (state) => state.goldPrice.buyPrice[0]?.buyGold18k
-      );
-      const buyGold14k = useSelector(
+    );
+    const buyGold14k = useSelector(
         (state) => state.goldPrice.buyPrice[0]?.buyGold14k
-      );
-      const buyGold10k = useSelector(
+    );
+    const buyGold10k = useSelector(
         (state) => state.goldPrice.buyPrice[0]?.buyGold10k
-      );
+    );
     function getDate() {
         const today = new Date();
         const month = today.getMonth() + 1;
         const year = today.getFullYear();
         const date = today.getDate();
         return `${date}/${month}/${year}`;
-      }
+    }
     const columns = [
         {
             title: "STT",
@@ -126,14 +128,16 @@ const InvoiceBuyBack = React.forwardRef(({ cartItems, customerInfor, cartTotalQu
     ];
     return (
         <div ref={ref} className="p-8">
-            <h2 className="text-2xl font-bold text-center mb-4">HÓA ĐƠN MUA HÀNG</h2>
-            {/* <p className="text-sm font-semibold">Mã hóa đơn :{invoiceNumber}</p> */}
-            <ul className="text-base mb-2">
-                <li className="text-sm font-semibold">Khách hàng: {customerInfor.customerName}</li>
-                <li className="text-sm font-semibold">Email: {customerInfor.email}</li>
-                <li className="text-sm font-semibold">Địa chỉ: {customerInfor.address}</li>
-                <li className="text-sm font-semibold">Sđt: {customerInfor.phoneNumber}</li>
-                <li className="text-sm font-semibold">Ngày: {getDate()}</li>
+            <div className="absolute top-0 right-0 m-4">
+                <QRCode value={invoiceNumber} size={80} />
+            </div>
+            <h2 className="text-2xl font-bold text-center mb-6 mt-8">HÓA ĐƠN MUA HÀNG</h2>
+            <ul className="text-base mb-4 w-full">
+                <li className="w-[30%] text-sm font-semibold flex justify-between"><span className='font-semibold'>Khách hàng: </span><span className='font-normal ml-6'>{customerInfor.customerName}</span></li>
+                <li className="w-[30%] text-sm font-semibold flex justify-between"><span className='font-semibold'>Email: </span> <span className='font-normal ml-6'>{customerInfor.email}</span></li>
+                <li className="w-[30%] text-sm font-semibold flex justify-between"><span className='font-semibold'>Địa chỉ: </span><span className='font-normal ml-6'>{customerInfor.address}</span></li>
+                <li className="w-[30%] text-sm font-semibold flex justify-between"><span className='font-semibold'>Số điện thoại: </span><span className='font-normal ml-6'>{customerInfor.phoneNumber}</span></li>
+                <li className="w-[30%] text-sm font-semibold flex justify-between"><span className='font-semibold'>Ngày: </span><span className='font-normal ml-6'>{getDate()}</span></li>
             </ul>
             <div className="cart-items flex flex-col items-center space-y-8 w-full ">
                 <Table
@@ -145,9 +149,9 @@ const InvoiceBuyBack = React.forwardRef(({ cartItems, customerInfor, cartTotalQu
                 />
             </div>
             <div className='w-full flex justify-end  mt-6'>
-                <div className='w-1/4'>
+                <div className='w-[30%]'>
                     <p className="w-full flex justify-between text-md font-semibold"><span className='font-semibold mr-4'>Số lượng:</span> <span>{cartTotalQuantity}</span></p>
-                    <p className="w-full flex justify-between text-md font-semibold"><span className='font-semibold mr-4'>Tổng tiền:</span> <span> {cartTotalAmount.toLocaleString()}đ</span></p>
+                    <p className="w-full flex justify-between text-md font-semibold"><span className='font-semibold mr-4'>Tổng tiền trả khách:</span> <span> {cartTotalAmount.toLocaleString()}đ</span></p>
                 </div>
             </div>
 

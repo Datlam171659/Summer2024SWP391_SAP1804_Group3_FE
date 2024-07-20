@@ -22,7 +22,8 @@ import Promotion from "../Pages/Promotion/Promotion";
 import RoleBasedRoute from "../Components/Common/RoleBasedRoute";
 import NoAccess from "../Pages/Authen/NoAccess";
 import StaffStationPage from "../Pages/StaffStationPage/StaffStationPage";
-
+import ChatRoom from "../Pages/RoomChatPage/ChatRoom";
+import OrderPage from "../Pages/OrderPage/OrderPage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -46,7 +47,7 @@ const router = createBrowserRouter([
       {
         path: "promotion",
         element: (
-          <RoleBasedRoute roles={["manager", "admin"]}>
+          <RoleBasedRoute roles={["Manager", "Admin"]}>
             <Promotion />
           </RoleBasedRoute>
         ),
@@ -84,9 +85,13 @@ const router = createBrowserRouter([
         element: <NoAccess />,
       },
       {
+        path: "orders",
+        element: <OrderPage />,
+      },
+      {
         path: "user",
         element: (
-          <RoleBasedRoute roles={["admin"]}>
+          <RoleBasedRoute roles={["Admin"]}>
             <UserManagePage />
           </RoleBasedRoute>
         ),
@@ -94,7 +99,7 @@ const router = createBrowserRouter([
       {
         path: "user/user-add",
         element: (
-          <RoleBasedRoute roles={["admin"]}>
+          <RoleBasedRoute roles={["Admin"]}>
             <AddUserPage />
           </RoleBasedRoute>
         ),
@@ -151,6 +156,16 @@ const router = createBrowserRouter([
       <Authentication>
         <RootLayoput>
           <DashBoardPage />
+        </RootLayoput>
+      </Authentication>
+    ),
+  },
+  {
+    path: "chat-room",
+    element: (
+      <Authentication>
+        <RootLayoput>
+          <ChatRoom />
         </RootLayoput>
       </Authentication>
     ),

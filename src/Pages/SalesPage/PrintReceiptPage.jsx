@@ -8,6 +8,8 @@ import { resetCart } from "../../Features/product/cartSlice";
 import InvoiceComponent from "../../Components/Common/InvoiceComponent";
 import WarrantyComponent from "../../Components/Common/WarrantyComponent";
 import { useLocation } from "react-router-dom";
+import Reproduct from "../../Components/Common/Reproduct";
+import '../SalesPage/PrintReceiptPage.scss'
 function PrintReceiptPage() {
   const dispatch = useDispatch();
   const handleReset = () => {
@@ -23,10 +25,12 @@ function PrintReceiptPage() {
   const discount = useSelector((state) => state.cart.discount);
   const invoiceComponentRef = useRef();
   const warrantyComponentRef = useRef();
+  const ReproductRef = useRef();
   const location = useLocation();
   const invoiceNumber = location.state?.invoiceNumber || '';
   return (
-    <ConfigProvider
+    <div className="print-receipt-page flex justify-center align-middle w-full">
+    <ConfigProvider 
       theme={{
         token: {
           colorPrimary: "var(--primary-color)",
@@ -34,18 +38,22 @@ function PrintReceiptPage() {
         },
       }}
     >
-      <div className="flex-col w-full text-center justify-center">
-        <div className="mt-60">
+      <div className="flex-col text-center justify-center w-full">
+        <div className="mt-60 ml-10">
           <CheckCircleOutlined className="text-9xl my-8 text-green-400" />
-          <p>Thanh toán thành công</p>
+          <p className="font-bold text-lg text-black">Thanh toán thành công</p>
           <div className="flex-col mt-9">
             <ReactToPrint
-              trigger={() => <Button className="w-80 h-14 bg-black text-white uppercase font-bold">In hóa đơn</Button>}
+              trigger={() => <Button className="print-receipt-btn w-80 h-14 bg-black text-white uppercase font-bold">In hóa đơn</Button>}
               content={() => invoiceComponentRef.current}
             />
             <ReactToPrint
-              trigger={() => <Button className="w-80 h-14 bg-black text-white uppercase font-bold mt-4">In bảo hành</Button>}
+              trigger={() => <Button className="print-warranty-btn w-80 h-14 bg-black text-white uppercase font-bold mt-4">In bảo hành</Button>}
               content={() => warrantyComponentRef.current}
+            />
+            <ReactToPrint
+              trigger={() => <Button className="print-return-btn w-80 h-14 bg-black text-white uppercase font-bold mt-4">In đổi trả hàng</Button>}
+              content={() => ReproductRef.current}
             />
             <Link to="/sales-page">
               <Button onClick={handleReset} className="w-80 h-14 bg-white text-black uppercase font-bold ml-4">
@@ -70,9 +78,15 @@ function PrintReceiptPage() {
           customerInfor={customerInfor}
           cartItems={cartItems}
         />
+        <Reproduct
+          ref={ReproductRef}
+          customerInfor={customerInfor}
+          cartItems={cartItems}
+        />
       </div>
       {console.log("Check cart",cartItems)}
     </ConfigProvider>
+    </div>
   );
 }
 
