@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Table, ConfigProvider, message, Modal } from "antd";
+import { Button, Table, ConfigProvider, message, Modal,Spin  } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { fetchCustomerData } from "../../Features/Customer/customerSlice";
 import { resetCart, updateCustomerInfo } from "../../Features/product/cartSlice";
@@ -15,10 +15,12 @@ import emailjs from 'emailjs-com';
 import { createInvoiceWithItems } from "../../Features/Invoice/InvoiceItemSlice"; 
 import { removePromotion } from '../../Features/Promotion/promotionallSlice';
 import { useLocation } from "react-router-dom";
+
 const PaymentPage = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const customerData = useSelector((state) => state.customer.customerData);
+  const [loading, setLoading] = useState(false);
   const isLoading = useSelector((state) => state.customer.isLoading);
   const buyGold24k = useSelector(
     (state) => state.goldPrice.sellPrice[0]?.sellGold24k
@@ -274,19 +276,19 @@ const PaymentPage = () => {
     const status = "Active";
     const now = new Date().toISOString(); 
     const isBuyBack = false;
-    // console.log("check",promotionId)
+
     const invoiceData = {
-      staffId: staffId,
+      staffId,
       customerId,
       invoiceNumber,
-      companyName: companyName,
+      companyName,
       buyerAddress: customerInfor.address,
       status,
       paymentType,
       quantity: cartTotalQuantity,
       subTotal: cartTotalAmount,
       createdDate: now,
-      isBuyBack:isBuyBack,
+      isBuyBack,
       items: cartItems.map(item => {
         let goldType = "";
         if (item.itemName.toLowerCase().includes("10k")) {
@@ -331,22 +333,23 @@ const PaymentPage = () => {
         const totalPrice = item.weight * item.itemQuantity * kara;
         return {
           itemID: item.itemId,
-          returnPolicyId: returnPolicyId,
+          returnPolicyId,
           itemQuantity: item.itemQuantity,
-          warrantyExpiryDate: warrantyExpiryDate,
-          price:totalPrice,
-          total:totalPrice,
+          warrantyExpiryDate,
+          price: totalPrice,
+          total: totalPrice,
         };
       }),
     };
-    
-    
+
+    setLoading(true);
+
     try {
       await dispatch(createInvoiceWithItems(invoiceData)).unwrap();
       await dispatch(addWarranty(customerId)).unwrap();
       await dispatch(removePromotion(promotionId));
-
       await dispatch(rewardCustomer({ customerId, addPoints })).unwrap();
+
       const cartItemsDetails = cartItems.map((item, index) => {
         let goldType = "";
         if (item.itemName.toLowerCase().includes("10k")) {
@@ -358,7 +361,7 @@ const PaymentPage = () => {
         } else if (item.itemName.toLowerCase().includes("24k")) {
           goldType = "24K";
         }
-  
+
         let kara;
         switch (goldType) {
           case "10K": kara = buyGold10k; break;
@@ -370,33 +373,36 @@ const PaymentPage = () => {
 
         const itemPrice = item.weight * kara;
         const totalPrice = item.weight * item.itemQuantity * kara;
-        return `${index + 1}. Tên sản phẩm: ${item.itemName},Serial Number: ${item.itemId}, Giá: ${Number(itemPrice.toFixed(0)).toLocaleString()}đ, Số Lượng: ${item.itemQuantity}, Tổng: ${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
+        return `${index + 1}. Tên sản phẩm: ${item.itemName}, Serial Number: ${item.itemId}, Giá: ${Number(itemPrice.toFixed(0)).toLocaleString()}đ, Số Lượng: ${item.itemQuantity}, Tổng: ${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
       }).join("\n");
-  
+
       const templateParams = {
         to_email: customerInfor.email,
-        customerName: customerInfor.customerName, 
+        customerName: customerInfor.customerName,
         invoiceNumber,
         buyerAddress: customerInfor.address,
         email: customerInfor.email,
         phoneNumber: customerInfor.phoneNumber,
-        date: getDate(), 
-        cartTotalQuantity: cartTotalQuantity,
+        date: getDate(),
+        cartTotalQuantity,
         cartTotalAmount: cartTotalAmount.toLocaleString(),
         cartItemsDetails,
         discount,
       };
 
       emailjs.send('service_2kxr0wt', 'template_ktsnxsg', templateParams, 'GsBxjtc2i5nJN_tRj')
-      .then((response) => {
-        message.success("Tạo hóa đơn và gửi email thành công!");
-      }, (err) => {
-        message.error("Gửi email thất bại.");
-      });
-  
-      navigate('/sales-page/Payment/PrintReceiptPage', { state: { invoiceNumber }, });
+        .then(response => {
+          message.success("Tạo hóa đơn và gửi email thành công!");
+        })
+        .catch(err => {
+          message.error("Gửi email thất bại.");
+        });
+
+      navigate('/sales-page/Payment/PrintReceiptPage', { state: { invoiceNumber } });
     } catch (error) {
       message.error(`Tạo hóa đơn thất bại: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -582,11 +588,15 @@ const PaymentPage = () => {
             </div>
             <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
             <div>
-              <Link to="/sales-page/Payment/PrintReceiptPage">
-                <Button className="w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500" onClick={handleConfirm}>
-                  Xác Nhận
-                </Button>
-              </Link>
+            <Spin spinning={loading}>
+      <Button
+        className="w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500"
+        onClick={handleConfirm}
+        disabled={loading}
+      >
+        {loading ? <Spin /> : "Xác Nhận"}
+      </Button>
+    </Spin>
               <Link to="/sales-page">
                 <Button className="w-full h-14 bg-white text-black uppercase font-bold hover:bg-gray-500 mt-4" onClick={handleCancel}>
                   Hủy

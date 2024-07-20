@@ -17,21 +17,8 @@ const Login = () => {
       if (token) {
         navigate("/dashboard");
         const decodedToken = jwtDecode(token);
-        switch (decodedToken.role) {
-          case "0":
-            localStorage.setItem("role", "admin");
-            break;
-          case "1":
-            localStorage.setItem("role", "manager");
-            break;
-          case "2":
-            localStorage.setItem("role", "staff");
-            break;
-          default:
-            console.log("Role not recognized");
-        }
-
         localStorage.setItem("nameid", decodedToken.nameid);
+        localStorage.setItem("role", decodedToken.role);
         localStorage.setItem("email", decodedToken.email);
         localStorage.setItem("UserName", decodedToken.UserName);
         localStorage.setItem("UniqueName", decodedToken.unique_name);

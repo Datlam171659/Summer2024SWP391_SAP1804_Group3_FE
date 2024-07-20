@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Input, message, Select, Spin, Modal, Form,Table } from "antd";
+import {
+  Button,
+  Input,
+  message,
+  Select,
+  Spin,
+  Modal,
+  Form,
+  Table,
+  InputNumber,
+} from "antd";
 import { MinusOutlined, PlusOutlined, ScanOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import {
@@ -21,7 +31,7 @@ import { requestPromotionCus } from "../../Features/Promotion/promotionSlice";
 import { fetchPromotions } from "../../Features/Promotion/promotionallSlice";
 import { fetchRewardAll } from "../../Features/Customer/rewardallSlice";
 import { fetchItemImages } from "../../Features/product/itemImageSlice";
-import { fetchRewardDetail } from '../../Features/Customer/rewardDetailSlice';
+import { fetchRewardDetail } from "../../Features/Customer/rewardDetailSlice";
 
 const ProductList = () => {
   const navigate = useNavigate();
@@ -73,7 +83,11 @@ const ProductList = () => {
   const promotions = useSelector((state) => state.promotions.promotions);
   const [promotionDataSelect, setPromotionDataSelect] = useState("");
   const [promotionPercentage, setPromotionPercentage] = useState(0);
-  const { rewardDetail: rewards, isrewardetailError, loading: isrewardLoading } = useSelector(state => state.rewards);
+  const {
+    rewardDetail: rewards,
+    isrewardetailError,
+    loading: isrewardLoading,
+  } = useSelector((state) => state.rewards);
   const currencyFormatter = new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
@@ -91,6 +105,7 @@ const ProductList = () => {
     if (points >= 10) return "Bạc";
     return "Chưa xếp hạng";
   };
+
   const customerRewards =
     customerInfor && rewardsallData
       ? rewardsallData.filter(
@@ -140,7 +155,11 @@ const ProductList = () => {
     }, 0);
     const discountedAmount = cartTotalAmount * (1 - promotionPercentage / 100);
     dispatch(
-      updateTotals({ cartTotalQuantity, cartTotalAmount: discountedAmount,discount:promotionPercentage })
+      updateTotals({
+        cartTotalQuantity,
+        cartTotalAmount: discountedAmount,
+        discount: promotionPercentage,
+      })
     );
   }, [
     cartItems,
@@ -154,7 +173,7 @@ const ProductList = () => {
   const handleProductIdChange = (e) => {
     setProductIdInput(e.target.value);
   };
-  console.log(productIdInput)
+  console.log(productIdInput);
 
   const showMessageError = (messageText) => {
     const now = Date.now();
@@ -164,16 +183,19 @@ const ProductList = () => {
     }
   };
   const handleAddToCart = (product) => {
-    const existingItem = cartItems.find((item) => item.itemId === product.itemId);
+    const existingItem = cartItems.find(
+      (item) => item.itemId === product.itemId
+    );
     if (existingItem && existingItem.itemQuantity >= product.quantity) {
-      showMessageError(`Bạn đã đạt số lượng tối đa cho sản phẩm ${product.itemName}`);
+      showMessageError(
+        `Bạn đã đạt số lượng tối đa cho sản phẩm ${product.itemName}`
+      );
       return;
     }
     dispatch(addItem(product));
     message.success("Sản phẩm đã được thêm vào giỏ hàng");
   };
-  
-  
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     switch (name) {
@@ -261,9 +283,9 @@ const ProductList = () => {
   }, [dispatch]);
 
   useEffect(() => {
-      setFilteredProducts(productData);
+    setFilteredProducts(productData);
   }, [productData]);
-console.log(filteredProducts)
+  console.log(filteredProducts);
   useEffect(() => {
     if (!isScanModalVisible) return;
 
@@ -327,7 +349,9 @@ console.log(filteredProducts)
     ) {
       message.error("Vui lòng nhập thông tin khách hàng trước khi thanh toán");
     } else {
-      navigate("/sales-page/Payment", { state: { promotionId: promotionDataSelect } });
+      navigate("/sales-page/Payment", {
+        state: { promotionId: promotionDataSelect },
+      });
     }
   };
   const openDiscountModal = () => {
@@ -382,7 +406,7 @@ console.log(filteredProducts)
     try {
       await dispatch(requestPromotionCus(discountData)).unwrap();
       message.success("Yêu cầu giảm giá thành công!");
-      fetchPromotions()
+      fetchPromotions();
       setIsModalVisible(false);
     } catch (error) {
       message.error(`Yêu cầu giảm giá thất bại: ${error.message}`);
@@ -401,13 +425,13 @@ console.log(filteredProducts)
   };
 
   useEffect(() => {
-    setPromotionDataSelect('');
+    setPromotionDataSelect("");
     setPromotionPercentage(0);
   }, [promotions]);
-  
+
   const handleChange = (value) => {
     if (value === undefined) {
-      setPromotionDataSelect('');
+      setPromotionDataSelect("");
       setPromotionPercentage(0);
     } else {
       setPromotionDataSelect(value);
@@ -423,22 +447,26 @@ console.log(filteredProducts)
   const handleIncrement = (itemId) => {
     const item = cartItems.find((item) => item.itemId === itemId);
     if (!item) {
-      return; 
+      return;
     }
     if (item.itemQuantity >= item.quantity) {
-      showMessageError(`Bạn đã đạt số lượng tối đa cho sản phẩm ${item.itemName}`);
+      showMessageError(
+        `Bạn đã đạt số lượng tối đa cho sản phẩm ${item.itemName}`
+      );
       return;
     }
     dispatch(incrementQuantity(itemId));
   };
-  
+
   const handleDecrement = (itemId) => {
     const item = cartItems.find((item) => item.itemId === itemId);
     if (!item) {
       return;
     }
     if (item.itemQuantity <= 1) {
-      showMessageError(`Số lượng không thể nhỏ hơn 1 cho sản phẩm ${item.itemName}`);
+      showMessageError(
+        `Số lượng không thể nhỏ hơn 1 cho sản phẩm ${item.itemName}`
+      );
       return;
     }
     dispatch(decrementQuantity(itemId));
@@ -477,44 +505,43 @@ console.log(filteredProducts)
       <div className="content">
         <div className="menu">
           <div className="menu-header"></div>
-          <div className="product-grid flex align-middle justify-center text-center"> 
-            {filteredProducts.filter(
-      (product) =>
-        product.quantity >0
-    ).map((product) => (
-              <div key={product.itemId} className="product-card">
-                 <img
-                  src={
-                    images.find((image) => image.itemId === product.itemId)?.imageUrl ||
-                    "default.jpg"
-                  }
-                  alt={product.itemName}
-                />
-                <h3 className="product-name">{product.itemName}</h3>
-                <p>Số lượng: {product.quantity}</p>
-                <p>
-              Giá:{" "}
-              {currencyFormatter.format(
-                product.itemName.toLowerCase().includes("10k")
-                  ? product.weight * buyGold10k
-                  : product.itemName.toLowerCase().includes("14k")
-                  ? product.weight * buyGold14k
-                  : product.itemName.toLowerCase().includes("18k")
-                  ? product.weight * buyGold18k
-                  : product.itemName.toLowerCase().includes("24k")
-                  ? product.weight * buyGold24k
-                  : 0
-              )}
-            </p>
-                <Button
-                  type="primary"
-                  onClick={() => handleAddToCart(product)}
-                  className="add-to-cart-btn"
-                >
-                  Thêm vào giỏ hàng
-                </Button>
-              </div>
-            ))}
+          <div className="product-grid flex align-middle justify-center text-center">
+            {filteredProducts
+              .filter((product) => product.quantity > 0)
+              .map((product) => (
+                <div key={product.itemId} className="product-card">
+                  <img
+                    src={
+                      images.find((image) => image.itemId === product.itemId)
+                        ?.imageUrl || "default.jpg"
+                    }
+                    alt={product.itemName}
+                  />
+                  <h3 className="product-name">{product.itemName}</h3>
+                  <p>Số lượng: {product.quantity}</p>
+                  <p>
+                    Giá:{" "}
+                    {currencyFormatter.format(
+                      product.itemName.toLowerCase().includes("10k")
+                        ? product.weight * buyGold10k
+                        : product.itemName.toLowerCase().includes("14k")
+                        ? product.weight * buyGold14k
+                        : product.itemName.toLowerCase().includes("18k")
+                        ? product.weight * buyGold18k
+                        : product.itemName.toLowerCase().includes("24k")
+                        ? product.weight * buyGold24k
+                        : 0
+                    )}
+                  </p>
+                  <Button
+                    type="primary"
+                    onClick={() => handleAddToCart(product)}
+                    className="add-to-cart-btn"
+                  >
+                    Thêm vào giỏ hàng
+                  </Button>
+                </div>
+              ))}
           </div>
         </div>
         <div className="cart">
@@ -524,13 +551,20 @@ console.log(filteredProducts)
               type="primary"
               onClick={showModal}
               className="dis-req-btn"
-              disabled={searchedCustomer===null}
+              disabled={searchedCustomer === null}
             >
               Yêu Cầu Giảm Giá
             </Button>
-            <Button className='ml-5' onClick={openDiscountModal} disabled={customerType === "newCustomer"&&searchedCustomer===null||searchedCustomer===null}>
-  Chọn giảm giá
-</Button>
+            <Button
+              className="ml-5"
+              onClick={openDiscountModal}
+              disabled={
+                (customerType === "newCustomer" && searchedCustomer === null) ||
+                searchedCustomer === null
+              }
+            >
+              Chọn giảm giá
+            </Button>
             <Modal
               title="Yêu Cầu Giảm Giá"
               visible={isModalVisible}
@@ -539,9 +573,11 @@ console.log(filteredProducts)
             >
               <Form layout="vertical">
                 <Form.Item label="Phần Trăm Giảm Giá" required>
-                  <Input
+                  <InputNumber
+                    min={1}
+                    max={100}
                     value={discountPct}
-                    onChange={(e) => setDiscountPct(e.target.value)}
+                    onChange={(value) => setDiscountPct(value)}
                   />
                 </Form.Item>
                 <Form.Item label="Nội dung" required>
@@ -579,7 +615,10 @@ console.log(filteredProducts)
                     onChange={handleInputChange}
                     className="rounded-[5px]"
                   />
-                  <Button onClick={handleSearchClick} className="search-btn ml-2">
+                  <Button
+                    onClick={handleSearchClick}
+                    className="search-btn ml-2"
+                  >
                     Tìm kiếm
                   </Button>
                 </div>
@@ -588,21 +627,25 @@ console.log(filteredProducts)
                 ) : (
                   searchedCustomer && (
                     <div className="customer-details ml-[0]">
-                      <p className='my-3 text-xl'>
+                      <p className="my-3 text-xl">
                         <strong>Tên:</strong> {searchedCustomer.customerName}
                       </p>
-                      <p className='my-3 text-xl'>
+                      <p className="my-3 text-xl">
                         <strong>Địa chỉ:</strong> {searchedCustomer.address}
                       </p>
-                      <p className='my-3 text-xl'>
+                      <p className="my-3 text-xl">
                         <strong>Giới tính:</strong> {searchedCustomer.gender}
                       </p>
-                      <p className='my-3 text-xl'>
+                      <p className="my-3 text-xl">
                         <strong>Email:</strong> {searchedCustomer.email}
                       </p>
-                        <strong>Điểm :</strong> {rewards ? rewards.pointsTotal : 'N/A'}
-                      <p className='my-3 text-xl'>
-                        <strong>Hạng của khách hàng là:</strong> {rewards ? calculateRewardLevel(rewards.pointsTotal) : 'N/A'}
+                      <strong>Điểm :</strong>{" "}
+                      {rewards ? rewards.pointsTotal : "N/A"}
+                      <p className="my-3 text-xl">
+                        <strong>Hạng của khách hàng là:</strong>{" "}
+                        {rewards
+                          ? calculateRewardLevel(rewards.pointsTotal)
+                          : "N/A"}
                       </p>
                     </div>
                   )
@@ -698,17 +741,17 @@ console.log(filteredProducts)
                 </Button>
               </div>
               <span className="item-price">
-              {currencyFormatter.format(
-                item.itemName.toLowerCase().includes("10k")
-                  ? item.weight * buyGold10k
-                  : item.itemName.toLowerCase().includes("14k")
-                  ? item.weight * buyGold14k
-                  : item.itemName.toLowerCase().includes("18k")
-                  ? item.weight * buyGold18k
-                  : item.itemName.toLowerCase().includes("24k")
-                  ? item.weight * buyGold24k
-                  : 0
-              )}
+                {currencyFormatter.format(
+                  item.itemName.toLowerCase().includes("10k")
+                    ? item.weight * buyGold10k
+                    : item.itemName.toLowerCase().includes("14k")
+                    ? item.weight * buyGold14k
+                    : item.itemName.toLowerCase().includes("18k")
+                    ? item.weight * buyGold18k
+                    : item.itemName.toLowerCase().includes("24k")
+                    ? item.weight * buyGold24k
+                    : 0
+                )}
               </span>
               <Button
                 type="primary"
@@ -720,31 +763,18 @@ console.log(filteredProducts)
               </Button>
             </div>
           ))}
-          <div className="add-product">
-          <Input
-      value={productIdInput}
-      onChange={handleProductIdChange}
-      placeholder="Nhập mã sản phẩm"
-      className="w-[130px] mb-2"
-    />
-    <Button
-      className="add-to-cart-btn"
-      onClick={handleAddToCart}
-    >
-      Thêm vào giỏ hàng
-    </Button>
-          </div>
+          <div className="add-product"></div>
           <div className="cart-summary">
             <div>
               <span>Tổng số lượng: </span>
               <span>{cartTotalQuantity}</span>
             </div>
             {promotionDataSelect && (
-            <div>
-              <span>Giảm giá: </span>
-              <span>{promotionPercentage}%</span>
-            </div>
-             )}
+              <div>
+                <span>Giảm giá: </span>
+                <span>{promotionPercentage}%</span>
+              </div>
+            )}
             <div>
               <span>Tổng giá: </span>
               <span>{currencyFormatter.format(cartTotalAmount)}</span>
