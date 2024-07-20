@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import buyBackApi from "../../Services/api/buyBackApi";
 import { addItem, decrementQuantity, incrementQuantity, removeItem, resetCustomerId, updateCustomerId, updateTotals } from "../../Features/buy-back/buyBackCartSlice";
 import { Html5QrcodeScanner } from "html5-qrcode";
+import '../BuyBackPage/ProductListBuyback.scss'
 
 const ProductListBuyBack = () => {
   const navigate = useNavigate();
@@ -500,7 +501,7 @@ const ProductListBuyBack = () => {
   ];
 
   return (
-    <div className="text-black">
+    <div className="pdt-lst-bb-page text-black">
       <h1 className="text-2xl font-bold mb-0 ml-5 mt-4">Mua Lại Trang Sức</h1>
       <div className="flex flex-col lg:flex-row">
         <div className="my-1 w-screen lg:w-full p-4">
@@ -517,7 +518,7 @@ const ProductListBuyBack = () => {
                 <Button
                   disabled={isButtonDisabled}
                   type="primary"
-                  className="ml-2"
+                  className="order-track-btn ml-2"
                   style={{ fontWeight: "600", heigh: "30px" }}
                   onClick={handleSearch}
                 >
@@ -574,7 +575,7 @@ const ProductListBuyBack = () => {
                 </div>
               </div>
             </div>
-            <div className="cart-summary mt-6 bg-white p-6 pt-2 rounded-lg shadow-md  w-[49%]">
+            <div className="cart-summary mt-6 bg-white p-6 pt-2 rounded-lg shadow-md w-[49%]">
               {/* <Button
                 onClick={showAddItemModal}
                 className="w-full h-14 bg-slate-600 text-white uppercase font-bold">
@@ -582,7 +583,7 @@ const ProductListBuyBack = () => {
               </Button> */}
               <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700"></hr>
               <div>
-                <Button onClick={handleCreateOrder} className="w-full h-14 bg-black text-white uppercase font-bold">
+                <Button onClick={handleCreateOrder} className="create-order-btn w-full h-14 bg-black text-white uppercase font-bold">
                   Tạo Đơn
                 </Button>
               </div>

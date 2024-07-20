@@ -396,15 +396,13 @@ function Product() {
                 </Select>
               </div>
 
-              <div className="flex">
-                <Button
-                  type="primary"
-                  className="filter-button mr-4"
-                  onClick={showFilterModal}
-                >
+              <div className="all-btn flex">
+
+                <Button type="primary" className="filter-button mr-4" onClick={showFilterModal}>
                   Lọc sản phẩm
                 </Button>
                 <Button
+                  className="add-product-btn"
                   type="primary"
                   onClick={() => setIsAddModalOpen(true)}
                   style={{ marginBottom: 16 }}
@@ -413,6 +411,7 @@ function Product() {
                   Thêm sản phẩm
                 </Button>
                 <Button
+                  className="refresh-btn"
                   type="primary"
                   onClick={handleRefresh}
                   style={{ marginBottom: 16, marginLeft: 16 }}

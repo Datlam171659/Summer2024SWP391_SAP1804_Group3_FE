@@ -6,7 +6,7 @@ import { fetchCustomerData } from "../../Features/buy-back/buyBackCustomerSlice"
 import { resetCart, updateCustomerInfo, updateInvoiceNumber } from "../../Features/buy-back/buyBackCartSlice";
 import buyBackApi from "../../Services/api/buyBackApi";
 import { EditOutlined, FormOutlined } from "@ant-design/icons";
-
+import '../BuyBackPage/BuyBackPaymentPage.scss'
 const BuyBackPaymentPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -237,6 +237,7 @@ const BuyBackPaymentPage = () => {
   ];
 
   return (
+    <div className="buyback-payment-page">
     <ConfigProvider
       theme={{
         token: {
@@ -326,7 +327,7 @@ const BuyBackPaymentPage = () => {
               </ConfigProvider>
             </div>
             <div>
-              <Button className="w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500" onClick={handleConfirm}>
+              <Button className="confirm-btn w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500" onClick={handleConfirm}>
                 Xác Nhận
               </Button>
               <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
@@ -372,6 +373,7 @@ const BuyBackPaymentPage = () => {
       </Modal>
       {/* {console.log("customerInfor: ", customerInfor)} */}
     </ConfigProvider>
+    </div>
   );
 };
 

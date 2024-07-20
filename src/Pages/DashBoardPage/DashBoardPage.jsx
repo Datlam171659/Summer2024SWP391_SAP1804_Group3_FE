@@ -254,7 +254,7 @@ const DashBoardPage = () => {
       key: 'fullName',
     },
     {
-      title: 'Tổng đơn',
+      title: 'Tổng đơn hàng',
       dataIndex: 'invoiceCount',
       key: 'invoiceCount',
     },
