@@ -20,8 +20,8 @@ const WarrantyComponent = React.forwardRef(({ cartItems, customerInfor }, ref) =
         },
         {
             title: "Mã Hàng",
-            dataIndex: "serialNumber",
-            key: "serialNumber",
+            dataIndex: "itemId",
+            key: "itemId",
             width: 120,
         },
         {

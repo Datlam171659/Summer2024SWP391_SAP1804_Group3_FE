@@ -29,7 +29,7 @@ function PrintReceiptPage() {
   const location = useLocation();
   const invoiceNumber = location.state?.invoiceNumber || '';
   return (
-    <div className="print-receipt-page">
+    <div className="print-receipt-page flex justify-center align-middle w-full">
     <ConfigProvider 
       theme={{
         token: {
@@ -38,7 +38,7 @@ function PrintReceiptPage() {
         },
       }}
     >
-      <div className="flex-col w-full text-center justify-center">
+      <div className="flex-col text-center justify-center w-full">
         <div className="mt-60 ml-10">
           <CheckCircleOutlined className="text-9xl my-8 text-green-400" />
           <p className="font-bold text-lg text-black">Thanh toán thành công</p>
