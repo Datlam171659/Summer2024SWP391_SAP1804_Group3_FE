@@ -9,6 +9,7 @@ import { getinvoiceAll, GetMonthlyRevenue } from '../../Services/api/InvoiceApi'
 import { getProductAll } from '../../Services/api/productApi'
 import userkApi from "../../Services/api/UserApi";
 import DashBoardCard from './DashboardCard';
+import viVN from 'antd/es/date-picker/locale/vi_VN';
 const { RangePicker } = DatePicker;
 
 const DashBoardPage = () => {
@@ -290,7 +291,12 @@ const DashBoardPage = () => {
           <div className='left-content'>
             <div className="line-chart-container">
               <Card title="Doanh số bán hàng theo tháng" style={{ width: '100%' }}>
-                <RangePicker onChange={handleDateRangeChange} picker="month" format="YYYY-MM" style={{ marginBottom: 20 }} />
+                <RangePicker 
+                    onChange={handleDateRangeChange} 
+                    picker="month" 
+                    format="YYYY-MM"
+                    locale={viVN}
+                    style={{ marginBottom: 20 }} />
                 <Line {...config} width={600} height={300}/>
               </Card>
             </div>
