@@ -75,7 +75,8 @@ function Sidebar() {
         display: "hidden"
       }
     ,
-    role === "Admin" ? {
+
+    role === "Admin" || role === "Staff" ? {
       icon: <SearchOutlined style={{ fontSize: "16px" }} />,
       title: strSidebar.SearchProfile,
       to: "/customer-search",
@@ -119,7 +120,7 @@ function Sidebar() {
   return (
     <Sider
       id='sidebar'
-      className='sidebar'
+      className='sidebar text-black'
       collapsed={collapsed}
       theme='light'
       style={{

@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
 import { BellFilled } from "@ant-design/icons";
 import "./Header.scss";
-import { Avatar } from "antd";
+import { Avatar, Switch } from "antd";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from '../../../context/ThemeContext';
 
 function Header() {
   const navigate = useNavigate();
   const uniqueName = localStorage.getItem('UniqueName');
   const initial = uniqueName ? uniqueName.charAt(0).toUpperCase() : '';
   const [showName, setShowName] = useState(false);
+  const { isDarkMode, toggleTheme } = useTheme();
 
   const toggleShowName = () => {
     setShowName(!showName);
   };
 
   return (
-    <header className="header">
+    <header className={`header ${isDarkMode ? 'dark-mode' : 'bright-mode'}`}>
       <div className="logo" />
       <div className="body">
         <div className="user flex">  
@@ -25,7 +27,13 @@ function Header() {
                 <BellFilled className="mr-6 text-[18px] hover:text-gray-200" />
               </button> */}
             </div>
-
+            <Switch
+            checkedChildren="Tối"
+            unCheckedChildren="Sáng"
+            checked={isDarkMode}
+            onChange={toggleTheme}
+            style={{ marginRight: '10px' }}
+          />
           <div className="relative">
             <Avatar
               size={"large"}

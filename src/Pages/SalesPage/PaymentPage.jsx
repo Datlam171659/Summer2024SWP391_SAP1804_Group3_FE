@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Table, ConfigProvider, message, Modal } from "antd";
+import { Button, Table, ConfigProvider, message, Modal,Spin  } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { fetchCustomerData } from "../../Features/Customer/customerSlice";
 import { resetCart, updateCustomerInfo } from "../../Features/product/cartSlice";
@@ -15,10 +15,13 @@ import emailjs from 'emailjs-com';
 import { createInvoiceWithItems } from "../../Features/Invoice/InvoiceItemSlice"; 
 import { removePromotion } from '../../Features/Promotion/promotionallSlice';
 import { useLocation } from "react-router-dom";
+
+import '../SalesPage/PaymentPage.scss'
 const PaymentPage = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
   const customerData = useSelector((state) => state.customer.customerData);
+  const [loading, setLoading] = useState(false);
   const isLoading = useSelector((state) => state.customer.isLoading);
   const buyGold24k = useSelector(
     (state) => state.goldPrice.sellPrice[0]?.sellGold24k
@@ -50,16 +53,26 @@ const PaymentPage = () => {
   const [customerInfo, setCustomerInfo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCashDisabled, setIsCashDisabled] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const location = useLocation();
+  const successMessageShown = useRef(false);
   const promotionId = location.state?.promotionId || '';
   // console.log("check",promotionId)
   const navigate = useNavigate();
+
+  const formatDate = (date) => {
+    const day = String(date.getDate()).padStart(2, '0'); 
+    const month = String(date.getMonth() + 1).padStart(2, '0'); 
+    const year = date.getFullYear();
+  
+    return `${day}${month}${year}`;
+  };
 
   const MY_BANK = {
     BANK_ID: "ACB",
     ACCOUNT_NO: "37942897",
     TEMPLATE: "compact2",
-    DESCRIPTION: `${cartItems.map(item => `${item.itemQuantity}${item.itemId}`).join("AND")}SELL`,
+    DESCRIPTION:  `${customerInfor.id}${formatDate(new Date())}SELL`,
     ACCOUNT_NAME: "FJEWELRY SHOP"
   };
 
@@ -80,6 +93,9 @@ const PaymentPage = () => {
   }
 
   async function checkPaid(price, content) {
+    if(isSuccess){
+      return;
+    } else {
     try{
       const response = await fetch(
         "https://script.google.com/macros/s/AKfycbzESerl7FzVcPjT7napuXGUmnebQsmJ-IFz90zHfXAAxXPNzV-GshSyG_XUFO94-tdy/exec"
@@ -89,29 +105,47 @@ const PaymentPage = () => {
       const lastPrice = lastPaid["Giá trị"];
       const lastContent = lastPaid["Mô tả"].trim().toLowerCase().replace(/[\s-]/g, '');
       const normalizedContent = content.toLowerCase().replace(/[\s-]/g, '');
-      
-      console.log("Last Content:", lastContent);
-      console.log("Normalized Content:", normalizedContent);
-      if(lastPrice >= price && lastContent.includes(normalizedContent)) {
-        message.success("Thanh toán thành công");
+      const roundedPrice = Math.round(price);
+      console.log(normalizedContent);
+      console.log(lastContent)
+      if(lastPrice >= roundedPrice && lastContent.includes(normalizedContent)) {     
         setIsCashDisabled(true);
         setIsModalOpen(false);
+        setPaymentType("Chuyển khoản");
+        if (!successMessageShown.current) {
+          message.success("Thanh toán thành công");
+          successMessageShown.current = true;
+        }
+        setIsSuccess(true);
       } else {
         console.log("Không có giao dịch tương ứng");
       }
     } catch(error){
       console.log(error);
+      }
     }
   }
 // {console.log("check promo",discount)}
   useEffect(() => {
-    setInterval(() => {
-      checkPaid(cartTotalAmount, MY_BANK.DESCRIPTION);
-    }, 1000);
+      if (isSuccess) return;
+      const interval = setInterval(() => {
+        if (!isSuccess) {
+          checkPaid(cartTotalAmount, MY_BANK.DESCRIPTION);
+        } else {
+          clearInterval(interval); 
+        }
+      }, 1000);
+      const timeout = setTimeout(() => {
+        clearInterval(interval);
+      }, 20000);
     const formattedAmount = (cartTotalAmount / 1000).toFixed(3).replace('.', '').replace(',', '.'); 
     const qrLink = `https://img.vietqr.io/image/${MY_BANK.BANK_ID}-${MY_BANK.ACCOUNT_NO}-${MY_BANK.TEMPLATE}.png?amount=${formattedAmount}&addInfo=${MY_BANK.DESCRIPTION}&accountName=${MY_BANK.ACCOUNT_NAME}`;
     setQrCode(qrLink);
-  }, [cartTotalAmount]);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
+  }, [cartTotalAmount,isSuccess]);
   // console.log("check cart item",cartItems)
   useEffect(() => {
     dispatch(fetchCustomerData());
@@ -243,19 +277,19 @@ const PaymentPage = () => {
     const status = "Active";
     const now = new Date().toISOString(); 
     const isBuyBack = false;
-    // console.log("check",promotionId)
+
     const invoiceData = {
-      staffId: staffId,
+      staffId,
       customerId,
       invoiceNumber,
-      companyName: companyName,
+      companyName,
       buyerAddress: customerInfor.address,
       status,
       paymentType,
       quantity: cartTotalQuantity,
       subTotal: cartTotalAmount,
       createdDate: now,
-      isBuyBack:isBuyBack,
+      isBuyBack,
       items: cartItems.map(item => {
         let goldType = "";
         if (item.itemName.toLowerCase().includes("10k")) {
@@ -300,22 +334,23 @@ const PaymentPage = () => {
         const totalPrice = item.weight * item.itemQuantity * kara;
         return {
           itemID: item.itemId,
-          returnPolicyId: returnPolicyId,
+          returnPolicyId,
           itemQuantity: item.itemQuantity,
-          warrantyExpiryDate: warrantyExpiryDate,
-          price:totalPrice,
-          total:totalPrice,
+          warrantyExpiryDate,
+          price: totalPrice,
+          total: totalPrice,
         };
       }),
     };
-    
-    
+
+    setLoading(true);
+
     try {
       await dispatch(createInvoiceWithItems(invoiceData)).unwrap();
       await dispatch(addWarranty(customerId)).unwrap();
       await dispatch(removePromotion(promotionId));
-
       await dispatch(rewardCustomer({ customerId, addPoints })).unwrap();
+
       const cartItemsDetails = cartItems.map((item, index) => {
         let goldType = "";
         if (item.itemName.toLowerCase().includes("10k")) {
@@ -327,7 +362,7 @@ const PaymentPage = () => {
         } else if (item.itemName.toLowerCase().includes("24k")) {
           goldType = "24K";
         }
-  
+
         let kara;
         switch (goldType) {
           case "10K": kara = buyGold10k; break;
@@ -339,33 +374,36 @@ const PaymentPage = () => {
 
         const itemPrice = item.weight * kara;
         const totalPrice = item.weight * item.itemQuantity * kara;
-        return `${index + 1}. Tên sản phẩm: ${item.itemName},Serial Number: ${item.itemId}, Giá: ${Number(itemPrice.toFixed(0)).toLocaleString()}đ, Số Lượng: ${item.itemQuantity}, Tổng: ${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
+        return `${index + 1}. Tên sản phẩm: ${item.itemName}, Serial Number: ${item.itemId}, Giá: ${Number(itemPrice.toFixed(0)).toLocaleString()}đ, Số Lượng: ${item.itemQuantity}, Tổng: ${Number(totalPrice.toFixed(0)).toLocaleString()}đ`;
       }).join("\n");
-  
+
       const templateParams = {
         to_email: customerInfor.email,
-        customerName: customerInfor.customerName, 
+        customerName: customerInfor.customerName,
         invoiceNumber,
         buyerAddress: customerInfor.address,
         email: customerInfor.email,
         phoneNumber: customerInfor.phoneNumber,
-        date: getDate(), 
-        cartTotalQuantity: cartTotalQuantity,
+        date: getDate(),
+        cartTotalQuantity,
         cartTotalAmount: cartTotalAmount.toLocaleString(),
         cartItemsDetails,
         discount,
       };
 
       emailjs.send('service_2kxr0wt', 'template_ktsnxsg', templateParams, 'GsBxjtc2i5nJN_tRj')
-      .then((response) => {
-        message.success("Tạo hóa đơn và gửi email thành công!");
-      }, (err) => {
-        message.error("Gửi email thất bại.");
-      });
-  
-      navigate('/sales-page/Payment/PrintReceiptPage', { state: { invoiceNumber }, });
+        .then(response => {
+          message.success("Tạo hóa đơn và gửi email thành công!");
+        })
+        .catch(err => {
+          message.error("Gửi email thất bại.");
+        });
+
+      navigate('/sales-page/Payment/PrintReceiptPage', { state: { invoiceNumber } });
     } catch (error) {
       message.error(`Tạo hóa đơn thất bại: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -453,6 +491,7 @@ const PaymentPage = () => {
   ];
 
   return (
+    <div className="payment-page">
     <ConfigProvider 
       theme={{
         token: {
@@ -469,7 +508,7 @@ const PaymentPage = () => {
     
     <div id="content">
     <Button type="button" 
-            className="bg-black hover:bg-gray-900 text-white font-bold rounded ml-4 mt-4"
+            className="go-back-btn bg-black hover:bg-gray-900 text-white font-bold rounded ml-4 mt-4"
             icon={<ArrowLeftOutlined />} 
             onClick={handleGoBack} 
             />
@@ -526,7 +565,7 @@ const PaymentPage = () => {
               >
                 <div className="flex justify-between">
                   <Button
-                    className={`w-1/2 h-14 uppercase font-bold ${
+                    className={`ck-btn w-1/2 h-14 uppercase font-bold ${
                       paymentType === "Chuyển khoản"
                         ? "bg-gray-500 text-white"
                         : "bg-black text-white hover:bg-gray-500"
@@ -536,7 +575,7 @@ const PaymentPage = () => {
                     Chuyển khoản
                   </Button>
                   <Button
-                    className={`w-1/2 h-14 uppercase font-bold ${
+                    className={`tm-btn w-1/2 h-14 uppercase font-bold ${
                       paymentType === "Tiền mặt"
                         ? "bg-gray-500 text-white"
                         : "bg-black text-white hover:bg-gray-500"
@@ -551,11 +590,15 @@ const PaymentPage = () => {
             </div>
             <hr className="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
             <div>
-              <Link to="/sales-page/Payment/PrintReceiptPage">
-                <Button className="w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500" onClick={handleConfirm}>
-                  Xác Nhận
-                </Button>
-              </Link>
+            <Spin spinning={loading}>
+      <Button
+        className="w-full h-14 bg-black text-white uppercase font-bold hover:bg-gray-500"
+        onClick={handleConfirm}
+        disabled={loading}
+      >
+        {loading ? <Spin /> : "Xác Nhận"}
+      </Button>
+    </Spin>
               <Link to="/sales-page">
                 <Button className="w-full h-14 bg-white text-black uppercase font-bold hover:bg-gray-500 mt-4" onClick={handleCancel}>
                   Hủy
@@ -573,6 +616,7 @@ const PaymentPage = () => {
       </div>
     </div>
     </ConfigProvider>
+    </div>
   );
 };
 

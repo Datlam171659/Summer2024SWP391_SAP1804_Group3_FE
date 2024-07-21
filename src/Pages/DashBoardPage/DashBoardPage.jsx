@@ -134,7 +134,7 @@ const DashBoardPage = () => {
         console.error(`Error: ${error}`);
       }
     };
-    
+
     fetchCustomerCount();
     fetchInvoiceCount();
     fetchProductCount();
@@ -156,7 +156,7 @@ const DashBoardPage = () => {
         opacity: 1,
       },
     },
-    tooltip: false
+    tooltip: false,
   };
 
   const formatRevenue = (value) => {
@@ -254,7 +254,7 @@ const DashBoardPage = () => {
       key: 'fullName',
     },
     {
-      title: 'Tổng số đơn bán được',
+      title: 'Tổng đơn hàng',
       dataIndex: 'invoiceCount',
       key: 'invoiceCount',
     },
@@ -291,17 +291,17 @@ const DashBoardPage = () => {
             <div className="line-chart-container">
               <Card title="Doanh số bán hàng theo tháng" style={{ width: '100%' }}>
                 <RangePicker onChange={handleDateRangeChange} picker="month" format="YYYY-MM" style={{ marginBottom: 20 }} />
-                <Line {...config} className="w-3/4"/>
+                <Line {...config} width={600} height={300}/>
               </Card>
             </div>
-            <div className='w-full flex justify-between mt-10'>
+            <div className='w-full flex justify-between mt-5'>
               <div className="top-staff">
-                <Card title="Top 3 nhân viên bán được nhiều nhất trong tháng:" className="card-top-staff w-full">
-                  <Table columns={staffColumns} dataSource={topStaff} rowKey="id" pagination={false} key="staffTable" />
+                <Card title="Top 3 nhân viên bán được nhiều nhất:" className="card-top-staff">
+                  <Table columns={staffColumns} dataSource={topStaff} rowKey="id" pagination={false} key="staffTable" className='w-full'/>
                 </Card>
               </div>
               <div className="top-customers">
-                <Card title="Top 3 khách hàng có nhiều đơn hàng nhất:" className="card-top-customers">
+                <Card title="Top 3 khách hàng có nhiều đơn nhất:" className="card-top-customers">
                   <Table columns={customerColumns} dataSource={topCustomers} rowKey="id" pagination={false} key="customerTable" />
                 </Card>
               </div>
@@ -310,13 +310,13 @@ const DashBoardPage = () => {
           </div>
           <div className='right-content'>
             <div className="column-chart-container">
-              <Card title="Khách hàng mới mỗi tháng" style={{ width: '95%' }}>
-                <Column {...columnConfig} className="w-3/4" />
+              <Card title="Khách hàng mới mỗi tháng" style={{ width: '100%' }}>
+                <Column {...columnConfig} width={600} height={350} className="w-full" />
               </Card>
             </div>
             <div className="pie-chart-container h-[585px]">
-              <Card title="Tỉ lệ người dùng hệ thống" className="card-pie-chart w-[400px] h-full mt-10">
-                <Pie {...pieConfig} />
+              <Card title="Tỉ lệ người dùng hệ thống" className="card-pie-chart w-[400px] h-[420px] mt-10">
+                <Pie {...pieConfig} width={350} height={350}/>
               </Card>
             </div>
           </div>

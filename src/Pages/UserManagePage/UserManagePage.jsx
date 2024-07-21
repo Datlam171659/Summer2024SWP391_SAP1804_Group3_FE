@@ -270,7 +270,7 @@ export default function UserManagePage() {
                 />
                 <Button
                   type="primary"
-                  className="ml-2"
+                  className="search-btn ml-2"
                   style={{ fontWeight: "600", heigh: "30px", width: "9.6%" }}
                   loading={loading}>
                   Tìm kiếm

@@ -160,7 +160,7 @@ const OrderPage = () => {
             }}
         >
             <div className="container mx-auto mt-6">
-                <h1 className="text-2xl font-bold mb-4 text-gray-800">Đơn hàng</h1>
+                <h1 className="text-2xl font-bold mb-4 text-gray-800 ml-5">Đơn hàng</h1>
                 <Table
                     dataSource={allOrder}
                     columns={columns}

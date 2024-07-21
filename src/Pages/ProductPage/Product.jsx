@@ -1,8 +1,25 @@
 import React, { useEffect, useState } from "react";
 import "./Product.scss";
-import { Button, message, Table, Modal, Form, Input, InputNumber, Checkbox, Select, ConfigProvider } from "antd";
+import {
+  Button,
+  message,
+  Table,
+  Modal,
+  Form,
+  Input,
+  InputNumber,
+  Checkbox,
+  Select,
+  ConfigProvider,
+} from "antd";
 import { fetchProductData } from "../../Features/product/productSlice";
-import { MinusCircleOutlined, EditOutlined, FileAddFilled, DeleteFilled, UploadOutlined } from "@ant-design/icons";
+import {
+  MinusCircleOutlined,
+  EditOutlined,
+  FileAddFilled,
+  DeleteFilled,
+  UploadOutlined,
+} from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
 import { removeProduct } from "../../Features/product/productdeleteSlice";
 import { addProduct } from "../../Features/product/productaddSlice";
@@ -15,8 +32,12 @@ import { fetchProductBuyBackData } from "../../Features/product/productBuyBackSl
 function Product() {
   const dispatch = useDispatch();
   const productData = useSelector((state) => state.product.productData);
-  const buyBackData = useSelector((state) => state.productBuyBack.producBuyBacktData); // Giả sử dụng tên đúng của slice trong Redux store
-  const isLoadingProductData = useSelector((state) => state.product.isLoadingProductData);
+  const buyBackData = useSelector(
+    (state) => state.productBuyBack.producBuyBacktData
+  ); // Giả sử dụng tên đúng của slice trong Redux store
+  const isLoadingProductData = useSelector(
+    (state) => state.product.isLoadingProductData
+  );
   const imageUploadState = useSelector((state) => state.imageUpload);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -27,13 +48,13 @@ function Product() {
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [filteredData, setFilteredData] = useState(productData);
   const [imageUrl, setImageUrl] = useState("");
-  const [productType, setProductType] = useState('inStock');
+  const [productType, setProductType] = useState("inStock");
 
   const [form] = Form.useForm();
 
   const handleProductTypeChange = (value) => {
     setProductType(value);
-  }
+  };
 
   const showFilterModal = () => {
     setIsFilterModalOpen(true);
@@ -51,19 +72,19 @@ function Product() {
   };
 
   const validateFile = (file) => {
-    const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    const validTypes = ["image/jpeg", "image/png", "image/jpg"];
     const maxSize = 5 * 1024 * 1024; // 5MB
 
     console.log("File type:", file.type); // Add this
     console.log("File size:", file.size); // Add this
 
     if (!validTypes.includes(file.type)) {
-      message.error('Chỉ chấp nhận các định dạng ảnh (JPEG, PNG, JPG)');
+      message.error("Chỉ chấp nhận các định dạng ảnh (JPEG, PNG, JPG)");
       return false;
     }
 
     if (file.size > maxSize) {
-      message.error('Kích thước ảnh không được vượt quá 5MB');
+      message.error("Kích thước ảnh không được vượt quá 5MB");
       return false;
     }
 
@@ -83,8 +104,10 @@ function Product() {
   };
 
   const handleFilterOk = () => {
-    const filteredProducts = productData.filter(product =>
-      selectedTypes.some(type => product.itemName.toLowerCase().includes(type.toLowerCase()))
+    const filteredProducts = productData.filter((product) =>
+      selectedTypes.some((type) =>
+        product.itemName.toLowerCase().includes(type.toLowerCase())
+      )
     );
     setFilteredData(filteredProducts);
     setIsFilterModalOpen(false);
@@ -95,9 +118,10 @@ function Product() {
   };
 
   const handleSearch = (value) => {
-    const filteredProducts = productData.filter(product =>
-      product.itemName.toLowerCase().includes(value.toLowerCase()) ||
-      product.itemId.toLowerCase().includes(value.toLowerCase())
+    const filteredProducts = productData.filter(
+      (product) =>
+        product.itemName.toLowerCase().includes(value.toLowerCase()) ||
+        product.itemId.toLowerCase().includes(value.toLowerCase())
     );
     setFilteredData(filteredProducts);
   };
@@ -107,15 +131,14 @@ function Product() {
   };
 
   const handleAddOk = () => {
-
-
     form
       .validateFields()
       .then((values) => {
         const productData = {
           ...values,
           isBuyBack: false,
-          itemImagesId: imageUrl, // Use the uploaded image URL
+          itemImagesId: imageUrl,
+          weight: values.weight.toString(), // Use the uploaded image URL
         };
         dispatch(addProduct(productData))
           .then(() => {
@@ -137,24 +160,24 @@ function Product() {
 
   const handleUpload = async (file) => {
     if (!file) {
-      message.error('Không có file được chọn');
+      message.error("Không có file được chọn");
       return;
     }
 
-    const itemId = selectedProduct ? selectedProduct.itemId : ''; // Use selectedProduct's itemId if available
+    const itemId = selectedProduct ? selectedProduct.itemId : ""; // Use selectedProduct's itemId if available
 
     try {
       const resultAction = await dispatch(uploadImage({ file, itemId }));
 
       if (uploadImage.fulfilled.match(resultAction)) {
         setImageUrl(resultAction.payload.imageUrl);
-        message.success('Tải lên thành công!');
+        message.success("Tải lên thành công!");
       } else {
-        message.error('Tải lên thất bại!');
+        message.error("Tải lên thất bại!");
       }
     } catch (error) {
       console.error("Upload failed", error);
-      message.error('Tải lên thất bại!');
+      message.error("Tải lên thất bại!");
     }
   };
 
@@ -182,7 +205,12 @@ function Product() {
           ...values,
           itemImagesId: imageUrl || selectedProduct.itemImagesId,
         };
-        dispatch(editProduct({ itemId: selectedProduct.itemId, productDetails: updatedProductData }))
+        dispatch(
+          editProduct({
+            itemId: selectedProduct.itemId,
+            productDetails: updatedProductData,
+          })
+        )
           .then(() => {
             message.success("Sản phẩm cập nhật thành công");
             dispatch(fetchProductData());
@@ -231,8 +259,13 @@ function Product() {
       dataIndex: "itemName",
       key: "itemName",
       render: (text, record) => (
-        <Link className="text-blue-500" to={`/product/productdetail/${record.itemId}`}>{text}</Link>
-      )
+        <Link
+          className="text-blue-500"
+          to={`/product/productdetail/${record.itemId}`}
+        >
+          {text}
+        </Link>
+      ),
     },
     {
       title: "Mô Tả",
@@ -262,11 +295,12 @@ function Product() {
       title: "Số lượng",
       dataIndex: "quantity",
       key: "quantity",
-      render: (quantity) => (
-        quantity === 0
-          ? <span style={{ color: 'red' }}>Hết hàng</span>
-          : <span>{quantity}</span>
-      ),
+      render: (quantity) =>
+        quantity === 0 ? (
+          <span style={{ color: "red" }}>Hết hàng</span>
+        ) : (
+          <span>{quantity}</span>
+        ),
     },
     {
       title: "Action",
@@ -296,7 +330,7 @@ function Product() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (productType === 'inStock') {
+    if (productType === "inStock") {
       dispatch(fetchProductData());
     } else {
       dispatch(fetchProductBuyBackData());
@@ -304,7 +338,7 @@ function Product() {
   }, [productType]);
 
   useEffect(() => {
-    if (productType === 'inStock') {
+    if (productType === "inStock") {
       setFilteredData(productData);
     } else {
       setFilteredData(buyBackData.data);
@@ -313,7 +347,9 @@ function Product() {
 
   useEffect(() => {
     if (productData) {
-      const filteredProducts = productData.filter(product => !product.isBuyBack && product.status !== "Deleted");
+      const filteredProducts = productData.filter(
+        (product) => !product.isBuyBack && product.status !== "Deleted"
+      );
       setFilteredData(filteredProducts);
     }
   }, [productData]);
@@ -323,11 +359,11 @@ function Product() {
       theme={{
         token: {
           colorPrimary: "var(--primary-color)",
-          colorPrimaryHover: "var(--primary-color-hover)"
+          colorPrimaryHover: "var(--primary-color-hover)",
         },
         components: {
           Select: {
-            optionSelectedBg: "#dbdbdb"
+            optionSelectedBg: "#dbdbdb",
           },
         },
       }}
@@ -338,19 +374,35 @@ function Product() {
           <div className="Product w-[96%] mt-4">
             <div className="w-full mb-1 flex justify-between">
               <div className="flex w-[85%]">
-                <Search allowClear onClear={handleRefresh} placeholder="Tìm kiếm theo tên hoặc ID sản phẩm" onSearch={handleSearch} style={{ width: "50%", marginRight: "10px" }} />
-                <Select defaultValue="inStock" placeholder="Chọn loại sản phẩm" onChange={(value) => handleProductTypeChange(value)} style={{ width: 200 }}>
-                  <Select.Option value="inStock">Sản phẩm bán hàng</Select.Option>
-                  <Select.Option value="buyBack">Sản phẩm mua lại</Select.Option>
+                <Search
+                  allowClear
+                  onClear={handleRefresh}
+                  placeholder="Tìm kiếm theo tên hoặc ID sản phẩm"
+                  onSearch={handleSearch}
+                  style={{ width: "50%", marginRight: "10px" }}
+                />
+                <Select
+                  defaultValue="inStock"
+                  placeholder="Chọn loại sản phẩm"
+                  onChange={(value) => handleProductTypeChange(value)}
+                  style={{ width: 200 }}
+                >
+                  <Select.Option value="inStock">
+                    Sản phẩm bán hàng
+                  </Select.Option>
+                  <Select.Option value="buyBack">
+                    Sản phẩm mua lại
+                  </Select.Option>
                 </Select>
               </div>
 
-              <div className="flex">
+              <div className="all-btn flex">
 
                 <Button type="primary" className="filter-button mr-4" onClick={showFilterModal}>
                   Lọc sản phẩm
                 </Button>
                 <Button
+                  className="add-product-btn"
                   type="primary"
                   onClick={() => setIsAddModalOpen(true)}
                   style={{ marginBottom: 16 }}
@@ -359,6 +411,7 @@ function Product() {
                   Thêm sản phẩm
                 </Button>
                 <Button
+                  className="refresh-btn"
                   type="primary"
                   onClick={handleRefresh}
                   style={{ marginBottom: 16, marginLeft: 16 }}
@@ -394,46 +447,71 @@ function Product() {
                 <Form.Item
                   label="Tên sản phẩm"
                   name="itemName"
-                  rules={[{ required: true, message: "Vui lòng nhập tên sản phẩm!" }]}
+                  rules={[
+                    { required: true, message: "Vui lòng nhập tên sản phẩm!" },
+                  ]}
                 >
                   <Input />
                 </Form.Item>
                 <Form.Item
                   name="itemId"
                   label="Mã sản phẩm"
-                  rules={[{ required: true, message: "Vui lòng nhập mã sản phẩm" }]}
+                  rules={[
+                    { required: true, message: "Vui lòng nhập mã sản phẩm" },
+                  ]}
                 >
                   <Input />
                 </Form.Item>
                 <Form.Item
                   name="accessoryType"
                   label="Loại hàng"
-                  rules={[{ required: true, message: "Vui lòng nhập loại hàng" }]}
+                  rules={[
+                    { required: true, message: "Vui lòng chọn loại hàng" },
+                  ]}
                 >
-                  <Input />
+                  <Select placeholder="Chọn loại hàng">
+                    <Select.Option value="Nhẫn">Nhẫn</Select.Option>
+                    <Select.Option value="Vòng tay">Vòng tay</Select.Option>
+                    <Select.Option value="Dây chuyền">Dây chuyền</Select.Option>
+                  </Select>
                 </Form.Item>
                 <Form.Item
                   label="Mô tả"
                   name="description"
-                  rules={[{ required: true, message: "Vui lòng nhập mô tả sản phẩm!" }]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập mô tả sản phẩm!",
+                    },
+                  ]}
                 >
                   <Input />
                 </Form.Item>
-                <Form.Item name="weight" label="Trọng Lượng" rules={[{ required: true, message: 'Vui lòng nhập trọng lượng' }]}>
-                  <Input />
-                </Form.Item>
+                <Form.Item
+  name="weight"
+  label="Trọng Lượng"
+  rules={[{ required: true, message: "Vui lòng nhập trọng lượng" }]}
+>
+  <InputNumber min={1} />
+</Form.Item>
                 <Form.Item
                   label="Số lượng"
                   name="quantity"
-                  rules={[{ required: true, message: "Vui lòng nhập số lượng sản phẩm!" }]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập số lượng sản phẩm!",
+                    },
+                  ]}
                 >
                   <InputNumber min={1} />
                 </Form.Item>
-                <Form.Item
-                  label="Upload ảnh mới"
-                  name="imageUpload"
-                >
-                  <Input type="file" accept="image/*" onChange={handleFileChange} />
+                <Form.Item label="Upload ảnh mới" name="imageUpload">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
                 </Form.Item>
               </Form>
             </Modal>
@@ -448,46 +526,71 @@ function Product() {
                 <Form.Item
                   label="Tên sản phẩm"
                   name="itemName"
-                  rules={[{ required: true, message: "Vui lòng nhập tên sản phẩm!" }]}
+                  rules={[
+                    { required: true, message: "Vui lòng nhập tên sản phẩm!" },
+                  ]}
                 >
                   <Input />
                 </Form.Item>
                 <Form.Item
                   name="itemId"
                   label="Mã sản phẩm"
-                  rules={[{ required: true, message: "Vui lòng nhập mã sản phẩm" }]}
+                  rules={[
+                    { required: true, message: "Vui lòng nhập mã sản phẩm" },
+                  ]}
                 >
                   <Input />
                 </Form.Item>
                 <Form.Item
                   name="accessoryType"
                   label="Loại hàng"
-                  rules={[{ required: true, message: "Vui lòng nhập loại hàng" }]}
+                  rules={[
+                    { required: true, message: "Vui lòng chọn loại hàng" },
+                  ]}
                 >
-                  <Input />
+                  <Select placeholder="Chọn loại hàng">
+                    <Select.Option value="Nhẫn">Nhẫn</Select.Option>
+                    <Select.Option value="Vòng tay">Vòng tay</Select.Option>
+                    <Select.Option value="Dây chuyền">Dây chuyền</Select.Option>
+                  </Select>
                 </Form.Item>
-                <Form.Item name="weight" label="Trọng Lượng" rules={[{ required: true, message: 'Vui lòng nhập trọng lượng' }]}>
-                  <Input />
-                </Form.Item>
+                <Form.Item
+  name="weight"
+  label="Trọng Lượng"
+  rules={[{ required: true, message: "Vui lòng nhập trọng lượng" }]}
+>
+  <InputNumber min={1} />
+</Form.Item>
                 <Form.Item
                   label="Mô tả"
                   name="description"
-                  rules={[{ required: true, message: "Vui lòng nhập mô tả sản phẩm!" }]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập mô tả sản phẩm!",
+                    },
+                  ]}
                 >
                   <Input />
                 </Form.Item>
                 <Form.Item
                   label="Số lượng"
                   name="quantity"
-                  rules={[{ required: true, message: "Vui lòng nhập số lượng sản phẩm!" }]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập số lượng sản phẩm!",
+                    },
+                  ]}
                 >
                   <InputNumber min={1} />
                 </Form.Item>
-                <Form.Item
-                  label="Upload ảnh mới"
-                  name="imageUpload"
-                >
-                  <Input type="file" accept="image/*" onChange={handleFileChange} />
+                <Form.Item label="Upload ảnh mới" name="imageUpload">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                  />
                 </Form.Item>
               </Form>
             </Modal>
@@ -512,10 +615,7 @@ function Product() {
           </div>
         </div>
       </div>
-
     </ConfigProvider>
-
-
   );
 }
 
