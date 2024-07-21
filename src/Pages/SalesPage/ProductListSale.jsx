@@ -82,6 +82,8 @@ const ProductList = () => {
   const [isDiscountModalVisible, setIsDiscountModalVisible] = useState(false);
   const promotions = useSelector((state) => state.promotions.promotions);
   const [promotionDataSelect, setPromotionDataSelect] = useState("");
+  const [rewardLevel, setRewardLevel] = useState("");
+  const [percentcus, setPercentcus] = useState(0);
   const [promotionPercentage, setPromotionPercentage] = useState(0);
   const {
     rewardDetail: rewards,
@@ -98,13 +100,18 @@ const ProductList = () => {
     dispatch(fetchPromotions());
     dispatch(fetchItemImages());
   }, [dispatch]);
+ 
   const calculateRewardLevel = (points) => {
-    if (points >= 1000) return "Vũ Trụ";
-    if (points >= 100) return "Kim Cương";
-    if (points >= 50) return "Vàng";
-    if (points >= 10) return "Bạc";
-    return "Chưa xếp hạng";
+    if (points > 1000) {
+      return { level: 'Vũ Trụ', discount: 20 };
+    }
+    if (points > 100 && points <1000) return { level: 'Kim Cương', discount: 15 };
+    if (points > 50 && points <100) return { level: 'Vàng', discount: 10 };
+    if (points > 10 && points <50) return { level: 'Bạc', discount: 5 };
+    if(points <10||points==null )return { level: 'Chưa xếp hạng', discount: 0 };
   };
+
+  console.log("check",rewards.pointsTotal)
 
   const customerRewards =
     customerInfor && rewardsallData
@@ -113,67 +120,79 @@ const ProductList = () => {
         )
       : [];
   const hasRewards = customerRewards.length > 0;
-  console.log(customerRewards);
+
 
   useEffect(() => {
-    const cartTotalQuantity = cartItems.reduce(
-      (acc, item) => acc + item.itemQuantity,
-      0
-    );
+    if (searchedCustomer && rewards && rewards.pointsTotal != null) {
+        const { level, discount } = calculateRewardLevel(rewards.pointsTotal);
+        setRewardLevel(level);
+        setPercentcus(discount);
+    }
+}, [searchedCustomer, rewards]);
+
+useEffect(() => {
+    const cartTotalQuantity = cartItems.reduce((acc, item) => acc + item.itemQuantity, 0);
+
     const cartTotalAmount = cartItems.reduce((acc, item) => {
-      let goldType = "";
-      if (item.itemName.toLowerCase().includes("10k")) {
-        goldType = "10K";
-      } else if (item.itemName.toLowerCase().includes("14k")) {
-        goldType = "14K";
-      } else if (item.itemName.toLowerCase().includes("18k")) {
-        goldType = "18K";
-      } else if (item.itemName.toLowerCase().includes("24k")) {
-        goldType = "24K";
-      }
+        let goldType = '';
+        if (item.itemName.toLowerCase().includes('10k')) {
+            goldType = '10K';
+        } else if (item.itemName.toLowerCase().includes('14k')) {
+            goldType = '14K';
+        } else if (item.itemName.toLowerCase().includes('18k')) {
+            goldType = '18K';
+        } else if (item.itemName.toLowerCase().includes('24k')) {
+            goldType = '24K';
+        }
 
-      let kara;
-      switch (goldType) {
-        case "10K":
-          kara = buyGold10k;
-          break;
-        case "14K":
-          kara = buyGold14k;
-          break;
-        case "18K":
-          kara = buyGold18k;
-          break;
-        case "24K":
-          kara = buyGold24k;
-          break;
-        default:
-          kara = 0;
-      }
+        let kara;
+        switch (goldType) {
+            case '10K':
+                kara = buyGold10k;
+                break;
+            case '14K':
+                kara = buyGold14k;
+                break;
+            case '18K':
+                kara = buyGold18k;
+                break;
+            case '24K':
+                kara = buyGold24k;
+                break;
+            default:
+                kara = 0;
+        }
 
-      const itemTotalPrice = item.weight * item.itemQuantity * kara;
-      return acc + itemTotalPrice;
+        const itemTotalPrice = item.weight * item.itemQuantity * kara;
+        return acc + itemTotalPrice;
     }, 0);
-    const discountedAmount = cartTotalAmount * (1 - promotionPercentage / 100);
+
+    const discountedAmount =
+        cartTotalAmount * (1 - promotionPercentage / 100) * (1 - percentcus / 100);
+
     dispatch(
-      updateTotals({
-        cartTotalQuantity,
-        cartTotalAmount: discountedAmount,
-        discount: promotionPercentage,
-      })
+        updateTotals({
+            cartTotalQuantity,
+            cartTotalAmount: discountedAmount,
+            discount: promotionPercentage,
+        })
     );
-  }, [
+}, [
     cartItems,
     buyGold10k,
     buyGold14k,
     buyGold18k,
     buyGold24k,
     promotionPercentage,
+    percentcus,
     dispatch,
-  ]);
+]);
+
+
   const handleProductIdChange = (e) => {
     setProductIdInput(e.target.value);
   };
-  console.log(productIdInput);
+  console.log("check dis",percentcus);
 
   const showMessageError = (messageText) => {
     const now = Date.now();
@@ -242,7 +261,7 @@ const ProductList = () => {
       message.warning("Không tìm thấy khách hàng với số điện thoại này");
     }
   };
-
+console.log("check",rewardLevel)
   const handleSubmit = async () => {
     const newCustomerInfo = {
       customerName,
@@ -572,7 +591,9 @@ const ProductList = () => {
               onCancel={handleModalCancel}
             >
               <Form layout="vertical">
-                <Form.Item label="Phần Trăm Giảm Giá" required>
+                <Form.Item label="Phần Trăm Giảm Giá"  rules={[
+                    { required: true, message: "Vui lòng nhập phần trăm giảm giá" },
+                  ]}>
                   <InputNumber
                     min={1}
                     max={100}
@@ -580,7 +601,9 @@ const ProductList = () => {
                     onChange={(value) => setDiscountPct(value)}
                   />
                 </Form.Item>
-                <Form.Item label="Nội dung" required>
+                <Form.Item label="Nội dung"  rules={[
+                    { required: true, message: "Vui lòng nhập nội dung giảm gi" },
+                  ]}>
                   <Input
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -643,9 +666,7 @@ const ProductList = () => {
                       {rewards ? rewards.pointsTotal : "N/A"}
                       <p className="my-3 text-xl">
                         <strong>Hạng của khách hàng là:</strong>{" "}
-                        {rewards
-                          ? calculateRewardLevel(rewards.pointsTotal)
-                          : "N/A"}
+                         {rewardLevel}
                       </p>
                     </div>
                   )
@@ -775,6 +796,10 @@ const ProductList = () => {
                 <span>{promotionPercentage}%</span>
               </div>
             )}
+            <div>
+              <span>Giảm giá đặc biệt: </span>
+              <span>{percentcus}%</span>
+            </div>
             <div>
               <span>Tổng giá: </span>
               <span>{currencyFormatter.format(cartTotalAmount)}</span>
