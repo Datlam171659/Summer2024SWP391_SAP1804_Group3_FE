@@ -47,7 +47,7 @@ const router = createBrowserRouter([
       {
         path: "promotion",
         element: (
-          <RoleBasedRoute roles={["Manager", "Admin"]}>
+          <RoleBasedRoute roles={["manager", "admin"]}>
             <Promotion />
           </RoleBasedRoute>
         ),
@@ -91,7 +91,7 @@ const router = createBrowserRouter([
       {
         path: "user",
         element: (
-          <RoleBasedRoute roles={["Admin"]}>
+          <RoleBasedRoute roles={["admin"]}>
             <UserManagePage />
           </RoleBasedRoute>
         ),
@@ -99,7 +99,7 @@ const router = createBrowserRouter([
       {
         path: "user/user-add",
         element: (
-          <RoleBasedRoute roles={["Admin"]}>
+          <RoleBasedRoute roles={["admin"]}>
             <AddUserPage />
           </RoleBasedRoute>
         ),
