@@ -84,6 +84,7 @@ const ProductList = () => {
   const [promotionDataSelect, setPromotionDataSelect] = useState("");
   const [rewardLevel, setRewardLevel] = useState("");
   const [percentcus, setPercentcus] = useState(0);
+  const [form] = Form.useForm();
   const [promotionPercentage, setPromotionPercentage] = useState(0);
   const {
     rewardDetail: rewards,
@@ -100,17 +101,18 @@ const ProductList = () => {
     dispatch(fetchPromotions());
     dispatch(fetchItemImages());
   }, [dispatch]);
- 
+
   const calculateRewardLevel = (points) => {
     if (points > 1000) {
-      return { level: 'Vũ Trụ', discount: 20 };
+      return { level: "Vũ Trụ", discount: 20 };
     }
-    if (points > 100 && points <1000) return { level: 'Kim Cương', discount: 15 };
-    if (points > 50 && points <100) return { level: 'Vàng', discount: 10 };
-    if (points > 10 && points <50) return { level: 'Bạc', discount: 5 };
-    if(points <10||points==null )return { level: 'Chưa xếp hạng', discount: 0 };
+    if (points > 100 && points < 1000)
+      return { level: "Kim Cương", discount: 15 };
+    if (points > 50 && points < 100) return { level: "Vàng", discount: 10 };
+    if (points > 10 && points < 50) return { level: "Bạc", discount: 5 };
+    if (points < 10 || points == null)
+      return { level: "Chưa xếp hạng", discount: 0 };
   };
-
 
   const customerRewards =
     customerInfor && rewardsallData
@@ -120,83 +122,87 @@ const ProductList = () => {
       : [];
   const hasRewards = customerRewards.length > 0;
 
-
- useEffect(() => {
-  if (searchedCustomer && rewards && rewards.pointsTotal !== null && rewards.pointsTotal !== undefined) {
-    const { level, discount } = calculateRewardLevel(rewards.pointsTotal);
-    setRewardLevel(level);
-    setPercentcus(discount);
-  }
-}, [searchedCustomer, rewards]);
-
-console.log("check percent", percentcus);
-
-useEffect(() => {
-  const cartTotalQuantity = cartItems.reduce(
-    (acc, item) => acc + item.itemQuantity,
-    0
-  );
-
-  const cartTotalAmount = cartItems.reduce((acc, item) => {
-    let goldType = '';
-    if (item.itemName.toLowerCase().includes('10k')) {
-      goldType = '10K';
-    } else if (item.itemName.toLowerCase().includes('14k')) {
-      goldType = '14K';
-    } else if (item.itemName.toLowerCase().includes('18k')) {
-      goldType = '18K';
-    } else if (item.itemName.toLowerCase().includes('24k')) {
-      goldType = '24K';
+  useEffect(() => {
+    if (
+      searchedCustomer &&
+      rewards &&
+      rewards.pointsTotal !== null &&
+      rewards.pointsTotal !== undefined
+    ) {
+      const { level, discount } = calculateRewardLevel(rewards.pointsTotal);
+      setRewardLevel(level);
+      setPercentcus(discount);
     }
+  }, [searchedCustomer, rewards]);
 
-    let kara;
-    switch (goldType) {
-      case '10K':
-        kara = buyGold10k;
-        break;
-      case '14K':
-        kara = buyGold14k;
-        break;
-      case '18K':
-        kara = buyGold18k;
-        break;
-      case '24K':
-        kara = buyGold24k;
-        break;
-      default:
-        kara = 0;
-    }
+  useEffect(() => {
+    const cartTotalQuantity = cartItems.reduce(
+      (acc, item) => acc + item.itemQuantity,
+      0
+    );
 
-    const itemTotalPrice = item.weight * item.itemQuantity * kara;
-    return acc + itemTotalPrice;
-  }, 0);
+    const cartTotalAmount = cartItems.reduce((acc, item) => {
+      let goldType = "";
+      if (item.itemName.toLowerCase().includes("10k")) {
+        goldType = "10K";
+      } else if (item.itemName.toLowerCase().includes("14k")) {
+        goldType = "14K";
+      } else if (item.itemName.toLowerCase().includes("18k")) {
+        goldType = "18K";
+      } else if (item.itemName.toLowerCase().includes("24k")) {
+        goldType = "24K";
+      }
 
-  const discountedAmount =
-    cartTotalAmount * (1 - promotionPercentage / 100) * (1 - percentcus / 100);
+      let kara;
+      switch (goldType) {
+        case "10K":
+          kara = buyGold10k;
+          break;
+        case "14K":
+          kara = buyGold14k;
+          break;
+        case "18K":
+          kara = buyGold18k;
+          break;
+        case "24K":
+          kara = buyGold24k;
+          break;
+        default:
+          kara = 0;
+      }
 
-  dispatch(
-    updateTotals({
-      cartTotalQuantity,
-      cartTotalAmount: discountedAmount,
-      discount: promotionPercentage,
-    })
-  );
-}, [
-  cartItems,
-  buyGold10k,
-  buyGold14k,
-  buyGold18k,
-  buyGold24k,
-  promotionPercentage,
-  percentcus,
-  dispatch,
-]);
+      const itemTotalPrice = item.weight * item.itemQuantity * kara;
+      return acc + itemTotalPrice;
+    }, 0);
 
+    const discountedAmount =
+      cartTotalAmount *
+      (1 - promotionPercentage / 100) *
+      (1 - percentcus / 100);
+
+    dispatch(
+      updateTotals({
+        cartTotalQuantity,
+        cartTotalAmount: discountedAmount,
+        discount: promotionPercentage,
+        discountspecial: percentcus,
+      })
+    );
+  }, [
+    cartItems,
+    buyGold10k,
+    buyGold14k,
+    buyGold18k,
+    buyGold24k,
+    promotionPercentage,
+    percentcus,
+    dispatch,
+  ]);
 
   const handleProductIdChange = (e) => {
     setProductIdInput(e.target.value);
   };
-  console.log("check dis",percentcus);
+  console.log("check dis", percentcus);
 
   const showMessageError = (messageText) => {
     const now = Date.now();
@@ -415,7 +421,6 @@ useEffect(() => {
   };
   const handleOk = async () => {
     const discountId = `DISC8`;
-
     const discountData = {
       id: discountId,
       code: "DISCOUNT_CODE",
@@ -424,14 +429,19 @@ useEffect(() => {
       description,
       cusID: customerInfor.id,
     };
-
     try {
+      await form.validateFields(); 
       await dispatch(requestPromotionCus(discountData)).unwrap();
       message.success("Yêu cầu giảm giá thành công!");
+      form.resetFields();
       fetchPromotions();
       setIsModalVisible(false);
     } catch (error) {
-      message.error(`Yêu cầu giảm giá thất bại: ${error.message}`);
+      if (error.name === 'ValidationError') {
+        console.error('Validation failed:', error);
+      } else {
+        message.error(`Yêu cầu giảm giá thất bại`);
+      }
     }
   };
   const showModal = () => {
@@ -593,10 +603,17 @@ useEffect(() => {
               onOk={handleOk}
               onCancel={handleModalCancel}
             >
-              <Form layout="vertical">
-                <Form.Item label="Phần Trăm Giảm Giá"  rules={[
-                    { required: true, message: "Vui lòng nhập phần trăm giảm giá" },
-                  ]}>
+              <Form layout="vertical" form={form}>
+                <Form.Item
+                  label="Phần Trăm Giảm Giá"
+                  name="discountPct"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập phần trăm giảm giá",
+                    },
+                  ]}
+                >
                   <InputNumber
                     min={1}
                     max={100}
@@ -604,9 +621,16 @@ useEffect(() => {
                     onChange={(value) => setDiscountPct(value)}
                   />
                 </Form.Item>
-                <Form.Item label="Nội dung"  rules={[
-                    { required: true, message: "Vui lòng nhập nội dung giảm gi" },
-                  ]}>
+                <Form.Item
+                  label="Nội dung"
+                  name="description"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập nội dung giảm giá",
+                    },
+                  ]}
+                >
                   <Input
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -668,8 +692,7 @@ useEffect(() => {
                       <strong>Điểm :</strong>{" "}
                       {rewards ? rewards.pointsTotal : "N/A"}
                       <p className="my-3 text-xl">
-                        <strong>Hạng của khách hàng là:</strong>{" "}
-                         {rewardLevel}
+                        <strong>Hạng của khách hàng là:</strong> {rewardLevel}
                       </p>
                     </div>
                   )
