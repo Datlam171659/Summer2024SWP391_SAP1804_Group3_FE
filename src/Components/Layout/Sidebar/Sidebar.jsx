@@ -75,6 +75,7 @@ function Sidebar() {
         display: "hidden"
       }
     ,
+
     role === "Admin" || role === "Staff" ? {
       icon: <SearchOutlined style={{ fontSize: "16px" }} />,
       title: strSidebar.SearchProfile,
