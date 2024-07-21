@@ -163,12 +163,6 @@ const StaffStationPage = () => {
         }
     };
 
-    const handleCancelEditStation = () => {
-        setEditStationName('');
-        setEditStationStaffId('');
-        setIsEditModalVisible(false);
-    };
-
     return (
         <ConfigProvider
             theme={{
@@ -191,7 +185,7 @@ const StaffStationPage = () => {
                     <Spin spinning={loading}>
                         <div className="flex justify-between items-center mb-6">
                             <h1 className="text-2xl font-bold text-gray-700">Quầy làm việc</h1>
-                            {(role === "0" || role === "1") && (
+                            {(role === "Admin" || role === "Manager") && (
                                 <Button type="primary" icon={<PlusOutlined />} onClick={openAddStationModal}>Thêm quầy</Button>
                             )}
                         </div>
@@ -210,7 +204,7 @@ const StaffStationPage = () => {
                                     </div>
 
                                     <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-200 bg-black bg-opacity-25">
-                                        {(role === "0" || role === "1") && (
+                                        {(role === "Admin" || role === "Manager") && (
                                             <Tooltip title="Sửa">
                                                 <Button icon={<EditOutlined />} shape="circle" className="mx-1" onClick={() => openEditModal(station)} loading={editLoading} />
                                             </Tooltip>
@@ -219,7 +213,7 @@ const StaffStationPage = () => {
                                         <Tooltip title="Chi tiết">
                                             <Button icon={<InfoCircleOutlined />} shape="circle" className="mx-1" onClick={() => handleOpenModal(station.staffId)} />
                                         </Tooltip>
-                                        {(role === "0" || role === "1") && (
+                                        {(role === "Admin" || role === "Manager") && (
                                             <Tooltip title="Sửa">
                                                 <Tooltip title="Xóa">
                                                     <Button onClick={() => handleDelete(station.stationId)} icon={<DeleteOutlined />} shape="circle" className="mx-1" loading={deleteLoading} />

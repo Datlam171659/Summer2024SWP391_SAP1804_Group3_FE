@@ -1,3 +1,5 @@
+//ChatRoom.jsx
+
 import React from 'react'
 import ChatBox from './ChatBox'
 import SendMessage from './SendMessage'

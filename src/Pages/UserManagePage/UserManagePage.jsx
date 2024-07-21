@@ -224,7 +224,7 @@ export default function UserManagePage() {
         <div className="statistics-section">
           <Row className="statistics-box" justify="center" gutter={16}>
             <Col span={6} style={{ wordWrap: "break-word" }}>
-              <Card>
+              <Card >
                 <Statistic
                   title="Managers"
                   value={numManagers}
@@ -257,7 +257,7 @@ export default function UserManagePage() {
             </Col>
           </Row>
         </div>
-        <div className="my-5 w-screen lg:w-full p-4">
+        <div className="my-1 w-screen lg:w-full p-4">
           <div className="h-[40%] min-h-[485px] w-full lg:w-full text-center p-3 bg-[#FFFFFF] rounded-[7px] shadow-md">
             <div className="flex justify-between">
               <div className="w-[86%] flex justify-start">
