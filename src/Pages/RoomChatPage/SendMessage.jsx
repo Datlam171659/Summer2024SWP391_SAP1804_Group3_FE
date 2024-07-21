@@ -27,6 +27,7 @@ const SendMessage = () => {
             text: value,
             name: uniqueName,
             role: role,
+            type: "message",
             createdAt: serverTimestamp(),
           })
         } catch(error) {
