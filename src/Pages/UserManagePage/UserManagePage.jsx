@@ -6,8 +6,8 @@ import './UserManagePage.scss';
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserData } from "../../Features/User/userListSlice";
 import { addUser } from "../../Features/User/userAddSlice";
-import { deleteUser } from "../../Features/User/userdeleteSlice"; 
-import { editUser } from "../../Features/User/userEditSlice"; 
+import { deleteUser } from "../../Features/User/userdeleteSlice";
+import { editUser } from "../../Features/User/userEditSlice";
 
 export default function UserManagePage() {
   const dispatch = useDispatch();
@@ -61,7 +61,8 @@ export default function UserManagePage() {
       address: user.address,
       phoneNumber: user.phoneNumber,
       status: user.status,
-      roleId: user.roleId
+      roleId: user.roleId,
+      passwordHash: "",
     });
     setIsEditModalOpen(true);
   };
@@ -339,6 +340,16 @@ export default function UserManagePage() {
                 <Select.Option value="Inactive">Inactive</Select.Option>
               </Select>
             </Form.Item>
+            <Form.Item
+              label="Mật khẩu"
+              name="passwordHash"
+              rules={[
+                {message: 'Vui lòng nhập mật khẩu' },
+              ]}
+            >
+              <Input.Password placeholder="Nhập mật khẩu" />
+            </Form.Item>
+
           </Form>
         </Modal>
 

@@ -65,7 +65,7 @@ function Sidebar() {
 
     },
 
-    role === "0" || role === "1" ? {
+    role === "Admin" || role === "Manager" ? {
       icon: <PercentageOutlined style={{ fontSize: "16px" }} />,
       title: 'Khuyến mãi',
       to: "/promotion",
@@ -75,7 +75,7 @@ function Sidebar() {
         display: "hidden"
       }
     ,
-    role === "0" ? {
+    role === "Admin" ? {
       icon: <SearchOutlined style={{ fontSize: "16px" }} />,
       title: strSidebar.SearchProfile,
       to: "/customer-search",
@@ -84,7 +84,7 @@ function Sidebar() {
       {
         display: "hidden"
       },
-    role === "0" ? {
+    role === "Admin" ? {
       icon: <UserOutlined style={{ fontSize: "16px" }} />,
       title: 'Nhân sự',
       to: "/user",
