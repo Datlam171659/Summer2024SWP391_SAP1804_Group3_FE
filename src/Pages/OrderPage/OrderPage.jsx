@@ -67,8 +67,8 @@ const OrderPage = () => {
             title: 'Loại hóa đơn',
             dataIndex: 'isBuyBack',
             key: 'isBuyBack',
-            render: (isBuyBack) => (isBuyBack ?  <Tag color="orange">Mua lại</Tag> : <Tag color="green">Bán ra</Tag>),
-            sorter: (a, b) => (a.isBuyBack === b.isBuyBack ? 0 : a.isBuyBack ? -1 : 1), 
+            render: (isBuyBack) => (isBuyBack ? <Tag color="orange">Mua lại</Tag> : <Tag color="green">Bán ra</Tag>),
+            sorter: (a, b) => (a.isBuyBack === b.isBuyBack ? 0 : a.isBuyBack ? -1 : 1),
         },
         {
             title: 'Ngày tạo',
