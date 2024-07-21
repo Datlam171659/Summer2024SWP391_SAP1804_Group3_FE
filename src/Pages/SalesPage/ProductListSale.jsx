@@ -111,7 +111,6 @@ const ProductList = () => {
     if(points <10||points==null )return { level: 'Chưa xếp hạng', discount: 0 };
   };
 
-  console.log("check",rewards.pointsTotal)
 
   const customerRewards =
     customerInfor && rewardsallData
@@ -122,70 +121,75 @@ const ProductList = () => {
   const hasRewards = customerRewards.length > 0;
 
 
-  useEffect(() => {
-    if (searchedCustomer && rewards && rewards.pointsTotal != null) {
-        const { level, discount } = calculateRewardLevel(rewards.pointsTotal);
-        setRewardLevel(level);
-        setPercentcus(discount);
-    }
+ useEffect(() => {
+  if (searchedCustomer && rewards && rewards.pointsTotal !== null && rewards.pointsTotal !== undefined) {
+    const { level, discount } = calculateRewardLevel(rewards.pointsTotal);
+    setRewardLevel(level);
+    setPercentcus(discount);
+  }
 }, [searchedCustomer, rewards]);
 
+console.log("check percent", percentcus);
+
 useEffect(() => {
-    const cartTotalQuantity = cartItems.reduce((acc, item) => acc + item.itemQuantity, 0);
+  const cartTotalQuantity = cartItems.reduce(
+    (acc, item) => acc + item.itemQuantity,
+    0
+  );
 
-    const cartTotalAmount = cartItems.reduce((acc, item) => {
-        let goldType = '';
-        if (item.itemName.toLowerCase().includes('10k')) {
-            goldType = '10K';
-        } else if (item.itemName.toLowerCase().includes('14k')) {
-            goldType = '14K';
-        } else if (item.itemName.toLowerCase().includes('18k')) {
-            goldType = '18K';
-        } else if (item.itemName.toLowerCase().includes('24k')) {
-            goldType = '24K';
-        }
+  const cartTotalAmount = cartItems.reduce((acc, item) => {
+    let goldType = '';
+    if (item.itemName.toLowerCase().includes('10k')) {
+      goldType = '10K';
+    } else if (item.itemName.toLowerCase().includes('14k')) {
+      goldType = '14K';
+    } else if (item.itemName.toLowerCase().includes('18k')) {
+      goldType = '18K';
+    } else if (item.itemName.toLowerCase().includes('24k')) {
+      goldType = '24K';
+    }
 
-        let kara;
-        switch (goldType) {
-            case '10K':
-                kara = buyGold10k;
-                break;
-            case '14K':
-                kara = buyGold14k;
-                break;
-            case '18K':
-                kara = buyGold18k;
-                break;
-            case '24K':
-                kara = buyGold24k;
-                break;
-            default:
-                kara = 0;
-        }
+    let kara;
+    switch (goldType) {
+      case '10K':
+        kara = buyGold10k;
+        break;
+      case '14K':
+        kara = buyGold14k;
+        break;
+      case '18K':
+        kara = buyGold18k;
+        break;
+      case '24K':
+        kara = buyGold24k;
+        break;
+      default:
+        kara = 0;
+    }
 
-        const itemTotalPrice = item.weight * item.itemQuantity * kara;
-        return acc + itemTotalPrice;
-    }, 0);
+    const itemTotalPrice = item.weight * item.itemQuantity * kara;
+    return acc + itemTotalPrice;
+  }, 0);
 
-    const discountedAmount =
-        cartTotalAmount * (1 - promotionPercentage / 100) * (1 - percentcus / 100);
+  const discountedAmount =
+    cartTotalAmount * (1 - promotionPercentage / 100) * (1 - percentcus / 100);
 
-    dispatch(
-        updateTotals({
-            cartTotalQuantity,
-            cartTotalAmount: discountedAmount,
-            discount: promotionPercentage,
-        })
-    );
+  dispatch(
+    updateTotals({
+      cartTotalQuantity,
+      cartTotalAmount: discountedAmount,
+      discount: promotionPercentage,
+    })
+  );
 }, [
-    cartItems,
-    buyGold10k,
-    buyGold14k,
-    buyGold18k,
-    buyGold24k,
-    promotionPercentage,
-    percentcus,
-    dispatch,
+  cartItems,
+  buyGold10k,
+  buyGold14k,
+  buyGold18k,
+  buyGold24k,
+  promotionPercentage,
+  percentcus,
+  dispatch,
 ]);
 
 
@@ -261,7 +265,6 @@ useEffect(() => {
       message.warning("Không tìm thấy khách hàng với số điện thoại này");
     }
   };
-console.log("check",rewardLevel)
   const handleSubmit = async () => {
     const newCustomerInfo = {
       customerName,
