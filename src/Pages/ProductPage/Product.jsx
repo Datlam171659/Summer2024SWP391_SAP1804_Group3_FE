@@ -397,8 +397,11 @@ function Product() {
               </div>
 
               <div className="all-btn flex">
-
-                <Button type="primary" className="filter-button mr-4" onClick={showFilterModal}>
+                <Button
+                  type="primary"
+                  className="filter-button mr-4"
+                  onClick={showFilterModal}
+                >
                   Lọc sản phẩm
                 </Button>
                 <Button
@@ -454,15 +457,6 @@ function Product() {
                   <Input />
                 </Form.Item>
                 <Form.Item
-                  name="itemId"
-                  label="Mã sản phẩm"
-                  rules={[
-                    { required: true, message: "Vui lòng nhập mã sản phẩm" },
-                  ]}
-                >
-                  <Input />
-                </Form.Item>
-                <Form.Item
                   name="accessoryType"
                   label="Loại hàng"
                   rules={[
@@ -490,10 +484,11 @@ function Product() {
                 <Form.Item
                   name="weight"
                   label="Trọng Lượng"
-                  rules={[{ required: true, message: "Vui lòng nhập trọng lượng" }]}
+                  rules={[
+                    { required: true, message: "Vui lòng nhập trọng lượng" },
+                  ]}
                 >
-                <InputNumber min={1} />
-                <span style={{ marginLeft: '8px', color: 'red', fontWeight:'bold' }}>chỉ</span>
+                  <InputNumber min={1} />
                 </Form.Item>
                 <Form.Item
                   label="Số lượng"
@@ -558,10 +553,11 @@ function Product() {
                 <Form.Item
                   name="weight"
                   label="Trọng Lượng"
-                  rules={[{ required: true, message: "Vui lòng nhập trọng lượng" }]}
+                  rules={[
+                    { required: true, message: "Vui lòng nhập trọng lượng" },
+                  ]}
                 >
-                  <InputNumber min={1} />
-                  <span style={{ marginLeft: '8px', color: 'red', fontWeight:'bold' }}>chỉ</span>
+                  <InputNumber min={1}  disabled/>
                 </Form.Item>
                 <Form.Item
                   label="Mô tả"
