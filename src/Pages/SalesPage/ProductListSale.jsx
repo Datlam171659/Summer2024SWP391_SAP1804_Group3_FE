@@ -421,12 +421,13 @@ const ProductList = () => {
   };
   const handleOk = async () => {
     const discountId = `DISC8`;
+    const updatedDescription = `${description} - Khách hàng sđt: ${customerInfor.phoneNumber}`;
     const discountData = {
       id: discountId,
       code: "DISCOUNT_CODE",
       discountPct,
       status: "Chờ duyệt",
-      description,
+      description: updatedDescription,
       cusID: customerInfor.id,
     };
     try {
