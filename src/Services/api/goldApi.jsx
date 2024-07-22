@@ -1,7 +1,7 @@
-import React from 'react';
-import axios from 'axios';
+import axios from "../axios/config";
 
-const goldURL = 'https://gjewellery.bsite.net/api/ExternalAPI/GoldPrice';
+
+const goldURL = '/api/ExternalAPI/GoldPrice';
 
 
 const getGoldExchangeRate = async () => {
