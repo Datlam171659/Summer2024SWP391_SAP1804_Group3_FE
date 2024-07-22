@@ -177,6 +177,7 @@ function ProductDetail() {
                 ) : (
                   <span className="ml-2">{product.weight}</span>
                 )}
+                <span style={{ marginLeft: '8px', color: 'red', fontWeight:'bold' }}>chỉ</span>
               </div>
               <div className="my-2">
                 <strong>Số lượng:</strong>

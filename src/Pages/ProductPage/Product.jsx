@@ -488,12 +488,13 @@ function Product() {
                   <Input />
                 </Form.Item>
                 <Form.Item
-  name="weight"
-  label="Trọng Lượng"
-  rules={[{ required: true, message: "Vui lòng nhập trọng lượng" }]}
->
-  <InputNumber min={1} />
-</Form.Item>
+                  name="weight"
+                  label="Trọng Lượng"
+                  rules={[{ required: true, message: "Vui lòng nhập trọng lượng" }]}
+                >
+                <InputNumber min={1} />
+                <span style={{ marginLeft: '8px', color: 'red', fontWeight:'bold' }}>chỉ</span>
+                </Form.Item>
                 <Form.Item
                   label="Số lượng"
                   name="quantity"
@@ -555,12 +556,13 @@ function Product() {
                   </Select>
                 </Form.Item>
                 <Form.Item
-  name="weight"
-  label="Trọng Lượng"
-  rules={[{ required: true, message: "Vui lòng nhập trọng lượng" }]}
->
-  <InputNumber min={1} />
-</Form.Item>
+                  name="weight"
+                  label="Trọng Lượng"
+                  rules={[{ required: true, message: "Vui lòng nhập trọng lượng" }]}
+                >
+                  <InputNumber min={1} />
+                  <span style={{ marginLeft: '8px', color: 'red', fontWeight:'bold' }}>chỉ</span>
+                </Form.Item>
                 <Form.Item
                   label="Mô tả"
                   name="description"
