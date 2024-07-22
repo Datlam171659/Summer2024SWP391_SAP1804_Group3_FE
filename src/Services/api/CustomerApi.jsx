@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axios from "../axios/config";
 
-const baseURL = 'https://gjewellery.bsite.net/api/Customer';
+const baseURL = '/api/Customer';
 
 const getAllCustomers = async (searchValue = '') => { 
     const response = await axios.get(`${baseURL}?search=${searchValue}`);

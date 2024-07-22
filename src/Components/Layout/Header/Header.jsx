@@ -63,12 +63,11 @@ function Header() {
               onClick={showModal}
             />
           </Badge>
-          <Modal title="Phản hồi yêu cầu giảm giá" visible={isModalVisible} onOk={handleOk} onCancel={handleOk}>
+          <Modal title="Thông báo" visible={isModalVisible} onOk={handleOk} onCancel={handleOk}>
             <div className="max-h-96 overflow-y-auto">
               {discountMessages.map((message) => (
                 <div key={message.id} className="border-b border-gray-300 py-2">
                   <div dangerouslySetInnerHTML={{ __html: message.text.replace(/\n/g, '<br>') }} />
-                  <b>Được duyệt bởi: <span className='font-normal'>{message.name}</span></b>
                   <p>{message.createdAt ? format(message.createdAt.toDate(), "dd/MM/yyyy HH:mm", { locale: vi }) : ''}</p>
                 </div>
               ))}
