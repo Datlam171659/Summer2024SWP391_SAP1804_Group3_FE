@@ -1,7 +1,7 @@
-import React from 'react';
-import axios from 'axios';
+import axios from "../axios/config";
 
-const currencyURL = 'https://gjewellery.bsite.net/api/ExternalAPI/ExchangeRate/vnd';
+
+const currencyURL = '/api/ExternalAPI/ExchangeRate/vnd';
 
 const getVNDExchangeRate = async () => {
   try {

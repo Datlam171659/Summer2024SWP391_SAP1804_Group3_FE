@@ -34,7 +34,7 @@ function Product() {
   const productData = useSelector((state) => state.product.productData);
   const buyBackData = useSelector(
     (state) => state.productBuyBack.producBuyBacktData
-  ); // Giả sử dụng tên đúng của slice trong Redux store
+  ); 
   const isLoadingProductData = useSelector(
     (state) => state.product.isLoadingProductData
   );
@@ -49,8 +49,15 @@ function Product() {
   const [filteredData, setFilteredData] = useState(productData);
   const [imageUrl, setImageUrl] = useState("");
   const [productType, setProductType] = useState("inStock");
-
   const [form] = Form.useForm();
+  const buyGold24k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold24k);
+  const buyGold18k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold18k);
+  const buyGold14k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold14k);
+  const buyGold10k = useSelector((state) => state.goldPrice.buyPrice[0]?.buyGold10k);
+  const sellGold24k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold24k);
+  const sellGold18k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold18k);
+  const sellGold14k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold14k);
+  const sellGold10k = useSelector((state) => state.goldPrice.sellPrice[0]?.sellGold10k);
 
   const handleProductTypeChange = (value) => {
     setProductType(value);
@@ -75,8 +82,8 @@ function Product() {
     const validTypes = ["image/jpeg", "image/png", "image/jpg"];
     const maxSize = 5 * 1024 * 1024; // 5MB
 
-    console.log("File type:", file.type); // Add this
-    console.log("File size:", file.size); // Add this
+    console.log("File type:", file.type); 
+    console.log("File size:", file.size); 
 
     if (!validTypes.includes(file.type)) {
       message.error("Chỉ chấp nhận các định dạng ảnh (JPEG, PNG, JPG)");
@@ -292,6 +299,12 @@ function Product() {
       },
     },
     {
+      title: "Trọng Lượng",
+      dataIndex: "weight",
+      key: "weight",
+      width: 120,
+    },
+    {
       title: "Số lượng",
       dataIndex: "quantity",
       key: "quantity",
@@ -301,6 +314,82 @@ function Product() {
         ) : (
           <span>{quantity}</span>
         ),
+    },
+    {
+      title: "Giá mua lại",
+      dataIndex: "buyPrice",
+      key: "buyPrice",
+      render: (_, record) => {
+        let goldType = "";
+        if (record.itemName.toLowerCase().includes("10k")) {
+          goldType = "10K";
+        } else if (record.itemName.toLowerCase().includes("14k")) {
+          goldType = "14K";
+        } else if (record.itemName.toLowerCase().includes("18k")) {
+          goldType = "18K";
+        } else if (record.itemName.toLowerCase().includes("24k")) {
+          goldType = "24K";
+        }
+
+        let kara;
+        switch (goldType) {
+          case "10K":
+            kara = buyGold10k;
+            break;
+          case "14K":
+            kara = buyGold14k;
+            break;
+          case "18K":
+            kara = buyGold18k;
+            break;
+          case "24K":
+            kara = buyGold24k;
+            break;
+          default:
+            kara = 0;
+        }
+
+        const buyPrice = record.weight * 1 * kara; 
+        return `${Number(buyPrice.toFixed(0)).toLocaleString()}đ`;
+      },
+    },
+    {
+      title: "Giá bán ra",
+      dataIndex: "sellPrice",
+      key: "sellPrice",
+      render: (_, record) => {
+        let goldType = "";
+        if (record.itemName.toLowerCase().includes("10k")) {
+          goldType = "10K";
+        } else if (record.itemName.toLowerCase().includes("14k")) {
+          goldType = "14K";
+        } else if (record.itemName.toLowerCase().includes("18k")) {
+          goldType = "18K";
+        } else if (record.itemName.toLowerCase().includes("24k")) {
+          goldType = "24K";
+        }
+
+        let sellKara;
+        switch (goldType) {
+          case "10K":
+            sellKara = sellGold10k; 
+            break;
+          case "14K":
+            sellKara = sellGold14k; 
+            break;
+          case "18K":
+            sellKara = sellGold18k; 
+            break;
+          case "24K":
+            sellKara = sellGold24k; 
+            break;
+          default:
+            sellKara = 0;
+        }
+
+        const sellPrice = record.weight * 1 * sellKara; 
+        return `${Number(sellPrice.toFixed(0)).toLocaleString()}đ`;
+      },
     },
     {
       title: "Action",
@@ -426,6 +515,7 @@ function Product() {
               columns={columns}
               loading={isLoadingProductData}
               rowKey="itemId"
+              className="font-semibold"
             />
 
             <Modal
@@ -488,12 +578,12 @@ function Product() {
                   <Input />
                 </Form.Item>
                 <Form.Item
-  name="weight"
-  label="Trọng Lượng"
-  rules={[{ required: true, message: "Vui lòng nhập trọng lượng" }]}
->
-  <InputNumber min={1} />
-</Form.Item>
+                  name="weight"
+                  label="Trọng Lượng"
+                  rules={[{ required: true, message: "Vui lòng nhập trọng lượng" }]}
+                >
+                  <InputNumber min={1} />
+                </Form.Item>
                 <Form.Item
                   label="Số lượng"
                   name="quantity"
@@ -555,12 +645,12 @@ function Product() {
                   </Select>
                 </Form.Item>
                 <Form.Item
-  name="weight"
-  label="Trọng Lượng"
-  rules={[{ required: true, message: "Vui lòng nhập trọng lượng" }]}
->
-  <InputNumber min={1} />
-</Form.Item>
+                  name="weight"
+                  label="Trọng Lượng"
+                  rules={[{ required: true, message: "Vui lòng nhập trọng lượng" }]}
+                >
+                  <InputNumber min={1} />
+                </Form.Item>
                 <Form.Item
                   label="Mô tả"
                   name="description"
