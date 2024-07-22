@@ -33,7 +33,8 @@ const DashBoardPage = () => {
       try {
         const customers = await CustomerApi.getAllCustomers();
         if (Array.isArray(customers)) {
-          setCustomerCount(customers.length);
+          const ActiveCustomer = customers.filter(cus => cus.status === 'active').length;
+          setCustomerCount(ActiveCustomer);
           const invoices = await getinvoiceAll();
           if (invoices && Array.isArray(invoices.data)) {
             const customersWithOrders = customers.map(customer => ({
@@ -289,7 +290,7 @@ const DashBoardPage = () => {
             <DashBoardCard icon={<ShoppingCartOutlined style={{ color: "blue" }} />} title={"Đơn Hàng Đã Bán"} value={soldInvoiceCount} key="soldOrders" />
             <DashBoardCard icon={<ShoppingCartOutlined style={{ color: "orange" }} />} title={"Đơn Hàng Đã Mua"} value={buyBackInvoiceCount} key="boughtOrders" />            
             <DashBoardCard icon={<ShoppingOutlined style={{ color: "brown" }} />} title={"Mặt Hàng Bán"} value={soldProductCount} key="soldProducts" />
-            <DashBoardCard icon={<ShoppingOutlined style={{ color: "black" }} />} title={"Mặt Hàng Mua"} value={buyBackProductCount} key="boughtProducts" />
+            <DashBoardCard icon={<ShoppingOutlined style={{ color: "black" }} />} title={"Mặt Hàng Đã Mua"} value={buyBackProductCount} key="boughtProducts" />
             <DashBoardCard icon={<DollarCircleOutlined style={{ color: "green" }} />} title={"Tổng Doanh Thu"} value={formatRevenue(totalRevenue)} key="revenue" />
           </Space>
         </div>

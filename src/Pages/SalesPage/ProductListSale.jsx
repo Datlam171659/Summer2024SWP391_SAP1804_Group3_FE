@@ -540,7 +540,7 @@ const ProductList = () => {
           <div className="menu-header"></div>
           <div className="product-grid flex align-middle justify-center text-center">
             {filteredProducts
-              .filter((product) => product.quantity > 0)
+              .filter((product) => product.quantity > 0  && product.status !== 'Deleted')
               .map((product) => (
                 <div key={product.itemId} className="product-card">
                   <img
