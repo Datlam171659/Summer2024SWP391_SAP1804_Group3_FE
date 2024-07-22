@@ -579,7 +579,7 @@ function Product() {
                     { required: true, message: "Vui lòng nhập trọng lượng" },
                   ]}
                 >
-                  <InputNumber min={1} /> chỉ
+                  <InputNumber min={1} /> 
                 </Form.Item>
                 <Form.Item
                   label="Số lượng"
@@ -650,7 +650,7 @@ function Product() {
                     { required: true, message: "Vui lòng nhập trọng lượng" },
                   ]}
                 >
-                  <InputNumber min={1}  disabled /> chỉ
+                  <InputNumber min={1}  disabled />
 
                 </Form.Item>
                 <Form.Item
