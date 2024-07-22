@@ -123,10 +123,13 @@ function Sidebar() {
       {
         display: "hidden"
       },
-    {
+      role === "Admin" || role === "Manager" ? {
       icon: <ScheduleOutlined style={{ fontSize: "16px" }} />,
       title: 'Quầy',
       to: "/station",
+    }:
+    {
+      display: "hidden"
     },
     {
       icon: (
