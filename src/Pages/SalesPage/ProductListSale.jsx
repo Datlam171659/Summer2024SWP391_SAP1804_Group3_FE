@@ -421,12 +421,13 @@ const ProductList = () => {
   };
   const handleOk = async () => {
     const discountId = `DISC8`;
+    const updatedDescription = `${description} - Khách hàng sđt: ${customerInfor.phoneNumber}`;
     const discountData = {
       id: discountId,
       code: "DISCOUNT_CODE",
       discountPct,
       status: "Chờ duyệt",
-      description,
+      description: updatedDescription,
       cusID: customerInfor.id,
     };
     try {
@@ -539,7 +540,7 @@ const ProductList = () => {
           <div className="menu-header"></div>
           <div className="product-grid flex align-middle justify-center text-center">
             {filteredProducts
-              .filter((product) => product.quantity > 0)
+              .filter((product) => product.quantity > 0  && product.status !== 'Deleted')
               .map((product) => (
                 <div key={product.itemId} className="product-card">
                   <img

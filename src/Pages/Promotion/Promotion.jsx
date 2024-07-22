@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchPromotions, approvePromotion, removePromotion, rejectPromotion } from '../../Features/Promotion/promotionallSlice';
-import { Button, message, Table, Modal } from "antd";
+import { Button, message, Table, Modal, Select } from "antd";
 import { DeleteOutlined } from '@ant-design/icons';
 import { collection, serverTimestamp, addDoc } from 'firebase/firestore';
 import { db } from '../firebase/ChatRoomFirebase';
+import { Option } from 'antd/es/mentions';
 
 function Promotion() {
   const dispatch = useDispatch();
@@ -17,6 +18,7 @@ function Promotion() {
   const [selectedPromotionForDelete, setSelectedPromotionForDelete] = useState(null);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
+  const [filterStatus, setFilterStatus] = useState('all');
   const isLoadingPromotion = useSelector(
     (state) => state.promotions.isLoadingPromotion
   );
@@ -151,7 +153,18 @@ function Promotion() {
     setIsDeleteModalOpen(false); 
   }
   };
-  // console.log(selectedPromotionForDelete)
+  const handleStatusFilterChange = (value) => {
+    setFilterStatus(value);
+  };
+
+  const filteredPromotions = promotions.filter(promotion => {
+    if (filterStatus === 'all') {
+      return true; 
+    } else {
+      return promotion.status === filterStatus; 
+    }
+  });
+
   const columns = [
     {
       title: "id",
@@ -216,13 +229,17 @@ function Promotion() {
   return (
     <div className="p-4 flex-col justify-center align-middle w-full mt-10">
         <div className="mb-4 flex">
-          <Button
-            onClick={showDeleteAllModal} 
-            type="primary"
+          <Select
+            value={filterStatus}
+            onChange={handleStatusFilterChange}
             className="mr-4"
+            style={{ width: 150 }}
           >
-            Xóa tất cả khuyến mãi
-          </Button>
+            <Option value="all">Tất cả trạng thái</Option>
+            <Option value="Chờ duyệt">Chờ duyệt</Option>
+            <Option value="Duyệt">Đã duyệt</Option>
+            <Option value="Từ Chối">Đã từ chối</Option>
+          </Select>
           <Button
             onClick={handleRefresh}
             type="primary"
@@ -231,7 +248,7 @@ function Promotion() {
           </Button>
         </div>
       <Table
-        dataSource={promotions}
+        dataSource={filteredPromotions}
         columns={columns}
         rowKey="id"
         pagination={{ position: ["bottomCenter"] }}
@@ -298,7 +315,6 @@ function Promotion() {
           </Button>,
         ]}
       >
-        <p>Bạn có chắc muốn xóa tất cả khuyến mãi không?</p>
       </Modal>
     </div>
   );
