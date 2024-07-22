@@ -27,7 +27,7 @@ const userkApi = {
       });
   },
   createUser: (userInfo) => {
-    return axiosClient.post('/api/Employee/Register', userInfo)
+    return axiosClient.post('/api/Employee/AddEmployee', userInfo)
       .then(response => {
         if (response.data) {
           return response.data;

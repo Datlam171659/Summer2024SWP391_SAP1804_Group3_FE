@@ -6,6 +6,7 @@ import { addBuyPrice, addSellPrice, resetBuyPrice, resetSellPrice } from '../Fea
 import getVNDExchangeRate from '../Services/api/exchangeRateApi';
 import getGoldExchangeRate from '../Services/api/goldApi';
 import constants from '../constants.json'
+import { getMultipliers } from "../Services/api/multiplier";
 
 function Authentication({ children }) {
     const navigate = useNavigate();
@@ -51,8 +52,10 @@ function Authentication({ children }) {
 
                         const vndRate = await getVNDExchangeRate();
                         const goldPrice = await getGoldExchangeRate();
+                        const multipliers = await getMultipliers(); 
+
                         const goldPriceInVND = (goldPrice * vndRate) / constants.exchangeRate;
-                        const buyPrice = goldPriceInVND * constants.buyMultiplier;
+                        const buyPrice = goldPriceInVND * multipliers.buyMultiplier;
 
                         const buyGold24k = roundToNearestThousand(parseFloat(buyPrice));
                         const buyGold18k = roundToNearestThousand(buyGold24k * constants.goldWeightRatio["18k"]);
@@ -66,7 +69,7 @@ function Authentication({ children }) {
                             buyGold10k: buyGold10k.toFixed(0),
                         };
 
-                        const sellPrice = goldPriceInVND * constants.sellMultiplier;
+                        const sellPrice = goldPriceInVND * multipliers.sellMultiplier;
 
                         const sellGold24k = roundToNearestThousand(parseFloat(sellPrice));
                         const sellGold18k = roundToNearestThousand(sellGold24k * constants.goldWeightRatio["18k"]);
@@ -106,7 +109,7 @@ function Authentication({ children }) {
             shouldRender.current = false;
             authenticate();
         }
-    }, [navigate]);
+    }, []);
 
     return (
         children
