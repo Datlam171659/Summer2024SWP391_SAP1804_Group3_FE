@@ -27,13 +27,13 @@ function Authentication({ children }) {
                 navigate("/login");
             } else {
                 switch (decodedToken.role) {
-                    case "0":
+                    case "Admin":
                         localStorage.setItem("role", "admin");
                         break;
-                    case "1":
+                    case "Manager":
                         localStorage.setItem("role", "manager");
                         break;
-                    case "2":
+                    case "Staff":
                         localStorage.setItem("role", "staff");
                         break;
                     default:

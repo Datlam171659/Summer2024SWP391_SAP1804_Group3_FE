@@ -23,6 +23,7 @@ function PrintReceiptPage() {
   const cartTotalQuantity = useSelector((state) => state.cart.cartTotalQuantity);
   const cartTotalAmount = useSelector((state) => state.cart.cartTotalAmount);
   const discount = useSelector((state) => state.cart.discount);
+  const discountspecial = useSelector((state) => state.cart.discountspecial);
   const invoiceComponentRef = useRef();
   const warrantyComponentRef = useRef();
   const ReproductRef = useRef();
@@ -72,6 +73,7 @@ function PrintReceiptPage() {
         cartTotalAmount={cartTotalAmount}
         invoiceNumber={invoiceNumber} 
         discount={discount} 
+        discountspecial={discountspecial} 
         />
         <WarrantyComponent
           ref={warrantyComponentRef}

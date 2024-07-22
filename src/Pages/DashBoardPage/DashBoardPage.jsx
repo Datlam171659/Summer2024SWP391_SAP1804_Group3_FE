@@ -9,6 +9,7 @@ import { getinvoiceAll, GetMonthlyRevenue } from '../../Services/api/InvoiceApi'
 import { getProductAll } from '../../Services/api/productApi'
 import userkApi from "../../Services/api/UserApi";
 import DashBoardCard from './DashboardCard';
+import viVN from 'antd/es/date-picker/locale/vi_VN';
 const { RangePicker } = DatePicker;
 
 const DashBoardPage = () => {
@@ -25,7 +26,8 @@ const DashBoardPage = () => {
   const [soldInvoiceCount, setSoldInvoiceCount] = useState(0);
   const [buyBackInvoiceCount, setBuyBackInvoiceCount] = useState(0);
   const [monthlyCustomers, setMonthlyCustomers] = useState([]);
-
+  const [soldProductCount, setSoldProductCount] = useState(0);
+  const [buyBackProductCount, setBuyBackProductCount] = useState(0);
   useEffect(() => {
     const fetchCustomerCount = async () => {
       try {
@@ -92,7 +94,11 @@ const DashBoardPage = () => {
       try {
         const response = await getProductAll();
         if (response && Array.isArray(response.data)) {
-          setProductCount(response.data.length);
+          const soldProducts = response.data.filter(product => product.isBuyBack === false);
+          const buyBackProducts = response.data.filter(product => product.isBuyBack === true);
+          // setProductCount(response.data.length);
+          setSoldProductCount(soldProducts.length);
+          setBuyBackProductCount(buyBackProducts.length);
         }
       } catch (error) {
         console.error(`Error: ${error}`);
@@ -282,7 +288,8 @@ const DashBoardPage = () => {
             <DashBoardCard icon={<TeamOutlined style={{ color: "purple" }} />} title={"Nhân Viên"} value={userCount} key="staff" />
             <DashBoardCard icon={<ShoppingCartOutlined style={{ color: "blue" }} />} title={"Đơn Hàng Đã Bán"} value={soldInvoiceCount} key="soldOrders" />
             <DashBoardCard icon={<ShoppingCartOutlined style={{ color: "orange" }} />} title={"Đơn Hàng Đã Mua"} value={buyBackInvoiceCount} key="boughtOrders" />            
-            <DashBoardCard icon={<ShoppingOutlined style={{ color: "brown" }} />} title={"Số Mặt Hàng"} value={productCount} key="products" />
+            <DashBoardCard icon={<ShoppingOutlined style={{ color: "brown" }} />} title={"Mặt Hàng Bán"} value={soldProductCount} key="soldProducts" />
+            <DashBoardCard icon={<ShoppingOutlined style={{ color: "black" }} />} title={"Mặt Hàng Mua"} value={buyBackProductCount} key="boughtProducts" />
             <DashBoardCard icon={<DollarCircleOutlined style={{ color: "green" }} />} title={"Tổng Doanh Thu"} value={formatRevenue(totalRevenue)} key="revenue" />
           </Space>
         </div>
@@ -290,18 +297,23 @@ const DashBoardPage = () => {
           <div className='left-content'>
             <div className="line-chart-container">
               <Card title="Doanh số bán hàng theo tháng" style={{ width: '100%' }}>
-                <RangePicker onChange={handleDateRangeChange} picker="month" format="YYYY-MM" style={{ marginBottom: 20 }} />
+                <RangePicker 
+                    onChange={handleDateRangeChange} 
+                    picker="month" 
+                    format="YYYY-MM"
+                    locale={viVN}
+                    style={{ marginBottom: 20 }} />
                 <Line {...config} width={600} height={300}/>
               </Card>
             </div>
             <div className='w-full flex justify-between mt-5'>
               <div className="top-staff">
-                <Card title="Top 3 nhân viên bán được nhiều nhất:" className="card-top-staff">
+                <Card title="Top 3 nhân viên bán được nhiều nhất:" className="card-top-staff h-[420px]">
                   <Table columns={staffColumns} dataSource={topStaff} rowKey="id" pagination={false} key="staffTable" className='w-full'/>
                 </Card>
               </div>
               <div className="top-customers">
-                <Card title="Top 3 khách hàng có nhiều đơn nhất:" className="card-top-customers">
+                <Card title="Top 3 khách hàng có nhiều đơn nhất:" className="card-top-customers h-[420px]">
                   <Table columns={customerColumns} dataSource={topCustomers} rowKey="id" pagination={false} key="customerTable" />
                 </Card>
               </div>

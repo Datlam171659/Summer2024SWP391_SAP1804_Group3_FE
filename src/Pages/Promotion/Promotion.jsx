@@ -31,7 +31,8 @@ function Promotion() {
       await addDoc(collection(db, "messages"), {
         text: messageContent,
         name: localStorage.getItem('UniqueName'), 
-        role: localStorage.getItem("role"), 
+        role: localStorage.getItem("role"),
+        type: "discount",
         createdAt: serverTimestamp(),
       });
     } catch (error) {

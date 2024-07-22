@@ -82,6 +82,9 @@ const ProductList = () => {
   const [isDiscountModalVisible, setIsDiscountModalVisible] = useState(false);
   const promotions = useSelector((state) => state.promotions.promotions);
   const [promotionDataSelect, setPromotionDataSelect] = useState("");
+  const [rewardLevel, setRewardLevel] = useState("");
+  const [percentcus, setPercentcus] = useState(0);
+  const [form] = Form.useForm();
   const [promotionPercentage, setPromotionPercentage] = useState(0);
   const {
     rewardDetail: rewards,
@@ -98,12 +101,17 @@ const ProductList = () => {
     dispatch(fetchPromotions());
     dispatch(fetchItemImages());
   }, [dispatch]);
+
   const calculateRewardLevel = (points) => {
-    if (points >= 1000) return "Vũ Trụ";
-    if (points >= 100) return "Kim Cương";
-    if (points >= 50) return "Vàng";
-    if (points >= 10) return "Bạc";
-    return "Chưa xếp hạng";
+    if (points > 1000) {
+      return { level: "Vũ Trụ", discount: 20 };
+    }
+    if (points > 100 && points < 1000)
+      return { level: "Kim Cương", discount: 15 };
+    if (points > 50 && points < 100) return { level: "Vàng", discount: 10 };
+    if (points > 10 && points < 50) return { level: "Bạc", discount: 5 };
+    if (points < 10 || points == null)
+      return { level: "Chưa xếp hạng", discount: 0 };
   };
 
   const customerRewards =
@@ -113,13 +121,26 @@ const ProductList = () => {
         )
       : [];
   const hasRewards = customerRewards.length > 0;
-  console.log(customerRewards);
+
+  useEffect(() => {
+    if (
+      searchedCustomer &&
+      rewards &&
+      rewards.pointsTotal !== null &&
+      rewards.pointsTotal !== undefined
+    ) {
+      const { level, discount } = calculateRewardLevel(rewards.pointsTotal);
+      setRewardLevel(level);
+      setPercentcus(discount);
+    }
+  }, [searchedCustomer, rewards]);
 
   useEffect(() => {
     const cartTotalQuantity = cartItems.reduce(
       (acc, item) => acc + item.itemQuantity,
       0
     );
+
     const cartTotalAmount = cartItems.reduce((acc, item) => {
       let goldType = "";
       if (item.itemName.toLowerCase().includes("10k")) {
@@ -153,12 +174,18 @@ const ProductList = () => {
       const itemTotalPrice = item.weight * item.itemQuantity * kara;
       return acc + itemTotalPrice;
     }, 0);
-    const discountedAmount = cartTotalAmount * (1 - promotionPercentage / 100);
+
+    const discountedAmount =
+      cartTotalAmount *
+      (1 - promotionPercentage / 100) *
+      (1 - percentcus / 100);
+
     dispatch(
       updateTotals({
         cartTotalQuantity,
         cartTotalAmount: discountedAmount,
         discount: promotionPercentage,
+        discountspecial: percentcus,
       })
     );
   }, [
@@ -168,12 +195,14 @@ const ProductList = () => {
     buyGold18k,
     buyGold24k,
     promotionPercentage,
+    percentcus,
     dispatch,
   ]);
+
   const handleProductIdChange = (e) => {
     setProductIdInput(e.target.value);
   };
-  console.log(productIdInput);
+  console.log("check dis", percentcus);
 
   const showMessageError = (messageText) => {
     const now = Date.now();
@@ -242,7 +271,6 @@ const ProductList = () => {
       message.warning("Không tìm thấy khách hàng với số điện thoại này");
     }
   };
-
   const handleSubmit = async () => {
     const newCustomerInfo = {
       customerName,
@@ -393,7 +421,6 @@ const ProductList = () => {
   };
   const handleOk = async () => {
     const discountId = `DISC8`;
-
     const discountData = {
       id: discountId,
       code: "DISCOUNT_CODE",
@@ -402,14 +429,19 @@ const ProductList = () => {
       description,
       cusID: customerInfor.id,
     };
-
     try {
+      await form.validateFields(); 
       await dispatch(requestPromotionCus(discountData)).unwrap();
       message.success("Yêu cầu giảm giá thành công!");
+      form.resetFields();
       fetchPromotions();
       setIsModalVisible(false);
     } catch (error) {
-      message.error(`Yêu cầu giảm giá thất bại: ${error.message}`);
+      if (error.name === 'ValidationError') {
+        console.error('Validation failed:', error);
+      } else {
+        message.error(`Yêu cầu giảm giá thất bại`);
+      }
     }
   };
   const showModal = () => {
@@ -571,8 +603,17 @@ const ProductList = () => {
               onOk={handleOk}
               onCancel={handleModalCancel}
             >
-              <Form layout="vertical">
-                <Form.Item label="Phần Trăm Giảm Giá" required>
+              <Form layout="vertical" form={form}>
+                <Form.Item
+                  label="Phần Trăm Giảm Giá"
+                  name="discountPct"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập phần trăm giảm giá",
+                    },
+                  ]}
+                >
                   <InputNumber
                     min={1}
                     max={100}
@@ -580,7 +621,16 @@ const ProductList = () => {
                     onChange={(value) => setDiscountPct(value)}
                   />
                 </Form.Item>
-                <Form.Item label="Nội dung" required>
+                <Form.Item
+                  label="Nội dung"
+                  name="description"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập nội dung giảm giá",
+                    },
+                  ]}
+                >
                   <Input
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -642,10 +692,7 @@ const ProductList = () => {
                       <strong>Điểm :</strong>{" "}
                       {rewards ? rewards.pointsTotal : "N/A"}
                       <p className="my-3 text-xl">
-                        <strong>Hạng của khách hàng là:</strong>{" "}
-                        {rewards
-                          ? calculateRewardLevel(rewards.pointsTotal)
-                          : "N/A"}
+                        <strong>Hạng của khách hàng là:</strong> {rewardLevel}
                       </p>
                     </div>
                   )
@@ -775,6 +822,10 @@ const ProductList = () => {
                 <span>{promotionPercentage}%</span>
               </div>
             )}
+            <div>
+              <span>Giảm giá đặc biệt: </span>
+              <span>{percentcus}%</span>
+            </div>
             <div>
               <span>Tổng giá: </span>
               <span>{currencyFormatter.format(cartTotalAmount)}</span>

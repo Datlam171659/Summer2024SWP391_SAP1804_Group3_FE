@@ -3,7 +3,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import QRCode from 'react-qr-code';
 
-const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotalQuantity, cartTotalAmount, invoiceNumber, discount }, ref) => {
+const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotalQuantity, cartTotalAmount, invoiceNumber, discount,discountspecial }, ref) => {
     const buyGold24k = useSelector(
         (state) => state.goldPrice.sellPrice[0]?.sellGold24k
     );
@@ -162,6 +162,10 @@ const InvoiceComponent = React.forwardRef(({ cartItems, customerInfor, cartTotal
                     <p className="w-full flex justify-between text-md font-semibold">
                         <span className="font-semibold mr-4">Giảm Giá:</span>
                         <span>{Number(discount).toLocaleString()}%</span>
+                    </p>
+                    <p className="w-full flex justify-between text-md font-semibold">
+                        <span className="font-semibold mr-4">Giảm Giá Đặc Biệt:</span>
+                        <span>{Number(discountspecial).toLocaleString()}%</span>
                     </p>
                     <p className="w-full flex justify-between text-md font-semibold">
                         <span className="font-semibold mr-4">Tổng tiền:</span>
