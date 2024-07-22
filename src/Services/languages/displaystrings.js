@@ -36,7 +36,7 @@ const strings_vi = {
         Actions: 'Thao tác',
         TIT_UpdateCutsomer: 'Cập nhật thông tin khách hàng',
         SearchBarPlaceHolder: 'Tìm kiếm theo tên và số điện thoại',
-        DeleteSuccess: "Khách Hàng {} đã được chuyển thành inactive",
+        DeleteSuccess: "Khách Hàng {} đã được xóa thành công",
         ERR_Registed_Phone: 'Số điện thoại này đã được đăng ký!',
         ERR_Registed_Email: 'Email này đã được đăng ký!',
         ERR_Delete_Customer: 'Xóa khách thông tin hàng không thành công',

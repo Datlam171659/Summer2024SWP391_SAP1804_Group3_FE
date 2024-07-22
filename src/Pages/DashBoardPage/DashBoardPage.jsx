@@ -33,7 +33,8 @@ const DashBoardPage = () => {
       try {
         const customers = await CustomerApi.getAllCustomers();
         if (Array.isArray(customers)) {
-          setCustomerCount(customers.length);
+          const ActiveCustomer = customers.filter(cus => cus.status === 'active').length;
+          setCustomerCount(ActiveCustomer);
           const invoices = await getinvoiceAll();
           if (invoices && Array.isArray(invoices.data)) {
             const customersWithOrders = customers.map(customer => ({
