@@ -47,7 +47,7 @@ const router = createBrowserRouter([
       {
         path: "promotion",
         element: (
-          <RoleBasedRoute roles={["Manager", "Admin"]}>
+          <RoleBasedRoute roles={["manager", "admin"]}>
             <Promotion />
           </RoleBasedRoute>
         ),
@@ -91,7 +91,7 @@ const router = createBrowserRouter([
       {
         path: "user",
         element: (
-          <RoleBasedRoute roles={["Admin"]}>
+          <RoleBasedRoute roles={["admin"]}>
             <UserManagePage />
           </RoleBasedRoute>
         ),
@@ -99,76 +99,59 @@ const router = createBrowserRouter([
       {
         path: "user/user-add",
         element: (
-          <RoleBasedRoute roles={["Admin"]}>
+          <RoleBasedRoute roles={["admin"]}>
             <AddUserPage />
           </RoleBasedRoute>
         ),
       },
+      {
+        path: "customer-search",
+        element: (
+          <CustomerSearchPage />
+        ),
+      },
+      {
+        path: "customer-search/customer-add",
+        element: (
+          <AddCustomerPage />
+        ),
+      },
+      {
+        path: "product",
+        element: (
+          <Product />
+        ),
+      },
+      {
+        path: "product/productdetail/:itemId",
+        element: (
+          <ProducDetail />
+        ),
+      },
+      {
+        path: "customer/customerdetail/:id",
+        element: (
+          <CustomerSearchDetail />
+        ),
+      },
+      {
+        path: "dashboard",
+        element: (
+          <DashBoardPage />
+        ),
+      },
+      {
+        path: "chat-room",
+        element: (
+          <ChatRoom />
+        ),
+      },
     ],
   },
-  {
-    path: "customer-search",
-    element: (
-      <RootLayoput>
-        <CustomerSearchPage />
-      </RootLayoput>
-    ),
-  },
-  {
-    path: "customer-search/customer-add",
-    element: (
-      <RootLayoput>
-        <AddCustomerPage />
-      </RootLayoput>
-    ),
-  },
-  {
-    path: "product",
-    element: (
-      <RootLayoput>
-        <Product />
-      </RootLayoput>
-    ),
-  },
-  {
-    path: "product/productdetail/:itemId",
-    element: (
-      <RootLayoput>
-        <ProducDetail />
-      </RootLayoput>
-    ),
-  },
+
   {
     path: "login",
     element: <Login />,
-  },
-  {
-    path: "customer/customerdetail/:id",
-    element: (
-      <RootLayoput>
-        <CustomerSearchDetail />
-      </RootLayoput>
-    ),
-  },
-  {
-    path: "dashboard",
-    element: (
-      <Authentication>
-        <RootLayoput>
-          <DashBoardPage />
-        </RootLayoput>
-      </Authentication>
-    ),
-  },
-  {
-    path: "chat-room",
-    element: (
-      <Authentication>
-        <RootLayoput>
-          <ChatRoom />
-        </RootLayoput>
-      </Authentication>
-    ),
   },
 ]);
 

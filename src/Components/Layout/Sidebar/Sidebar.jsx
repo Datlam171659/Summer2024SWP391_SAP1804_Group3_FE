@@ -6,13 +6,18 @@ import NavItem from './NavItem/NavItem';
 import { CloseOutlined, MenuOutlined, SearchOutlined, DollarOutlined, AppstoreOutlined, InboxOutlined, LineChartOutlined, SettingOutlined, UserOutlined, PercentageOutlined, LogoutOutlined, ScheduleOutlined, CommentOutlined } from '@ant-design/icons';
 import Search from 'antd/es/transfer/search';
 import { strings_vi } from '../../../Services/languages/displaystrings';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import { collection, onSnapshot } from 'firebase/firestore';
+import { db } from '../../../Pages/firebase/ChatRoomFirebase'
 
 function Sidebar() {
+  const location = useLocation();
+  const [showNotification, setShowNotification] = useState(false);
+
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
-
+  const [newMessage, setNewMessage] = useState(false);
   const authToken = localStorage.getItem('token');
   const [role, setRole] = useState(null);
 
@@ -21,7 +26,24 @@ function Sidebar() {
       const decodedToken = jwtDecode(authToken);
       setRole(decodedToken.role);
     }
-  }, []);
+
+    // Theo dõi tin nhắn mới từ Firebase
+    const q = collection(db, "messages");
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      let hasNewMessage = false;
+      querySnapshot.forEach((doc) => {
+        if (doc.data().type === 'message') {
+          hasNewMessage = true;
+        }
+      });
+      // Hiển thị thông báo nếu người dùng không đang ở trang trò chuyện
+      if (location.pathname !== '/chat-room') {
+        setShowNotification(hasNewMessage);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [authToken, location.pathname]);
 
 
   const strSidebar = strings_vi.SideBar;
@@ -29,6 +51,13 @@ function Sidebar() {
     localStorage.clear();
     navigate("/login");
   };
+
+  const handleChatClick = () => {
+    setNewMessage(false);
+    setShowNotification(false); // Xóa thông báo khi người dùng nhấp vào
+    navigate('/chat-room');
+  };
+
   const navItems = [
     {
       icon: <LineChartOutlined style={{ fontSize: "16px" }} />,
@@ -75,6 +104,7 @@ function Sidebar() {
         display: "hidden"
       }
     ,
+
     role === "Admin" || role === "Staff" ? {
       icon: <SearchOutlined style={{ fontSize: "16px" }} />,
       title: strSidebar.SearchProfile,
@@ -99,9 +129,28 @@ function Sidebar() {
       to: "/station",
     },
     {
-      icon: <CommentOutlined style={{ fontSize: "16px" }} />,
+      icon: (
+        <div style={{ position: 'relative' }}>
+          <CommentOutlined style={{ fontSize: "16px" }} />
+          {newMessage && (
+            <span
+              style={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                backgroundColor: 'red',
+              }}
+            />
+          )}
+        </div>
+      ),
       title: 'Giao Tiếp',
       to: "/chat-room",
+      onClick: handleChatClick
+
     },
     {
       icon: <SettingOutlined style={{ fontSize: "16px" }} />,

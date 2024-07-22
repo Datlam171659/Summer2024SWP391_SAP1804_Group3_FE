@@ -58,9 +58,14 @@ console.log("check buy back invoice", customerInvoicesBuyBack)
   const columns = [
     {
       title: 'Mã hóa đơn',
+      dataIndex: 'id',
+      key: 'id',
+      render: (text) => <a onClick={() => showModal(text)}>{text}</a>,
+    },
+    {
+      title: 'Mã hóa đơn',
       dataIndex: 'invoiceNumber',
       key: 'invoiceNumber',
-      render: (text) => <a onClick={() => showModal(text)}>{text}</a>,
     },
     {
       title: 'Tên công ty',

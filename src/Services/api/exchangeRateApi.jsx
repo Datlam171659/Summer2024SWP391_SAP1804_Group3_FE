@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 
-const currencyURL = 'https://api.exchangerate-api.com/v4/latest/USD';
+const currencyURL = 'https://gjewellery.bsite.net/api/ExternalAPI/ExchangeRate/vnd';
 
 const getVNDExchangeRate = async () => {
   try {
@@ -9,7 +9,7 @@ const getVNDExchangeRate = async () => {
     const responseData = response.data;
 
     if (responseData) { 
-      const VND = responseData.rates.VND;
+      const VND = responseData.data;
       return VND;
     } else {
       throw new Error('Failed to fetch VND exchange rate');

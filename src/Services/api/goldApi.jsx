@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 
-const goldURL = 'https://api.gold-api.com/price/XAU';
+const goldURL = 'https://gjewellery.bsite.net/api/ExternalAPI/GoldPrice';
 
 
 const getGoldExchangeRate = async () => {
@@ -10,7 +10,7 @@ const getGoldExchangeRate = async () => {
     const responseData = response.data;
 
     if (responseData) {
-      const price = responseData.price;
+      const price = responseData.data;
       return price;
     } else {
       throw new Error('Failed to fetch gold exchange rate');

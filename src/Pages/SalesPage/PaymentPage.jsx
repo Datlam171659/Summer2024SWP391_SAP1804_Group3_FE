@@ -38,6 +38,7 @@ const PaymentPage = () => {
   const cartTotalAmount = useSelector((state) => state.cart.cartTotalAmount);
   const cartTotalQuantity = useSelector((state) => state.cart.cartTotalQuantity);
   const discount = useSelector((state) => state.cart.discount);
+  const discountspecial = useSelector((state) => state.cart.discountspecial);
   const customerInfor = useSelector((state) => state.cart.customerInfor);
   const promotions = useSelector((state) => state.promotions.promotions);
   const [qrCode, setQrCode] = useState("");
@@ -541,6 +542,11 @@ const PaymentPage = () => {
                 <div className="flex justify-between mb-3 text-lg text-black">
                   <p>Giảm giá</p>
                   <p>{discount}%</p>
+                </div>
+                <div className="flex justify-between mb-3 text-lg text-black">
+                  <p>Giảm giá đặc biệt</p>
+                  <p>{discountspecial}%</p>
+                  {console.log(discountspecial)}
                 </div>
               </div>
               <div className="mt-14 flex justify-between">
