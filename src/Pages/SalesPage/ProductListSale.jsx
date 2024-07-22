@@ -32,7 +32,8 @@ import { fetchPromotions } from "../../Features/Promotion/promotionallSlice";
 import { fetchRewardAll } from "../../Features/Customer/rewardallSlice";
 import { fetchItemImages } from "../../Features/product/itemImageSlice";
 import { fetchRewardDetail } from "../../Features/Customer/rewardDetailSlice";
-
+import { collection, serverTimestamp, addDoc } from 'firebase/firestore';
+import { db } from '../firebase/ChatRoomFirebase';
 const ProductList = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -117,8 +118,8 @@ const ProductList = () => {
   const customerRewards =
     customerInfor && rewardsallData
       ? rewardsallData.filter(
-          (reward) => reward.customerId === customerInfor.id
-        )
+        (reward) => reward.customerId === customerInfor.id
+      )
       : [];
   const hasRewards = customerRewards.length > 0;
 
@@ -387,6 +388,20 @@ const ProductList = () => {
     dispatch(fetchPromotions());
   };
 
+  const postMessageToChatRoom = async (messageContent) => {
+    try {
+      await addDoc(collection(db, "messages"), {
+        text: messageContent,
+        name: localStorage.getItem('UniqueName'),
+        role: localStorage.getItem("role"),
+        type: "discount",
+        createdAt: serverTimestamp(),
+      });
+    } catch (error) {
+      console.error('Failed to post message to chat room', error);
+    }
+  };
+
   const closeDiscountModal = () => {
     setIsDiscountModalVisible(false);
   };
@@ -431,11 +446,20 @@ const ProductList = () => {
       cusID: customerInfor.id,
     };
     try {
-      await form.validateFields(); 
+      await form.validateFields();
       await dispatch(requestPromotionCus(discountData)).unwrap();
       message.success("Yêu cầu giảm giá thành công!");
       form.resetFields();
       fetchPromotions();
+
+      const messageContent = `
+        <b>YÊU CẦU GIẢM GIÁ</b><br>
+        <b>Phần trăm giảm:</b> ${discountPct}%
+        <b>Nội dung:</b> ${updatedDescription}
+        <b>Được yêu cầu bởi:</b> ${localStorage.getItem('UniqueName')}
+        `;
+      await postMessageToChatRoom(messageContent);
+
       setIsModalVisible(false);
     } catch (error) {
       if (error.name === 'ValidationError') {
@@ -540,7 +564,7 @@ const ProductList = () => {
           <div className="menu-header"></div>
           <div className="product-grid flex align-middle justify-center text-center">
             {filteredProducts
-              .filter((product) => product.quantity > 0  && product.status !== 'Deleted')
+              .filter((product) => product.quantity > 0 && product.status !== 'Deleted')
               .map((product) => (
                 <div key={product.itemId} className="product-card">
                   <img
@@ -558,12 +582,12 @@ const ProductList = () => {
                       product.itemName.toLowerCase().includes("10k")
                         ? product.weight * buyGold10k
                         : product.itemName.toLowerCase().includes("14k")
-                        ? product.weight * buyGold14k
-                        : product.itemName.toLowerCase().includes("18k")
-                        ? product.weight * buyGold18k
-                        : product.itemName.toLowerCase().includes("24k")
-                        ? product.weight * buyGold24k
-                        : 0
+                          ? product.weight * buyGold14k
+                          : product.itemName.toLowerCase().includes("18k")
+                            ? product.weight * buyGold18k
+                            : product.itemName.toLowerCase().includes("24k")
+                              ? product.weight * buyGold24k
+                              : 0
                     )}
                   </p>
                   <Button
@@ -793,12 +817,12 @@ const ProductList = () => {
                   item.itemName.toLowerCase().includes("10k")
                     ? item.weight * buyGold10k
                     : item.itemName.toLowerCase().includes("14k")
-                    ? item.weight * buyGold14k
-                    : item.itemName.toLowerCase().includes("18k")
-                    ? item.weight * buyGold18k
-                    : item.itemName.toLowerCase().includes("24k")
-                    ? item.weight * buyGold24k
-                    : 0
+                      ? item.weight * buyGold14k
+                      : item.itemName.toLowerCase().includes("18k")
+                        ? item.weight * buyGold18k
+                        : item.itemName.toLowerCase().includes("24k")
+                          ? item.weight * buyGold24k
+                          : 0
                 )}
               </span>
               <Button

@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
 import { createInvoice } from'../../Services/api/InvoiceApi';
 export const createInvoiceWithItems = createAsyncThunk(
   'invoice/createInvoiceWithItems',
