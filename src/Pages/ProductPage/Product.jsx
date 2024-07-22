@@ -557,6 +557,7 @@ function Product() {
                     <Select.Option value="Nhẫn">Nhẫn</Select.Option>
                     <Select.Option value="Vòng tay">Vòng tay</Select.Option>
                     <Select.Option value="Dây chuyền">Dây chuyền</Select.Option>
+                    <Select.Option value="Dây chuyền">Bông tay</Select.Option>
                   </Select>
                 </Form.Item>
                 <Form.Item
@@ -578,7 +579,7 @@ function Product() {
                     { required: true, message: "Vui lòng nhập trọng lượng" },
                   ]}
                 >
-                  <InputNumber min={1} />
+                  <InputNumber min={1} /> 
                 </Form.Item>
                 <Form.Item
                   label="Số lượng"
@@ -638,6 +639,7 @@ function Product() {
                     <Select.Option value="Nhẫn">Nhẫn</Select.Option>
                     <Select.Option value="Vòng tay">Vòng tay</Select.Option>
                     <Select.Option value="Dây chuyền">Dây chuyền</Select.Option>
+                    <Select.Option value="Dây chuyền">Bông tay</Select.Option>
                   </Select>
                 </Form.Item>
                 <Form.Item
@@ -648,7 +650,7 @@ function Product() {
                     { required: true, message: "Vui lòng nhập trọng lượng" },
                   ]}
                 >
-                  <InputNumber min={1}  disabled/>
+                  <InputNumber min={1}  disabled />
 
                 </Form.Item>
                 <Form.Item

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import '../StaffStationPage/StaffStationPage.scss'
 import { Card, Button, Tooltip, Spin, Modal, Input, Select, message, ConfigProvider, Form } from 'antd';
 import { EditOutlined, DeleteOutlined, InfoCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import staffStationkApi from '../../Services/api/staffStationApi';
@@ -186,7 +187,7 @@ const StaffStationPage = () => {
                         <div className="flex justify-between items-center mb-6">
                             <h1 className="text-2xl font-bold text-gray-700">Quầy làm việc</h1>
                             {(role === "Admin" || role === "Manager") && (
-                                <Button type="primary" icon={<PlusOutlined />} onClick={openAddStationModal}>Thêm quầy</Button>
+                                <Button className="add-station-btn" type="primary" icon={<PlusOutlined />} onClick={openAddStationModal}>Thêm quầy</Button>
                             )}
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

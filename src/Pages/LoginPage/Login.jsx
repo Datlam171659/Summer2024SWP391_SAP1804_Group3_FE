@@ -28,7 +28,7 @@ const Login = () => {
           navigate("/dashboard");
         }
       } else {
-        message.error("Incorrect email or password. Please try again.");
+        message.error("Sai Email và mật khẩu! vui lòng thử lại");
       }
     } catch (error) {
       console.error("Error during login:", error);
@@ -69,6 +69,7 @@ const Login = () => {
           <div className="login-content">
             <div className="login-title">
               <h3 className="font-bold text-black">ĐĂNG NHẬP</h3>
+
             </div>
 
             <Form
@@ -86,7 +87,7 @@ const Login = () => {
                   {
                     required: true,
                     type: "email",
-                    message: "Please input your email!",
+                    message: "Vui Lòng nhập email của bạn",
                   },
                 ]}
               >
@@ -105,7 +106,7 @@ const Login = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Please input your password!",
+                    message: "Vui lòng nhập mật khẩu của bạn",
                   },
                 ]}
               >
@@ -113,7 +114,7 @@ const Login = () => {
                   className="login-input"
                   prefix={<LockOutlined />}
                   type="password"
-                  placeholder="Password"
+                  placeholder="Mật khẩu"
                   maxLength={12}
                 />
               </Form.Item>

@@ -133,7 +133,7 @@ function Sidebar() {
       {
         display: "hidden"
       },
-    {
+{
       icon: (
         <div style={{ position: 'relative' }}>
           <CommentOutlined style={{ fontSize: "16px" }} />

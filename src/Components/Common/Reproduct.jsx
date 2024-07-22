@@ -132,6 +132,9 @@ const Reproduct = React.forwardRef(({ cartItems, customerInfor }, ref) => {
                 <div className='w-1/4'>
                     <p className="w-full flex justify-between text-md font-semibold"><span className='font-semibold mr-3'>Ngày mua:</span> <span>{currentDateString}</span></p>
                 </div>
+                <div className='w-1/4'>
+                    <p className="w-full flex justify-between text-md font-semibold"><span className='font-semibold mr-3'>Lưu ý: chỉ nhận đổi trả hàng khi hàng còn nguyên vẹn và không có dấu hiệu làm giả</span></p>
+                </div>
             </div>
         </div>
     );
