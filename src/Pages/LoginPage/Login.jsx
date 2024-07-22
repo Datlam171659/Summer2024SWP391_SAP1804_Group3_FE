@@ -15,15 +15,19 @@ const Login = () => {
       setLoading(true);
       const { token } = await loginUser(values.email, values.password);
       if (token) {
-        navigate("/dashboard");
         const decodedToken = jwtDecode(token);
         localStorage.setItem("nameid", decodedToken.nameid);
         localStorage.setItem("role", decodedToken.role);
         localStorage.setItem("email", decodedToken.email);
         localStorage.setItem("UserName", decodedToken.UserName);
         localStorage.setItem("UniqueName", decodedToken.unique_name);
-      }
-      else {
+
+        if (decodedToken.role === "Staff") {
+          navigate("/sales-page");
+        } else {
+          navigate("/dashboard");
+        }
+      } else {
         message.error("Incorrect email or password. Please try again.");
       }
     } catch (error) {
@@ -33,7 +37,6 @@ const Login = () => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -65,7 +68,7 @@ const Login = () => {
           </div>
           <div className="login-content">
             <div className="login-title">
-              <h3 className="font-bold text-black">LOG IN</h3>
+              <h3 className="font-bold text-black">ĐĂNG NHẬP</h3>
             </div>
 
             <Form
@@ -122,7 +125,7 @@ const Login = () => {
                   block
                   htmlType="submit"
                 >
-                  LOG IN
+                  ĐĂNG NHẬP
                 </Button>
               </Form.Item>
             </Form>

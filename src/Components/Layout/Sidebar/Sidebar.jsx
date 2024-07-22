@@ -59,13 +59,15 @@ function Sidebar() {
   };
 
   const navItems = [
-    {
+    role === "Admin" || role === "Manager" ? {
       icon: <LineChartOutlined style={{ fontSize: "16px" }} />,
       title: strSidebar.Overview,
       to: '/dashboard',
-
-
-    },
+    } :
+      {
+        display: "hidden"
+      }
+    ,
     {
       icon: <DollarOutlined style={{ fontSize: "16px" }} />,
       title: strSidebar.Payment,
@@ -123,11 +125,14 @@ function Sidebar() {
       {
         display: "hidden"
       },
-    {
+    role === "Admin" || role === "Manager" ? {
       icon: <ScheduleOutlined style={{ fontSize: "16px" }} />,
       title: 'Quầy',
       to: "/station",
-    },
+    } :
+      {
+        display: "hidden"
+      },
     {
       icon: (
         <div style={{ position: 'relative' }}>

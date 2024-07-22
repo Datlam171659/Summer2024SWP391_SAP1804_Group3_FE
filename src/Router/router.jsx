@@ -78,7 +78,10 @@ const router = createBrowserRouter([
       },
       {
         path: "station",
-        element: <StaffStationPage />,
+        element:
+          <RoleBasedRoute roles={["manager", "admin"]}>
+            <StaffStationPage />,
+          </RoleBasedRoute>
       },
       {
         path: "no-access",
@@ -137,7 +140,9 @@ const router = createBrowserRouter([
       {
         path: "dashboard",
         element: (
-          <DashBoardPage />
+          <RoleBasedRoute roles={["manager", "admin"]}>
+            <DashBoardPage />
+          </RoleBasedRoute>
         ),
       },
       {
