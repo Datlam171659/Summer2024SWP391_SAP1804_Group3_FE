@@ -315,7 +315,6 @@ function Promotion() {
           </Button>,
         ]}
       >
-        <p>Bạn có chắc muốn xóa tất cả khuyến mãi không?</p>
       </Modal>
     </div>
   );
