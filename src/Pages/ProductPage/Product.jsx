@@ -467,6 +467,7 @@ function Product() {
                     <Select.Option value="Nhẫn">Nhẫn</Select.Option>
                     <Select.Option value="Vòng tay">Vòng tay</Select.Option>
                     <Select.Option value="Dây chuyền">Dây chuyền</Select.Option>
+                    <Select.Option value="Dây chuyền">Bông tay</Select.Option>
                   </Select>
                 </Form.Item>
                 <Form.Item
@@ -548,6 +549,7 @@ function Product() {
                     <Select.Option value="Nhẫn">Nhẫn</Select.Option>
                     <Select.Option value="Vòng tay">Vòng tay</Select.Option>
                     <Select.Option value="Dây chuyền">Dây chuyền</Select.Option>
+                    <Select.Option value="Dây chuyền">Bông tay</Select.Option>
                   </Select>
                 </Form.Item>
                 <Form.Item

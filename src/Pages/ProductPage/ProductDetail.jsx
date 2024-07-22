@@ -96,16 +96,6 @@ function ProductDetail() {
           <div className="w-1/2 pl-6">
             <div className="flex items-center mb-6">
               <h2 className="text-2xl font-semibold text-gray-800">Thông tin chi tiết</h2>
-              {!isEditing && (
-                <Button className="ml-auto" type="primary" onClick={handleEditClick}>
-                  <EditOutlined /> Chỉnh sửa
-                </Button>
-              )}
-              {isEditing && (
-                <Button className="ml-auto" type="primary" onClick={handleSaveClick}>
-                  Lưu
-                </Button>
-              )}
             </div>
             <div className="grid grid-cols-2 gap-4 text-black">
               <div className="my-2">
@@ -123,7 +113,7 @@ function ProductDetail() {
                 )}
               </div>
               <div className="my-2">
-                <strong>Loại trang sức:</strong>
+                <strong>Bộ sưu tập:</strong>
                 {isEditing ? (
                   <input 
                     type="text" 
@@ -172,7 +162,8 @@ function ProductDetail() {
                     name="weight" 
                     value={editableProduct.weight || ''} 
                     onChange={handleChange} 
-                    className="ml-2 border p-1 bg-transparent"
+                    className="ml-2 border p-1 bg-transparent" 
+                    disabled
                   />
                 ) : (
                   <span className="ml-2">{product.weight}</span>
