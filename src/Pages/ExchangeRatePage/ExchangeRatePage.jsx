@@ -149,11 +149,11 @@ const ExchangeRatePage = () => {
             </div>
             <Modal title="Điều chỉnh tỷ lệ áp giá" visible={modalIsOpen} onCancel={closeModal} onOk={handleUpdateMultipliers}>
                 <div>
-                    <label htmlFor="buyMultiplier">Buy Multiplier:</label>
+                    <label htmlFor="buyMultiplier">Tỉ lệ Mua:</label>
                     <Input id="buyMultiplier" value={buyMultiplier} onChange={handleBuyMultiplierChange} type="number" />
                 </div>
                 <div>
-                    <label htmlFor="sellMultiplier">Sell Multiplier:</label>
+                    <label htmlFor="sellMultiplier">Tỉ lệ Bán:</label>
                     <Input id="sellMultiplier" value={sellMultiplier} onChange={handleSellMultiplierChange} type="number" />
                 </div>
             </Modal>
