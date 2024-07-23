@@ -2,8 +2,8 @@ const strings_vi = {
     SideBar: {
         Overview: "Tổng quan",
         Payment: "Thanh toán",
-        Buy: "Mua",
-        Sell: "Bán",
+        Buy: "Mua lại",
+        Sell: "Bán hàng",
         Products: "Sản Phẩm",
         SearchProfile: "Tìm kiếm khách hàng",
         Setting: "Cài đặt",

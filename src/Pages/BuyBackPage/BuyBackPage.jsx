@@ -11,11 +11,12 @@ const BuyBackPage = () => {
         theme={{
           token: {
             colorPrimary: "var(--primary-color)",
-            colorPrimaryHover: "var(--primary-color-hover)"
+            colorPrimaryHover: "var(--primary-color-hover)",
+            colorPrimaryActive: "grey"
           },
           components: {
             Select: {
-              optionSelectedBg: "#dbdbdb"
+              optionSelectedBg: "white"
             },
             Input: {
               activeShadow: "0 0 0 0 rgba(5, 145, 255, 0.1)"

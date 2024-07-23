@@ -2,12 +2,12 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig1 = {
-  apiKey: "AIzaSyBfDwDDwNic7C4osCgbiEDHzCqPpPg1jBc",
-  authDomain: "instantchat-2b53e.firebaseapp.com",
-  projectId: "instantchat-2b53e",
-  storageBucket: "instantchat-2b53e.appspot.com",
-  messagingSenderId: "329115979212",
-  appId: "1:329115979212:web:dde3ad081dedfb58e8a169"
+  apiKey: "AIzaSyCrQZdclDxp4rBsvYvpz5EJ3c0xGKaO8hA",
+  authDomain: "imsd-5d4b3.firebaseapp.com",
+  projectId: "imsd-5d4b3",
+  storageBucket: "imsd-5d4b3.appspot.com",
+  messagingSenderId: "796113946915",
+  appId: "1:796113946915:web:a3de301d75e2e272d46496"
 };
 
 const app1 = initializeApp(firebaseConfig1);
