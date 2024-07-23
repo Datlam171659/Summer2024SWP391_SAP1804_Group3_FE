@@ -171,6 +171,7 @@ const ProductListBuyBack = () => {
     dispatch(updateCustomerId(tempCustomerId));
     setIsInvoiceModalVisible(false);
     setSelectedItems([]);
+    setSearchQuery("")
     setTempCustomerId('');
   };
 
@@ -178,7 +179,7 @@ const ProductListBuyBack = () => {
 
     setIsInvoiceModalVisible(false);
     setSelectedItems([]);
-    setTempCustomerId('')
+    setTempCustomerId('');
 
   };
 
