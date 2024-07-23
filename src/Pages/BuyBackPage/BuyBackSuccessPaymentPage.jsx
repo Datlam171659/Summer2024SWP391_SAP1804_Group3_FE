@@ -9,7 +9,9 @@ import { resetCart } from "../../Features/buy-back/buyBackCartSlice";
 import InvoiceBuyBack from "../../Components/Common/InvoiceBuyBack";
 import '../BuyBackPage/BuyBackSuccessPaymentPage.scss'
 function BuyBackSuccessPaymentPage() {
+
   const dispatch = useDispatch();
+  
   const handleReset = () => { 
     dispatch(resetCart());
   };

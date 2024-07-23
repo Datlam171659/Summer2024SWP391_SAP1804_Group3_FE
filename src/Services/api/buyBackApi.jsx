@@ -117,7 +117,7 @@ const buyBackApi = {
       });
   },
   createBuyBackInvoice: (invoiceInfor) => {
-    return axiosClient.post('/api/Sales/CreateInvoiceWithItems', invoiceInfor)
+    return axiosClient.post('/api/Sales/CreateBuyBackInvoiceWithItems', invoiceInfor)
       .then(response => {
         if (response.data) {
           return response.data;
