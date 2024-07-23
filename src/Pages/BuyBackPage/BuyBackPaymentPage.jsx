@@ -84,9 +84,7 @@ const BuyBackPaymentPage = () => {
         },
         items: cartItems.map(item => ({
           itemID: item.itemId,
-          returnPolicyID: "1", 
           itemQuantity: item.quantity,
-          warrantyExpiryDate: currentDateTime.toISOString(),
           price: item.price,
           total: item.price * item.quantity
         })
